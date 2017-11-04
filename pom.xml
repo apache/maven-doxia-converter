@@ -26,7 +26,7 @@ under the License.
     <groupId>org.apache.maven.doxia</groupId>
     <artifactId>doxia-tools</artifactId>
     <version>30</version>
-    <relativePath>../../../pom/maven/doxia-tools/pom.xml</relativePath>
+    <relativePath>../../pom/maven/doxia-tools/pom.xml</relativePath>
   </parent>
 
   <artifactId>doxia-converter</artifactId>
@@ -36,14 +36,19 @@ under the License.
   <description>Doxia Converter Tool to convert a supported format to another.</description>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/doxia/doxia-tools/trunk/doxia-converter</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/doxia/doxia-tools/trunk/doxia-converter</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/doxia/doxia-tools/trunk/doxia-converter</url>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-doxia-converter.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-doxia-converter.git</developerConnection>
+    <url>https://github.com/apache/maven-doxia-converter/tree/${project.scm.tag}</url>
+    <tag>HEAD</tag>
   </scm>
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/DOXIATOOLS/component/12326004</url>
   </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://builds.apache.org/view/M-R/view/Maven/job/doxia-converter/</url>
+  </ciManagement>
   <distributionManagement>
     <site>
       <id>apache.website</id>
