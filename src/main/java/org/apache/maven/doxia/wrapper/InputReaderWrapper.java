@@ -25,7 +25,6 @@ import java.io.Reader;
  * Wrapper for an input reader.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class InputReaderWrapper
     extends AbstractWrapper

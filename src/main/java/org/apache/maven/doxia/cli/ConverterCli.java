@@ -41,7 +41,6 @@ import org.codehaus.plexus.util.Os;
  * Doxia converter CLI.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class ConverterCli
 {
@@ -154,13 +153,7 @@ public class ConverterCli
 
             return 1;
         }
-        catch ( UnsupportedEncodingException e )
-        {
-            showFatalError( e.getMessage(), e, showErrors );
-
-            return 1;
-        }
-        catch ( FileNotFoundException e )
+        catch ( UnsupportedEncodingException | FileNotFoundException e )
         {
             showFatalError( e.getMessage(), e, showErrors );
 

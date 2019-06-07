@@ -53,6 +53,7 @@ public class ConverterTest
     private boolean formatOutput;
 
     /** {@inheritDoc} */
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -64,6 +65,7 @@ public class ConverterTest
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void tearDown()
         throws Exception
     {

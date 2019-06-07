@@ -29,7 +29,6 @@ import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
  * Interface to convert a Doxia input wrapper to a Doxia output wrapper.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public interface Converter
     extends LogEnabled
@@ -64,7 +63,7 @@ public interface Converter
 
     /**
      * Make the generated files human readable.
-     * <br/>
+     * <br>
      * <b>Note</b>: actually, only XML based outputs could be formatted.
      *
      * @param formatOutput <code>true</code> to format the generated files, <code>false</code> otherwise.

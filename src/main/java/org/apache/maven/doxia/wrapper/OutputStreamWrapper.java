@@ -27,7 +27,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Wrapper for an output stream.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class OutputStreamWrapper
     extends AbstractWrapper

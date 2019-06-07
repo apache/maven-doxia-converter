@@ -34,7 +34,6 @@ import com.ibm.icu.text.CharsetDetector;
  * Abstract File wrapper for Doxia converter.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 abstract class AbstractFileWrapper
     extends AbstractWrapper
@@ -145,6 +144,7 @@ abstract class AbstractFileWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )
@@ -165,6 +165,7 @@ abstract class AbstractFileWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode()
     {
         final int result = super.hashCode();
@@ -174,6 +175,7 @@ abstract class AbstractFileWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public java.lang.String toString()
     {
         StringBuilder buf = new StringBuilder( super.toString() + "\n" );

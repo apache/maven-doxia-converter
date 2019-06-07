@@ -29,7 +29,6 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
  * Utility class to play with Doxia objects.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class ConverterUtil
 {

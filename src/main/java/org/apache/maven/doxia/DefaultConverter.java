@@ -23,7 +23,6 @@ import java.io.BufferedInputStream;
 import java.io.CharArrayWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +72,6 @@ import com.ibm.icu.text.CharsetMatch;
  * Default implementation of <code>Converter</code>
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class DefaultConverter
     implements Converter
@@ -131,6 +129,7 @@ public class DefaultConverter
     private Log log;
 
     /** {@inheritDoc} */
+    @Override
     public void enableLogging( Log log )
     {
         this.log = log;
@@ -153,19 +152,21 @@ public class DefaultConverter
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getInputFormats()
     {
         return SUPPORTED_FROM_FORMAT;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getOutputFormats()
     {
         return SUPPORTED_TO_FORMAT;
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings( "unchecked" )
+    @Override
     public void convert( InputFileWrapper input, OutputFileWrapper output )
         throws UnsupportedFormatException, ConverterException
     {
@@ -224,6 +225,7 @@ public class DefaultConverter
     }
 
     /** {@inheritDoc} */
+    @Override
     public void convert( InputReaderWrapper input, OutputStreamWrapper output )
         throws UnsupportedFormatException, ConverterException
     {
@@ -298,6 +300,7 @@ public class DefaultConverter
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setFormatOutput( boolean formatOutput )
     {
         this.formatOutput = formatOutput;
@@ -510,7 +513,7 @@ public class DefaultConverter
             return;
         }
 
-        Map<String, String> context = new HashMap<String, String>();
+        Map<String, String> context = new HashMap<>();
         context.put( "basedir", new File( "" ).getAbsolutePath() );
 
         ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
@@ -694,10 +697,9 @@ public class DefaultConverter
             throw new IllegalArgumentException( "The file '" + xmlFile.getAbsolutePath() + "' is not a file." );
         }
 
-        Reader reader = null;
-        try
+        
+        try ( Reader reader = ReaderFactory.newXmlReader( xmlFile ) )
         {
-            reader = ReaderFactory.newXmlReader( xmlFile );
             XmlPullParser parser = new MXParser();
             parser.setInput( reader );
             int eventType = parser.getEventType();
@@ -710,21 +712,9 @@ public class DefaultConverter
                 eventType = parser.nextToken();
             }
         }
-        catch ( FileNotFoundException e )
+        catch ( IOException | XmlPullParserException e )
         {
             return null;
-        }
-        catch ( XmlPullParserException e )
-        {
-            return null;
-        }
-        catch ( IOException e )
-        {
-            return null;
-        }
-        finally
-        {
-            IOUtil.close( reader );
         }
 
         return null;

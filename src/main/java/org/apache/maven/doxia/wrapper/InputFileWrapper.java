@@ -26,7 +26,6 @@ import java.io.UnsupportedEncodingException;
  * Wrapper for an input file.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class InputFileWrapper
     extends AbstractFileWrapper

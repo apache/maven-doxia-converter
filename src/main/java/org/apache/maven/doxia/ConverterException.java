@@ -23,7 +23,6 @@ package org.apache.maven.doxia;
  * Wrap an exception that occurs during the conversion.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class ConverterException
     extends Exception

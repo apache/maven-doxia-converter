@@ -27,7 +27,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Abstract wrapper for Doxia converter.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 abstract class AbstractWrapper
     implements Serializable
@@ -86,6 +85,7 @@ abstract class AbstractWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )
@@ -106,6 +106,7 @@ abstract class AbstractWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode()
     {
         final int result = 17;
@@ -115,6 +116,7 @@ abstract class AbstractWrapper
     }
 
     /** {@inheritDoc} */
+    @Override
     public java.lang.String toString()
     {
         StringBuilder buf = new StringBuilder();

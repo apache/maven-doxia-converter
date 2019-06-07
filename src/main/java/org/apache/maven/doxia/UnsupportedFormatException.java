@@ -25,7 +25,6 @@ import org.codehaus.plexus.util.StringUtils;
  * Wrap an exception that occurs if a format is not supported.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class UnsupportedFormatException
     extends Exception

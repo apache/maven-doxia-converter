@@ -38,9 +38,7 @@ import com.ibm.icu.text.CharsetDetector;
  * Manager for Doxia converter CLI options.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
-@SuppressWarnings( "static-access" )
 class CLIManager
 {
     /** h character */
@@ -82,35 +80,61 @@ class CLIManager
     {
         OPTIONS = new Options();
 
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "help" ).withDescription( "Display help information." )
+        OptionBuilder.withLongOpt( "help" );
+        OptionBuilder.withDescription( "Display help information." );
+        OPTIONS.addOption( OptionBuilder
                                         .create( HELP ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "version" ).withDescription( "Display version information." )
+        OptionBuilder.withLongOpt( "version" );
+        OptionBuilder.withDescription( "Display version information." );
+        OPTIONS.addOption( OptionBuilder
                                         .create( VERSION ) );
 
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "input" ).withDescription( "Input file or directory." )
-                                        .hasArg().create( IN ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "output" ).withDescription( "Output file or directory." )
-                                        .hasArg().create( OUT ) );
-        OPTIONS.addOption( OptionBuilder.withDescription( "From format. If not specified, try to autodetect it." )
-                                        .hasArg().create( FROM ) );
-        OPTIONS.addOption( OptionBuilder.withDescription( "To format." ).hasArg().create( TO ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "inputEncoding" )
+        OptionBuilder.withLongOpt( "input" );
+        OptionBuilder.withDescription( "Input file or directory." );
+        OptionBuilder
+                                        .hasArg();
+        OPTIONS.addOption( OptionBuilder.create( IN ) );
+        OptionBuilder.withLongOpt( "output" );
+        OptionBuilder.withDescription( "Output file or directory." );
+        OptionBuilder
+                                        .hasArg();
+        OPTIONS.addOption( OptionBuilder.create( OUT ) );
+        OptionBuilder.withDescription( "From format. If not specified, try to autodetect it." );
+        OptionBuilder
+                                        .hasArg();
+        OPTIONS.addOption( OptionBuilder.create( FROM ) );
+        OptionBuilder.withDescription( "To format." );
+        OptionBuilder.hasArg();
+        OPTIONS.addOption( OptionBuilder.create( TO ) );
+        OptionBuilder.withLongOpt( "inputEncoding" );
+        OptionBuilder
                                         .withDescription( "Input file encoding. "
-                                                              + "If not specified, try to autodetect it." )
-                                        .hasArg().create( INENCODING ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "format" )
+                                                              + "If not specified, try to autodetect it." );
+        OptionBuilder
+                                        .hasArg();
+        OPTIONS.addOption( OptionBuilder.create( INENCODING ) );
+        OptionBuilder.withLongOpt( "format" );
+        OptionBuilder
                                         .withDescription( "Format the output (actually only xml based outputs) "
-                                                              + " to be human readable." )
+                                                              + " to be human readable." );
+        OPTIONS.addOption( OptionBuilder
                            .create( FORMAT ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "outputEncoding" )
+        OptionBuilder.withLongOpt( "outputEncoding" );
+        OptionBuilder
                                         .withDescription( "Output file encoding. If not specified, use the "
-                                                              + "input encoding (or autodetected)." ).hasArg()
+                                                              + "input encoding (or autodetected)." );
+        OptionBuilder.hasArg();
+        OPTIONS.addOption( OptionBuilder
                                         .create( OUTENCODING ) );
 
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "debug" )
-                                        .withDescription( "Produce execution debug output." ).create( DEBUG ) );
-        OPTIONS.addOption( OptionBuilder.withLongOpt( "errors" )
-                                        .withDescription( "Produce execution error messages." ).create( ERRORS ) );
+        OptionBuilder.withLongOpt( "debug" );
+        OptionBuilder
+                                        .withDescription( "Produce execution debug output." );
+        OPTIONS.addOption( OptionBuilder.create( DEBUG ) );
+        OptionBuilder.withLongOpt( "errors" );
+        OptionBuilder
+                                        .withDescription( "Produce execution error messages." );
+        OPTIONS.addOption( OptionBuilder.create( ERRORS ) );
     }
 
     /**
@@ -162,7 +186,7 @@ class CLIManager
 
     private String[] cleanArgs( String[] args )
     {
-        List<String> cleaned = new ArrayList<String>();
+        List<String> cleaned = new ArrayList<>();
 
         StringBuilder currentArg = null;
 
@@ -255,7 +279,7 @@ class CLIManager
         }
         else
         {
-            cleanArgs = (String[]) cleaned.toArray( new String[cleanedSz] );
+            cleanArgs = cleaned.toArray( new String[cleanedSz] );
         }
 
         return cleanArgs;
