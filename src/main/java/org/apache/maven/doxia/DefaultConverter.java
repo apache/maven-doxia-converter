@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -608,23 +609,20 @@ public class DefaultConverter
                 + "' is not a file, could not detect format." );
         }
 
-        for ( int i = 0; i < SUPPORTED_FROM_FORMAT.length; i++ )
+        for ( String supportedFromFormat : SUPPORTED_FROM_FORMAT )
         {
-            String supportedFromFormat = SUPPORTED_FROM_FORMAT[i];
-
             // Handle Doxia text files
-            if ( supportedFromFormat.equalsIgnoreCase( APT_PARSER )
-                && isDoxiaFileName( f, supportedFromFormat ) )
+            if ( supportedFromFormat.equalsIgnoreCase( APT_PARSER ) && isDoxiaFileName( f, supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( supportedFromFormat.equalsIgnoreCase( CONFLUENCE_PARSER )
-                && isDoxiaFileName( f, supportedFromFormat ) )
+            else if ( supportedFromFormat.equalsIgnoreCase( CONFLUENCE_PARSER ) && isDoxiaFileName( f,
+                    supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( supportedFromFormat.equalsIgnoreCase( TWIKI_PARSER )
-                && isDoxiaFileName( f, supportedFromFormat ) )
+            else if ( supportedFromFormat.equalsIgnoreCase( TWIKI_PARSER ) && isDoxiaFileName( f,
+                    supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
@@ -635,33 +633,27 @@ public class DefaultConverter
             {
                 continue;
             }
-            else if ( firstTag.equals( "article" )
-                && supportedFromFormat.equalsIgnoreCase( DOCBOOK_PARSER ) )
+            else if ( firstTag.equals( "article" ) && supportedFromFormat.equalsIgnoreCase( DOCBOOK_PARSER ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "faqs" )
-                && supportedFromFormat.equalsIgnoreCase( FML_PARSER ) )
+            else if ( firstTag.equals( "faqs" ) && supportedFromFormat.equalsIgnoreCase( FML_PARSER ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "document" )
-                && supportedFromFormat.equalsIgnoreCase( XDOC_PARSER ) )
+            else if ( firstTag.equals( "document" ) && supportedFromFormat.equalsIgnoreCase( XDOC_PARSER ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "html" )
-                && supportedFromFormat.equalsIgnoreCase( XHTML_PARSER ) )
+            else if ( firstTag.equals( "html" ) && supportedFromFormat.equalsIgnoreCase( XHTML_PARSER ) )
             {
                 return supportedFromFormat;
             }
         }
 
-        StringBuilder msg = new StringBuilder();
-        msg.append( "Could not detect the Doxia format for file: " );
-        msg.append( f.getAbsolutePath() );
-        msg.append( "\n Specify explicitly the Doxia format." );
-        throw new UnsupportedOperationException( msg.toString() );
+        throw new UnsupportedOperationException(
+                String.format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
+                        f.getAbsolutePath() ) );
     }
 
     /**

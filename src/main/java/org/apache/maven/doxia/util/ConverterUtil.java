@@ -61,9 +61,9 @@ public class ConverterUtil
 
         Parser parser = null;
 
-        for ( int i = 0; i < supportedFormats.length; i++ )
+        for ( String supportedFormat : supportedFormats )
         {
-            if ( format.equalsIgnoreCase( supportedFormats[i] ) )
+            if ( format.equalsIgnoreCase( supportedFormat ) )
             {
                 parser = (Parser) plexus.lookup( Parser.ROLE, format );
             }
@@ -106,9 +106,9 @@ public class ConverterUtil
 
         SinkFactory factory = null;
 
-        for ( int i = 0; i < supportedFormats.length; i++ )
+        for ( String supportedFormat : supportedFormats )
         {
-            if ( format.equalsIgnoreCase( supportedFormats[i] ) )
+            if ( format.equalsIgnoreCase( supportedFormat ) )
             {
                 factory = (SinkFactory) plexus.lookup( SinkFactory.ROLE, format );
             }

@@ -61,7 +61,7 @@ public class ConverterTest
 
         converter = new DefaultConverter();
 
-        formatOutput = Boolean.valueOf( System.getProperty( "format", "false" ) ).booleanValue();
+        formatOutput = Boolean.parseBoolean( System.getProperty( "format", "false" ) );
     }
 
     /** {@inheritDoc} */
@@ -340,7 +340,7 @@ public class ConverterTest
         catch ( ConverterException e )
         {
             // The TWiki parser is wrong for *  <pre>some text</pre>
-            if ( e.getMessage().indexOf( "Error validating the model" ) == -1 )
+            if ( !e.getMessage().contains( "Error validating the model" ) )
             {
                 throw e;
             }
@@ -441,25 +441,19 @@ public class ConverterTest
         File outFile = new File( out );
         outFile.getParentFile().mkdirs();
 
-        OutputStream fo = null;
-        try
+        try ( OutputStream fo = new FileOutputStream( outFile ) )
         {
-            fo = new FileOutputStream( outFile );
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            InputReaderWrapper input =
-                InputReaderWrapper.valueOf( new FileReader( inFile ), from, converter.getInputFormats() );
-            OutputStreamWrapper output = OutputStreamWrapper.valueOf( outputStream, to, "UTF-8", converter.getOutputFormats() );
+            InputReaderWrapper input = InputReaderWrapper.valueOf( new FileReader( inFile ), from,
+                    converter.getInputFormats() );
+            OutputStreamWrapper output = OutputStreamWrapper.valueOf( outputStream, to, "UTF-8",
+                    converter.getOutputFormats() );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
 
             IOUtil.copy( outputStream.toByteArray(), fo );
-        }
-        finally
-        {
-            IOUtil.close( fo );
         }
 
         assertTrue( outFile.exists() );
@@ -484,26 +478,19 @@ public class ConverterTest
         File outFile = new File( out );
         outFile.getParentFile().mkdirs();
 
-        OutputStream fo = null;
-        try
+        try ( OutputStream fo = new FileOutputStream( outFile ) )
         {
-            fo = new FileOutputStream( outFile );
-
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            InputReaderWrapper input =
-                InputReaderWrapper.valueOf( new FileReader( inFile ), from, converter.getInputFormats() );
-            OutputStreamWrapper output =
-                OutputStreamWrapper.valueOf( outputStream, to, "UTF-8", converter.getOutputFormats() );
+            InputReaderWrapper input = InputReaderWrapper.valueOf( new FileReader( inFile ), from,
+                    converter.getInputFormats() );
+            OutputStreamWrapper output = OutputStreamWrapper.valueOf( outputStream, to, "UTF-8",
+                    converter.getOutputFormats() );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
 
             IOUtil.copy( outputStream.toByteArray(), fo );
-        }
-        finally
-        {
-            IOUtil.close( fo );
         }
 
         assertTrue( outFile.exists() );
@@ -528,11 +515,8 @@ public class ConverterTest
         File outFile = new File( out );
         outFile.getParentFile().mkdirs();
 
-        FileWriter fw = null;
-        try
+        try (FileWriter fw = new FileWriter( outFile ))
         {
-            fw = new FileWriter( outFile );
-
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
@@ -547,10 +531,6 @@ public class ConverterTest
 
             assertTrue( outFile.exists() );
             assertTrue( outFile.length() != 0 );
-        }
-        finally
-        {
-            IOUtil.close( fw );
         }
 
         in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
@@ -562,10 +542,8 @@ public class ConverterTest
         outFile = new File( out );
         outFile.getParentFile().mkdirs();
 
-        try
+        try (FileWriter fw = new FileWriter( outFile ))
         {
-            fw = new FileWriter( outFile );
-
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
@@ -581,10 +559,6 @@ public class ConverterTest
             assertTrue( outFile.exists() );
             assertTrue( outFile.length() != 0 );
         }
-        finally
-        {
-            IOUtil.close( fw );
-        }
 
         in = getBasedir() + "/src/test/resources/unit/apt/test.unknown";
         from = null;
@@ -595,10 +569,8 @@ public class ConverterTest
         outFile = new File( out );
         outFile.getParentFile().mkdirs();
 
-        try
+        try (FileWriter fw = new FileWriter( outFile ))
         {
-            fw = new FileWriter( outFile );
-
             InputFileWrapper input =
                 InputFileWrapper.valueOf( inFile.getAbsolutePath(), from, converter.getInputFormats() );
             OutputFileWrapper output =
@@ -612,10 +584,6 @@ public class ConverterTest
         catch ( UnsupportedOperationException e )
         {
             assertTrue( true );
-        }
-        finally
-        {
-            IOUtil.close( fw );
         }
     }
 
