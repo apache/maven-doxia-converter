@@ -171,14 +171,8 @@ public class DefaultConverter
     public void convert( InputFileWrapper input, OutputFileWrapper output )
         throws UnsupportedFormatException, ConverterException
     {
-        if ( input == null )
-        {
-            throw new IllegalArgumentException( "input is required" );
-        }
-        if ( output == null )
-        {
-            throw new IllegalArgumentException( "output is required" );
-        }
+        Objects.requireNonNull( input, "input is required" );
+        Objects.requireNonNull( output, "output is required" );
 
         try
         {
@@ -230,14 +224,8 @@ public class DefaultConverter
     public void convert( InputReaderWrapper input, OutputStreamWrapper output )
         throws UnsupportedFormatException, ConverterException
     {
-        if ( input == null )
-        {
-            throw new IllegalArgumentException( "input is required" );
-        }
-        if ( output == null )
-        {
-            throw new IllegalArgumentException( "output is required" );
-        }
+        Objects.requireNonNull( input, "input is required" );
+        Objects.requireNonNull( output, "output is required" );
 
         try
         {
@@ -330,7 +318,7 @@ public class DefaultConverter
                                 + "' with the encoding '" + output.getEncoding() + "'" );
         }
 
-        if ( inputEncoding.equals( InputFileWrapper.AUTO_ENCODING ) )
+        if ( InputFileWrapper.AUTO_ENCODING.equals( inputEncoding ) )
         {
             inputEncoding = autoDetectEncoding( inputFile );
             if ( getLog().isDebugEnabled() )
@@ -339,7 +327,7 @@ public class DefaultConverter
             }
         }
 
-        if ( inputFormat.equals( InputFileWrapper.AUTO_FORMAT ) )
+        if ( InputFileWrapper.AUTO_FORMAT.equals( inputFormat ) )
         {
             inputFormat = autoDetectFormat( inputFile, inputEncoding );
             if ( getLog().isDebugEnabled() )
@@ -360,7 +348,7 @@ public class DefaultConverter
         }
 
         File outputFile;
-        if ( output.getFile().exists() && output.getFile().isDirectory() )
+        if ( output.getFile().isDirectory() )
         {
             outputFile = new File( output.getFile(), inputFile.getName() + "." + output.getFormat() );
         }
@@ -444,34 +432,27 @@ public class DefaultConverter
 
         parse( parser, reader, sink );
 
-        if ( formatOutput && ( output.getFormat().equals( DOCBOOK_SINK ) || output.getFormat().equals( FO_SINK )
-            || output.getFormat().equals( ITEXT_SINK ) || output.getFormat().equals( XDOC_SINK )
-            || output.getFormat().equals( XHTML_SINK ) ) )
+        if ( formatOutput && ( DOCBOOK_SINK.equals( output.getFormat() ) || FO_SINK.equals( output.getFormat() )
+            || ITEXT_SINK.equals( output.getFormat() ) || XDOC_SINK.equals( output.getFormat() )
+            || XHTML_SINK.equals( output.getFormat() ) ) )
         {
             // format all xml files excluding docbook which is buggy
             // TODO Add doc book format
-            if ( output.getFormat().equals( DOCBOOK_SINK ) || inputFormat.equals( DOCBOOK_PARSER ) )
+            if ( DOCBOOK_SINK.equals( output.getFormat() ) || DOCBOOK_PARSER.equals( inputFormat ) )
             {
                 return;
             }
-            Reader r = null;
-            Writer w = null;
-            try
+            
+            try ( Reader r = ReaderFactory.newXmlReader( outputFile );
+                  Writer w = WriterFactory.newXmlWriter( outputFile ) )
             {
-                r = ReaderFactory.newXmlReader( outputFile );
                 CharArrayWriter caw = new CharArrayWriter();
                 XmlUtil.prettyFormat( r, caw );
-                w = WriterFactory.newXmlWriter( outputFile );
                 w.write( caw.toString() );
             }
             catch ( IOException e )
             {
                 throw new ConverterException( "IOException: " + e.getMessage(), e );
-            }
-            finally
-            {
-                IOUtil.close( r );
-                IOUtil.close( w );
             }
         }
     }
@@ -612,16 +593,16 @@ public class DefaultConverter
         for ( String supportedFromFormat : SUPPORTED_FROM_FORMAT )
         {
             // Handle Doxia text files
-            if ( supportedFromFormat.equalsIgnoreCase( APT_PARSER ) && isDoxiaFileName( f, supportedFromFormat ) )
+            if ( APT_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f, supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( supportedFromFormat.equalsIgnoreCase( CONFLUENCE_PARSER ) && isDoxiaFileName( f,
+            else if ( CONFLUENCE_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
                     supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( supportedFromFormat.equalsIgnoreCase( TWIKI_PARSER ) && isDoxiaFileName( f,
+            else if ( TWIKI_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
                     supportedFromFormat ) )
             {
                 return supportedFromFormat;
@@ -633,19 +614,19 @@ public class DefaultConverter
             {
                 continue;
             }
-            else if ( firstTag.equals( "article" ) && supportedFromFormat.equalsIgnoreCase( DOCBOOK_PARSER ) )
+            else if ( "article".equals( firstTag ) && DOCBOOK_PARSER.equalsIgnoreCase( supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "faqs" ) && supportedFromFormat.equalsIgnoreCase( FML_PARSER ) )
+            else if ( "faqs".equals( firstTag ) && FML_PARSER.equalsIgnoreCase( supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "document" ) && supportedFromFormat.equalsIgnoreCase( XDOC_PARSER ) )
+            else if ( "document".equals( firstTag ) && XDOC_PARSER.equalsIgnoreCase( supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
-            else if ( firstTag.equals( "html" ) && supportedFromFormat.equalsIgnoreCase( XHTML_PARSER ) )
+            else if ( "html".equals( firstTag ) && XHTML_PARSER.equalsIgnoreCase( supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }
@@ -663,10 +644,7 @@ public class DefaultConverter
      */
     private static boolean isDoxiaFileName( File f, String format )
     {
-        if ( f == null )
-        {
-            throw new IllegalArgumentException( "f is required." );
-        }
+        Objects.requireNonNull( f, "f is required." );
 
         Pattern pattern = Pattern.compile( "(.*?)\\." + format.toLowerCase( Locale.ENGLISH ) + "$" );
         Matcher matcher = pattern.matcher( f.getName().toLowerCase( Locale.ENGLISH ) );
