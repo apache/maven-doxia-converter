@@ -92,9 +92,12 @@ public class DefaultConverter
 
     private static final String XHTML_PARSER = "xhtml";
 
+    private static final String XHTML5_PARSER = "xhtml5";
+
     /** Supported input format, i.e. supported Doxia parser */
     public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER };
+        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
+                XHTML5_PARSER};
 
     private static final String APT_SINK = "apt";
 
@@ -116,10 +119,12 @@ public class DefaultConverter
 
     private static final String XHTML_SINK = "xhtml";
 
+    private static final String XHTML5_SINK = "xhtml5";
+
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
         { APT_SINK, CONFLUENCE_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
-            XHTML_SINK };
+            XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
     private boolean formatOutput;
@@ -434,7 +439,7 @@ public class DefaultConverter
 
         if ( formatOutput && ( DOCBOOK_SINK.equals( output.getFormat() ) || FO_SINK.equals( output.getFormat() )
             || ITEXT_SINK.equals( output.getFormat() ) || XDOC_SINK.equals( output.getFormat() )
-            || XHTML_SINK.equals( output.getFormat() ) ) )
+            || XHTML_SINK.equals( output.getFormat() ) || XHTML5_SINK.equals( output.getFormat() ) ) )
         {
             // format all xml files excluding docbook which is buggy
             // TODO Add doc book format
@@ -658,7 +663,7 @@ public class DefaultConverter
             throw new IllegalArgumentException( "The file '" + xmlFile.getAbsolutePath() + "' is not a file." );
         }
 
-        
+
         try ( Reader reader = ReaderFactory.newXmlReader( xmlFile ) )
         {
             XmlPullParser parser = new MXParser();

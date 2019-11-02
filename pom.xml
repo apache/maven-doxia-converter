@@ -135,7 +135,11 @@ under the License.
       <artifactId>doxia-module-xhtml</artifactId>
       <version>${doxiaVersion}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.maven.doxia</groupId>
+      <artifactId>doxia-module-xhtml5</artifactId>
+      <version>${doxiaVersion}</version>
+    </dependency>
     <!-- Misc -->
     <dependency>
       <groupId>commons-cli</groupId>

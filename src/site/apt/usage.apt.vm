@@ -58,8 +58,8 @@ Options:
  -X,--debug                          Produce execution debug output.
 
 Supported Formats:
-from: apt, confluence, docbook, fml, twiki, xdoc, xhtml or autodetect
-out: apt, docbook, fo, itext, latex, rtf, xdoc, xhtml
+from: apt, confluence, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
+out: apt, docbook, fo, itext, latex, rtf, xdoc, xhtml, xhtml5
 Supported Encoding:
 UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, Shift_JIS, ISO-2022-JP,
 ISO-2022-CN, ISO-2022-KR, GB18030, EUC-JP, EUC-KR, Big5, ISO-8859-1,
@@ -113,7 +113,7 @@ catch ( ConverterException e )
 +---
  <target name="doxia-convert">
      <java
-         jar="./lib/doxia-converter-1.2-jar-with-dependencies.jar"
+         jar="./lib/doxia-converter-${project.version}-jar-with-dependencies.jar"
          dir="."
          fork="true"
          failonerror="true"

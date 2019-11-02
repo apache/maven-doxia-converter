@@ -422,6 +422,43 @@ public class ConverterTest
         assertTrue( new File( out ).exists() );
         assertTrue( new File( out ).length() != 0 );
     }
+    /**
+     * Input xhtml5 file / output dir
+     *
+     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
+     * @throws Exception if any
+     */
+    public void testXhtml5FileConverter()
+            throws Exception
+    {
+        String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
+        String from = "xhtml5";
+        String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
+        String to = "xhtml5";
+
+        InputFileWrapper input =
+                InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
+        OutputFileWrapper output =
+                OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
+
+        converter.setFormatOutput( formatOutput );
+        converter.convert( input, output );
+        assertTrue( new File( out ).exists() );
+        assertTrue( new File( out ).length() != 0 );
+
+        in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
+        from = "xhtml5";
+        out = getBasedir() + "/target/unit/file/xhtml/test.xhtml5";
+        to = "xhtml5";
+
+        input = InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
+        output = OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
+
+        converter.setFormatOutput( formatOutput );
+        converter.convert( input, output );
+        assertTrue( new File( out ).exists() );
+        assertTrue( new File( out ).length() != 0 );
+    }
 
     /**
      * Input apt reader / output writer
@@ -582,6 +619,34 @@ public class ConverterTest
         {
             assertTrue( true );
         }
+
+        in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
+        out = getBasedir() + "/target/unit/writer/xhtml/test.html5.xhtml5";
+        to = "xhtml5";
+
+        inFile = new File( in );
+        outFile = new File( out );
+        outFile.getParentFile().mkdirs();
+
+        try (FileWriter fw = new FileWriter( outFile ))
+        {
+            StringWriter writer = new StringWriter();
+
+            InputFileWrapper input =
+                    InputFileWrapper.valueOf( inFile.getAbsolutePath(), null, converter.getInputFormats() );
+            OutputFileWrapper output =
+                    OutputFileWrapper.valueOf( outFile.getAbsolutePath(), to, converter.getOutputFormats() );
+
+            converter.setFormatOutput( formatOutput );
+            converter.convert( input, output );
+
+            IOUtil.copy( writer.toString(), fw );
+
+            assertTrue( outFile.exists() );
+            assertTrue( outFile.length() != 0 );
+        }
+
+
     }
 
     private String autoDetectEncoding( File f )

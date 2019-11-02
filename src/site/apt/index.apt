@@ -33,9 +33,9 @@ Doxia Converter
 
   Currently, the supported Doxia formats are:
 
-    * input format: apt, confluence, docbook, fml, twiki, xdoc, xhtml or autodetect
+    * input format: apt, confluence, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
 
-    * output format: apt, confluence, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml
+    * output format: apt, confluence, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
 
     []
 
