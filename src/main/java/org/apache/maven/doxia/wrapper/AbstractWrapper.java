@@ -20,8 +20,9 @@ package org.apache.maven.doxia.wrapper;
  */
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import org.codehaus.plexus.util.StringUtils;
+import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
 
 /**
  * Abstract wrapper for Doxia converter.
@@ -44,7 +45,7 @@ abstract class AbstractWrapper
      */
     AbstractWrapper( String format, String[] supportedFormat )
     {
-        this.format = ( StringUtils.isNotEmpty( format ) ? format : AUTO_FORMAT );
+        this.format = ( isNotEmpty( format ) ? format : AUTO_FORMAT );
         if ( supportedFormat == null )
         {
             throw new IllegalArgumentException( "supportedFormat is required" );
@@ -92,36 +93,26 @@ abstract class AbstractWrapper
         {
             return true;
         }
-
-        if ( !( other instanceof AbstractWrapper ) )
+        if ( other == null || getClass() != other.getClass() )
         {
             return false;
         }
 
         AbstractWrapper that = (AbstractWrapper) other;
-        boolean result = true;
-        result =
-            result && ( getFormat() == null ? that.getFormat() == null : getFormat().equals( that.getFormat() ) );
-        return result;
+        return Objects.equals( getFormat(), that.getFormat() );
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode()
     {
-        final int result = 17;
-        final int hash = 37;
-
-        return hash * result + ( format != null ? format.hashCode() : 0 );
+        return Objects.hash( getFormat() );
     }
 
     /** {@inheritDoc} */
     @Override
-    public java.lang.String toString()
+    public String toString()
     {
-        StringBuilder buf = new StringBuilder();
-        buf.append( "format = '" );
-        buf.append( getFormat() + "'" );
-        return buf.toString();
+        return "format = '" + getFormat() + "'";
     }
 }

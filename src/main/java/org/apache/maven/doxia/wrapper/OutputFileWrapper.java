@@ -21,8 +21,9 @@ package org.apache.maven.doxia.wrapper;
 
 import java.io.UnsupportedEncodingException;
 
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.WriterFactory;
+
+import static org.codehaus.plexus.util.StringUtils.isEmpty;
 
 /**
  * Wrapper for an output file.
@@ -38,7 +39,7 @@ public class OutputFileWrapper
     /**
      * Private constructor.
      *
-     * @param file not null
+     * @param absolutePath not null
      * @param format not null
      * @param charsetName could be null
      * @param supportedFormat not null.
@@ -81,7 +82,7 @@ public class OutputFileWrapper
                                              String[] supportedFormat )
         throws UnsupportedEncodingException
     {
-        if ( StringUtils.isEmpty( format ) )
+        if ( isEmpty( format ) )
         {
             throw new IllegalArgumentException( "output format is required" );
         }

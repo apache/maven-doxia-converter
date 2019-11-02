@@ -19,16 +19,17 @@ package org.apache.maven.doxia.wrapper;
  * under the License.
  */
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.Objects;
 
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 import com.ibm.icu.text.CharsetDetector;
+
+import static org.codehaus.plexus.util.StringUtils.isEmpty;
+import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
 
 /**
  * Abstract File wrapper for Doxia converter.
@@ -58,7 +59,7 @@ abstract class AbstractFileWrapper
     {
         super( format, supportedFormat );
 
-        if ( StringUtils.isEmpty( absolutePath ) )
+        if ( isEmpty( absolutePath ) )
         {
             throw new IllegalArgumentException( "absolutePath is required" );
         }
@@ -70,15 +71,15 @@ abstract class AbstractFileWrapper
         }
         this.file = filetoset;
 
-        if ( StringUtils.isNotEmpty( encoding ) && !encoding.equalsIgnoreCase( encoding )
-            && !validateEncoding( encoding ) )
+        if ( isNotEmpty( encoding ) && !encoding.equalsIgnoreCase( encoding )
+            && !Charset.isSupported( encoding ) )
         {
             StringBuilder msg = new StringBuilder();
             msg.append( "The encoding '" + encoding + "' is not a valid one. The supported charsets are: " );
             msg.append( StringUtils.join( CharsetDetector.getAllDetectableCharsets(), ", " ) );
             throw new UnsupportedEncodingException( msg.toString() );
         }
-        this.encoding = ( StringUtils.isNotEmpty( encoding ) ? encoding : AUTO_ENCODING );
+        this.encoding = ( isNotEmpty( encoding ) ? encoding : AUTO_ENCODING );
     }
 
     /**
@@ -113,74 +114,35 @@ abstract class AbstractFileWrapper
         this.encoding = encoding;
     }
 
-    /**
-     * Validate if a charset is supported on this platform.
-     *
-     * @param charsetName the charsetName to be checked.
-     * @return <code>true</code> if the charset is supported by the JVM, <code>false</code> otherwise.
-     */
-    static boolean validateEncoding( String charsetName )
-    {
-        if ( StringUtils.isEmpty( charsetName ) )
-        {
-            return false;
-        }
-
-        OutputStream ost = new ByteArrayOutputStream();
-        OutputStreamWriter osw = null;
-        try
-        {
-            osw = new OutputStreamWriter( ost, charsetName );
-        }
-        catch ( UnsupportedEncodingException exc )
-        {
-            return false;
-        }
-        finally
-        {
-            IOUtil.close( osw );
-        }
-        return true;
-    }
-
-    /** {@inheritDoc} */
     @Override
-    public boolean equals( Object other )
+    public boolean equals( Object o )
     {
-        if ( this == other )
+        if ( this == o )
         {
             return true;
         }
-
-        if ( !( other instanceof AbstractFileWrapper ) )
+        if ( o == null || getClass() != o.getClass() )
         {
             return false;
         }
-
-        AbstractFileWrapper that = (AbstractFileWrapper) other;
-        boolean result = true;
-        result = result && super.equals( other );
-        result = result && ( getFile() == null ? that.getFile() == null : getFile().equals( that.getFile() ) );
-        return result;
+        if ( !super.equals( o ) )
+        {
+            return false;
+        }
+        AbstractFileWrapper that = (AbstractFileWrapper) o;
+        return Objects.equals( getFile(), that.getFile() );
     }
 
-    /** {@inheritDoc} */
     @Override
     public int hashCode()
     {
-        final int result = super.hashCode();
-        final int hash = 37;
-
-        return hash * result + ( getFile() != null ? getFile().hashCode() : 0 );
+        return Objects.hash( super.hashCode(), getFile() );
     }
 
     /** {@inheritDoc} */
     @Override
     public java.lang.String toString()
     {
-        StringBuilder buf = new StringBuilder( super.toString() + "\n" );
-        buf.append( "file= '" );
-        buf.append( getFile() + "'" );
-        return buf.toString();
+        return super.toString() + "\n" + "file= '" + getFile() + "'";
     }
 }

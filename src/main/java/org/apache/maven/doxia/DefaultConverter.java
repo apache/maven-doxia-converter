@@ -55,7 +55,6 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -68,6 +67,8 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+
+import static java.lang.String.format;
 
 /**
  * Default implementation of <code>Converter</code>
@@ -194,8 +195,7 @@ public class DefaultConverter
                 List<File> files;
                 try
                 {
-                    files =
-                        FileUtils.getFiles( input.getFile(), "**/*." + input.getFormat(),
+                    files = FileUtils.getFiles( input.getFile(), "**/*." + input.getFormat(),
                                             StringUtils.join( FileUtils.getDefaultExcludes(), ", " ) );
                 }
                 catch ( IOException e )
@@ -466,17 +466,16 @@ public class DefaultConverter
     private void parse( Parser parser, Reader reader, Sink sink )
         throws ConverterException
     {
-        try
+        try ( Reader r = reader )
         {
-            parser.parse( reader, sink );
+            parser.parse( r, sink );
         }
-        catch ( ParseException e )
+        catch ( ParseException | IOException e )
         {
             throw new ConverterException( "ParseException: " + e.getMessage(), e );
         }
         finally
         {
-            IOUtil.close( reader );
             sink.flush();
             sink.close();
         }
@@ -534,39 +533,31 @@ public class DefaultConverter
             throw new IllegalArgumentException( "The file '" + f.getAbsolutePath()
                 + "' is not a file, could not detect encoding." );
         }
-
-        Reader reader = null;
-        InputStream is = null;
         try
         {
             if ( XmlUtil.isXml( f ) )
             {
-                reader = new XmlStreamReader( f );
-                return ( (XmlStreamReader) reader ).getEncoding();
+                try ( XmlStreamReader reader = new XmlStreamReader( f ) )
+                {
+                    return reader.getEncoding();
+                }
             }
 
-            is = new BufferedInputStream( new FileInputStream( f ) );
-            CharsetDetector detector = new CharsetDetector();
-            detector.setText( is );
-            CharsetMatch match = detector.detect();
+            try ( InputStream is = new BufferedInputStream( new FileInputStream( f ) ) )
+            {
+                CharsetDetector detector = new CharsetDetector();
+                detector.setText( is );
+                CharsetMatch match = detector.detect();
 
-            return match.getName().toUpperCase( Locale.ENGLISH );
+                return match.getName().toUpperCase( Locale.ENGLISH );
+            }
         }
         catch ( IOException e )
         {
             // nop
         }
-        finally
-        {
-            IOUtil.close( reader );
-            IOUtil.close( is );
-        }
-
-        StringBuilder msg = new StringBuilder();
-        msg.append( "Could not detect the encoding for file: " );
-        msg.append( f.getAbsolutePath() );
-        msg.append( "\n Specify explicitly the encoding." );
-        throw new UnsupportedOperationException( msg.toString() );
+        throw new UnsupportedOperationException( format( "Could not detect the encoding for file: %s\n"
+                + "Specify explicitly the encoding.", f.getAbsolutePath() ) );
     }
 
     /**
@@ -633,7 +624,7 @@ public class DefaultConverter
         }
 
         throw new UnsupportedOperationException(
-                String.format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
+                format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
                         f.getAbsolutePath() ) );
     }
 

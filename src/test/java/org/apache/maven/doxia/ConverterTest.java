@@ -292,7 +292,7 @@ public class ConverterTest
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
 
-            assertFalse( true );
+            fail();
         }
         catch ( UnsupportedFormatException e )
         {
@@ -507,7 +507,6 @@ public class ConverterTest
         throws Exception
     {
         String in = getBasedir() + "/src/test/resources/unit/xdoc/test.xml";
-        String from = null;
         String out = getBasedir() + "/target/unit/writer/apt/test.xdoc.apt";
         String to = "xhtml";
 
@@ -520,7 +519,7 @@ public class ConverterTest
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), from, converter.getInputFormats() );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), null, converter.getInputFormats() );
             OutputFileWrapper output =
                 OutputFileWrapper.valueOf( outFile.getAbsolutePath(), to, converter.getOutputFormats() );
 
@@ -534,7 +533,6 @@ public class ConverterTest
         }
 
         in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
-        from = null;
         out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
         to = "xhtml";
 
@@ -547,7 +545,7 @@ public class ConverterTest
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), from, converter.getInputFormats() );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), null, converter.getInputFormats() );
             OutputFileWrapper output =
                 OutputFileWrapper.valueOf( outFile.getAbsolutePath(), to, converter.getOutputFormats() );
 
@@ -561,7 +559,6 @@ public class ConverterTest
         }
 
         in = getBasedir() + "/src/test/resources/unit/apt/test.unknown";
-        from = null;
         out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
         to = "xhtml";
 
@@ -572,14 +569,14 @@ public class ConverterTest
         try (FileWriter fw = new FileWriter( outFile ))
         {
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), from, converter.getInputFormats() );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), null, converter.getInputFormats() );
             OutputFileWrapper output =
                 OutputFileWrapper.valueOf( outFile.getAbsolutePath(), to, converter.getOutputFormats() );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
 
-            assertFalse( true );
+            fail();
         }
         catch ( UnsupportedOperationException e )
         {

@@ -30,9 +30,10 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.maven.doxia.DefaultConverter;
-import org.codehaus.plexus.util.StringUtils;
 
 import com.ibm.icu.text.CharsetDetector;
+
+import static org.codehaus.plexus.util.StringUtils.join;
 
 /**
  * Manager for Doxia converter CLI options.
@@ -82,58 +83,44 @@ class CLIManager
 
         OptionBuilder.withLongOpt( "help" );
         OptionBuilder.withDescription( "Display help information." );
-        OPTIONS.addOption( OptionBuilder
-                                        .create( HELP ) );
+        OPTIONS.addOption( OptionBuilder.create( HELP ) );
         OptionBuilder.withLongOpt( "version" );
         OptionBuilder.withDescription( "Display version information." );
-        OPTIONS.addOption( OptionBuilder
-                                        .create( VERSION ) );
+        OPTIONS.addOption( OptionBuilder.create( VERSION ) );
 
         OptionBuilder.withLongOpt( "input" );
         OptionBuilder.withDescription( "Input file or directory." );
-        OptionBuilder
-                                        .hasArg();
+        OptionBuilder.hasArg();
         OPTIONS.addOption( OptionBuilder.create( IN ) );
         OptionBuilder.withLongOpt( "output" );
         OptionBuilder.withDescription( "Output file or directory." );
-        OptionBuilder
-                                        .hasArg();
+        OptionBuilder.hasArg();
         OPTIONS.addOption( OptionBuilder.create( OUT ) );
         OptionBuilder.withDescription( "From format. If not specified, try to autodetect it." );
-        OptionBuilder
-                                        .hasArg();
+        OptionBuilder.hasArg();
         OPTIONS.addOption( OptionBuilder.create( FROM ) );
         OptionBuilder.withDescription( "To format." );
         OptionBuilder.hasArg();
         OPTIONS.addOption( OptionBuilder.create( TO ) );
         OptionBuilder.withLongOpt( "inputEncoding" );
-        OptionBuilder
-                                        .withDescription( "Input file encoding. "
-                                                              + "If not specified, try to autodetect it." );
-        OptionBuilder
-                                        .hasArg();
+        OptionBuilder.withDescription( "Input file encoding. If not specified, try to autodetect it." );
+        OptionBuilder.hasArg();
         OPTIONS.addOption( OptionBuilder.create( INENCODING ) );
         OptionBuilder.withLongOpt( "format" );
-        OptionBuilder
-                                        .withDescription( "Format the output (actually only xml based outputs) "
+        OptionBuilder.withDescription( "Format the output (actually only xml based outputs) "
                                                               + " to be human readable." );
-        OPTIONS.addOption( OptionBuilder
-                           .create( FORMAT ) );
+        OPTIONS.addOption( OptionBuilder.create( FORMAT ) );
         OptionBuilder.withLongOpt( "outputEncoding" );
-        OptionBuilder
-                                        .withDescription( "Output file encoding. If not specified, use the "
+        OptionBuilder.withDescription( "Output file encoding. If not specified, use the "
                                                               + "input encoding (or autodetected)." );
         OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder
-                                        .create( OUTENCODING ) );
+        OPTIONS.addOption( OptionBuilder.create( OUTENCODING ) );
 
         OptionBuilder.withLongOpt( "debug" );
-        OptionBuilder
-                                        .withDescription( "Produce execution debug output." );
+        OptionBuilder.withDescription( "Produce execution debug output." );
         OPTIONS.addOption( OptionBuilder.create( DEBUG ) );
         OptionBuilder.withLongOpt( "errors" );
-        OptionBuilder
-                                        .withDescription( "Produce execution error messages." );
+        OptionBuilder.withDescription( "Produce execution error messages." );
         OPTIONS.addOption( OptionBuilder.create( ERRORS ) );
     }
 
@@ -174,14 +161,14 @@ class CLIManager
 
     private static String getSupportedFormat()
     {
-        return "\nSupported Formats:\n from: " + StringUtils.join( DefaultConverter.SUPPORTED_FROM_FORMAT, ", " )
-            + " or autodetect" + "\n out: " + StringUtils.join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
+        return "\nSupported Formats:\n from: " + join( DefaultConverter.SUPPORTED_FROM_FORMAT, ", " )
+            + " or autodetect" + "\n out: " + join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
             + "\n";
     }
 
     private static String getSupportedEncoding()
     {
-        return "\nSupported Encoding:\n " + StringUtils.join( CharsetDetector.getAllDetectableCharsets(), ", " );
+        return "\nSupported Encoding:\n " + join( CharsetDetector.getAllDetectableCharsets(), ", " );
     }
 
     private String[] cleanArgs( String[] args )
@@ -268,7 +255,7 @@ class CLIManager
         }
 
         int cleanedSz = cleaned.size();
-        String[] cleanArgs = null;
+        String[] cleanArgs;
 
         if ( cleanedSz == 0 )
         {

@@ -21,7 +21,7 @@ package org.apache.maven.doxia.wrapper;
 
 import java.io.OutputStream;
 
-import org.codehaus.plexus.util.StringUtils;
+import static org.codehaus.plexus.util.StringUtils.isEmpty;
 
 /**
  * Wrapper for an output stream.
@@ -88,7 +88,7 @@ public class OutputStreamWrapper
         {
             throw new IllegalArgumentException( "output writer is required" );
         }
-        if ( StringUtils.isEmpty( format ) )
+        if ( isEmpty( format ) )
         {
             throw new IllegalArgumentException( "output format is required" );
         }
