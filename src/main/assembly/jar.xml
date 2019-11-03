@@ -30,8 +30,6 @@ under the License.
       <unpack>true</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>junit:junit</exclude>
-        <exclude>junit-addons:junit-addons</exclude>
         <exclude>javax.servlet:servlet-api</exclude>
         <exclude>org.apache.maven.doxia:doxia-converter</exclude>
       </excludes>

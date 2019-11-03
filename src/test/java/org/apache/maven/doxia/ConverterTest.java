@@ -27,8 +27,6 @@ import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-import junitx.util.PrivateAccessor;
-
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
@@ -652,8 +650,7 @@ public class ConverterTest
     private String autoDetectEncoding( File f )
         throws Throwable
     {
-        return (String) PrivateAccessor.invoke( DefaultConverter.class, "autoDetectEncoding",
-                                         new Class[] { File.class }, new Object[] { f } );
+        return DefaultConverter.autoDetectEncoding( f );
     }
 
     private String autoDetectEncoding( String filename )
@@ -681,8 +678,7 @@ public class ConverterTest
     private String autoDetectFormat( File f, String encoding )
         throws Throwable
     {
-        return (String) PrivateAccessor.invoke( DefaultConverter.class, "autoDetectFormat", new Class[] { File.class,
-                                                String.class }, new Object[] { f, encoding } );
+        return DefaultConverter.autoDetectFormat( f, encoding );
     }
 
     private String autoDetectFormat( String filename, String encoding )

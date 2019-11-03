@@ -531,7 +531,7 @@ public class DefaultConverter
      * @see {@link XmlStreamReader#getEncoding()} for xml files
      * @see {@link CharsetDetector#detect()} for text files
      */
-    private static String autoDetectEncoding( File f )
+    static String autoDetectEncoding( File f )
     {
         if ( !f.isFile() )
         {
@@ -578,7 +578,7 @@ public class DefaultConverter
      * @throws IllegalArgumentException if f is not a file.
      * @throws UnsupportedOperationException if could not detect the Doxia format.
      */
-    private static String autoDetectFormat( File f, String encoding )
+    static String autoDetectFormat( File f, String encoding )
     {
         if ( !f.isFile() )
         {
