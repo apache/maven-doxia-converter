@@ -499,7 +499,7 @@ public class DefaultConverter
             return;
         }
 
-        Map<String, String> context = new HashMap<>();
+        Map<Object, Object> context = new HashMap<>();
         context.put( "basedir", new File( "" ).getAbsolutePath() );
 
         ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
