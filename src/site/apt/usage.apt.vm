@@ -35,10 +35,10 @@ Usage
 * Command Line Help
 
 +-----+
-# java -jar target/apache-doxia-${project.version}-jar-with-dependencies.jar -h
+# java -jar target/doxia-converter-${project.version}-jar-with-dependencies.jar -h
 
-usage: doxia-converter [-e] [-f] [-from <arg>] [-h] -in <arg> [-inEncoding <arg>] -out <arg> [-outEncoding <arg>] -to
- <arg> [-v] [-X]
+usage: doxia-converter [options] -in <arg> [-from <arg>] [-inEncoding <arg>] -out
+             <arg> -to <arg> [-outEncoding <arg>]
 
 Options:
 -e,--errors           Produce execution error messages.
@@ -68,7 +68,7 @@ ISO-8859-9, IBM424_rtl, IBM424_ltr, IBM420_rtl, IBM420_ltr
 * Command Line Execution
 
 +-----+
-# java -jar target/apache-doxia-${project.version}-jar-with-dependencies.jar \
+# java -jar target/doxia-converter-${project.version}-jar-with-dependencies.jar \
     -in /path/to/xhtml.file \
     -from xhtml \
     -out /path/to/outputdir \
