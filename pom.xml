@@ -60,7 +60,15 @@ under the License.
     <doxiaVersion>1.9</doxiaVersion>
     <javaVersion>7</javaVersion>
   </properties>
-
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.3.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <!-- doxia -->
     <dependency>
