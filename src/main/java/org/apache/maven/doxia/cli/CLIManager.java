@@ -19,14 +19,10 @@ package org.apache.maven.doxia.cli;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.maven.doxia.DefaultConverter;
@@ -43,10 +39,10 @@ import static org.codehaus.plexus.util.StringUtils.join;
 class CLIManager
 {
     /** h character */
-    static final char HELP = 'h';
+    static final String HELP = "h";
 
     /** v character */
-    static final char VERSION = 'v';
+    static final String VERSION = "v";
 
     /** in String */
     static final String IN = "in";
@@ -64,16 +60,16 @@ class CLIManager
     static final String INENCODING = "inEncoding";
 
     /** f character */
-    static final char FORMAT = 'f';
+    static final String FORMAT = "f";
 
     /** outEncoding String */
     static final String OUTENCODING = "outEncoding";
 
     /** X character */
-    static final char DEBUG = 'X';
+    static final String DEBUG = "X";
 
     /** e character */
-    static final char ERRORS = 'e';
+    static final String ERRORS = "e";
 
     private static final Options OPTIONS;
 
@@ -81,47 +77,52 @@ class CLIManager
     {
         OPTIONS = new Options();
 
-        OptionBuilder.withLongOpt( "help" );
-        OptionBuilder.withDescription( "Display help information." );
-        OPTIONS.addOption( OptionBuilder.create( HELP ) );
-        OptionBuilder.withLongOpt( "version" );
-        OptionBuilder.withDescription( "Display version information." );
-        OPTIONS.addOption( OptionBuilder.create( VERSION ) );
-
-        OptionBuilder.withLongOpt( "input" );
-        OptionBuilder.withDescription( "Input file or directory." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( IN ) );
-        OptionBuilder.withLongOpt( "output" );
-        OptionBuilder.withDescription( "Output file or directory." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( OUT ) );
-        OptionBuilder.withDescription( "From format. If not specified, try to autodetect it." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( FROM ) );
-        OptionBuilder.withDescription( "To format." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( TO ) );
-        OptionBuilder.withLongOpt( "inputEncoding" );
-        OptionBuilder.withDescription( "Input file encoding. If not specified, try to autodetect it." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( INENCODING ) );
-        OptionBuilder.withLongOpt( "format" );
-        OptionBuilder.withDescription( "Format the output (actually only xml based outputs) "
-                                                              + " to be human readable." );
-        OPTIONS.addOption( OptionBuilder.create( FORMAT ) );
-        OptionBuilder.withLongOpt( "outputEncoding" );
-        OptionBuilder.withDescription( "Output file encoding. If not specified, use the "
-                                                              + "input encoding (or autodetected)." );
-        OptionBuilder.hasArg();
-        OPTIONS.addOption( OptionBuilder.create( OUTENCODING ) );
-
-        OptionBuilder.withLongOpt( "debug" );
-        OptionBuilder.withDescription( "Produce execution debug output." );
-        OPTIONS.addOption( OptionBuilder.create( DEBUG ) );
-        OptionBuilder.withLongOpt( "errors" );
-        OptionBuilder.withDescription( "Produce execution error messages." );
-        OPTIONS.addOption( OptionBuilder.create( ERRORS ) );
+        OPTIONS.addOption( Option.builder( HELP )
+                .longOpt( "help" )
+                .desc( "Display help information." )
+                .build() );
+        OPTIONS.addOption( Option.builder( VERSION )
+                .longOpt( "version" )
+                .desc( "Display version information." )
+                .build() );
+        OPTIONS.addOption( Option.builder( IN )
+                .longOpt( "input" )
+                .desc( "Input file or directory." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( OUT )
+                .longOpt( "output" )
+                .desc( "Output file or directory." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( FROM )
+                .desc( "From format. If not specified, try to autodetect it." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( TO )
+                .desc( "To format." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( INENCODING )
+                .desc( "Input file encoding. If not specified, try to autodetect it." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( FORMAT )
+                .longOpt( "format" )
+                .desc( "Format the output (actually only xml based outputs) to be human readable." )
+                .build() );
+        OPTIONS.addOption( Option.builder( OUTENCODING )
+                .desc( "Output file encoding. If not specified, use the input encoding (or autodetected)." )
+                .hasArg()
+                .build() );
+        OPTIONS.addOption( Option.builder( DEBUG )
+                .longOpt( "debug" )
+                .desc( "Produce execution debug output." )
+                .build() );
+        OPTIONS.addOption( Option.builder( ERRORS )
+                .longOpt( "errors" )
+                .desc( "Produce execution error messages." )
+                .build() );
     }
 
     /**
@@ -138,11 +139,8 @@ class CLIManager
             throw new IllegalArgumentException( "args is required." );
         }
 
-        // We need to eat any quotes surrounding arguments...
-        String[] cleanArgs = cleanArgs( args );
-
-        CommandLineParser parser = new GnuParser();
-        return parser.parse( OPTIONS, cleanArgs );
+        DefaultParser parser = new DefaultParser();
+        return parser.parse( OPTIONS, args );
     }
 
     static void displayHelp()
@@ -150,8 +148,8 @@ class CLIManager
         System.out.println();
 
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "doxia [options] -in <arg> [-from <arg>] [-inEncoding <arg>] -out <arg> "
-            + "-to <arg> [-outEncoding <arg>]\n", "\nOptions:", OPTIONS, getSupportedFormatAndEncoding() );
+        formatter.setWidth( 128 );
+        formatter.printHelp( "doxia-converter", "\nOptions:", OPTIONS, getSupportedFormatAndEncoding(), true );
     }
 
     private static String getSupportedFormatAndEncoding()
@@ -162,111 +160,12 @@ class CLIManager
     private static String getSupportedFormat()
     {
         return "\nSupported Formats:\n from: " + join( DefaultConverter.SUPPORTED_FROM_FORMAT, ", " )
-            + " or autodetect" + "\n out: " + join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
+            + " or autodetect" + "\n to:   " + join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
             + "\n";
     }
 
     private static String getSupportedEncoding()
     {
         return "\nSupported Encoding:\n " + join( CharsetDetector.getAllDetectableCharsets(), ", " );
-    }
-
-    private String[] cleanArgs( String[] args )
-    {
-        List<String> cleaned = new ArrayList<>();
-
-        StringBuilder currentArg = null;
-
-        for ( String arg : args )
-        {
-            boolean addedToBuffer = false;
-
-            if ( arg.startsWith( "\"" ) )
-            {
-                // if we're in the process of building up another arg, push it and start over.
-                // this is for the case: "-Dfoo=bar "-Dfoo2=bar two" (note the first unterminated quote)
-                if ( currentArg != null )
-                {
-                    cleaned.add( currentArg.toString() );
-                }
-
-                // start building an argument here.
-                currentArg = new StringBuilder( arg.substring( 1 ) );
-                addedToBuffer = true;
-            }
-
-            // this has to be a separate "if" statement, to capture the case of: "-Dfoo=bar"
-            if ( arg.endsWith( "\"" ) )
-            {
-                String cleanArgPart = arg.substring( 0, arg.length() - 1 );
-
-                // if we're building an argument, keep doing so.
-                if ( currentArg != null )
-                {
-                    // if this is the case of "-Dfoo=bar", then we need to adjust the buffer.
-                    if ( addedToBuffer )
-                    {
-                        currentArg.setLength( currentArg.length() - 1 );
-                    }
-                    // otherwise, we trim the trailing " and append to the buffer.
-                    else
-                    {
-                        // TODO: introducing a space here...not sure what else to do but collapse whitespace
-                        currentArg.append( ' ' ).append( cleanArgPart );
-                    }
-
-                    // we're done with this argument, so add it.
-                    cleaned.add( currentArg.toString() );
-                }
-                else
-                {
-                    // this is a simple argument...just add it.
-                    cleaned.add( cleanArgPart );
-                }
-
-                // the currentArg MUST be finished when this completes.
-                currentArg = null;
-                continue;
-            }
-
-            // if we haven't added this arg to the buffer, and we ARE building an argument
-            // buffer, then append it with a preceding space...again, not sure what else to
-            // do other than collapse whitespace.
-            // NOTE: The case of a trailing quote is handled by nullifying the arg buffer.
-            if ( !addedToBuffer )
-            {
-                // append to the argument we're building, collapsing whitespace to a single space.
-                if ( currentArg != null )
-                {
-                    currentArg.append( ' ' ).append( arg );
-                }
-                // this is a loner, just add it directly.
-                else
-                {
-                    cleaned.add( arg );
-                }
-            }
-        }
-
-        // clean up.
-        if ( currentArg != null )
-        {
-            cleaned.add( currentArg.toString() );
-        }
-
-        int cleanedSz = cleaned.size();
-        String[] cleanArgs;
-
-        if ( cleanedSz == 0 )
-        {
-            // if we didn't have any arguments to clean, simply pass the original array through
-            cleanArgs = args;
-        }
-        else
-        {
-            cleanArgs = cleaned.toArray( new String[cleanedSz] );
-        }
-
-        return cleanArgs;
     }
 }

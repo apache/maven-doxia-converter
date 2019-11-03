@@ -37,29 +37,26 @@ Usage
 +-----+
 # java -jar target/apache-doxia-${project.version}-jar-with-dependencies.jar -h
 
-usage: doxia [options] -in <arg> [-from <arg>] [-inEncoding <arg>] -out
-             <arg> -to <arg> [-outEncoding <arg>]
+usage: doxia-converter [-e] [-f] [-from <arg>] [-h] -in <arg> [-inEncoding <arg>] -out <arg> [-outEncoding <arg>] -to
+ <arg> [-v] [-X]
 
 Options:
- -e,--errors                         Produce execution error messages.
- -f,--format                         Format the output (actually only xml
-                                     based outputs) to be human readable.
- -from <arg>                         From format. If not specified, try to
-                                     autodetect it.
- -h,--help                           Display help information.
- -in,--input <arg>                   Input file or directory.
- -inEncoding,--inputEncoding <arg>   Input file encoding. If not
-                                     specified, try to autodetect it.
- -out,--output <arg>                 Output file or directory.
- -outEncoding,--outputEncoding <arg>   Output file encoding. If not
-                                       specified, use the input encoding (or detected).
- -to <arg>                           To format.
- -v,--version                        Display version information.
- -X,--debug                          Produce execution debug output.
+-e,--errors           Produce execution error messages.
+-f,--format           Format the output (actually only xml based outputs) to be human readable.
+-from <arg>           From format. If not specified, try to autodetect it.
+-h,--help             Display help information.
+-in,--input <arg>     Input file or directory.
+-inEncoding <arg>     Input file encoding. If not specified, try to autodetect it.
+-out,--output <arg>   Output file or directory.
+-outEncoding <arg>    Output file encoding. If not specified, use the input encoding (or autodetected).
+-to <arg>             To format.
+-v,--version          Display version information.
+-X,--debug            Produce execution debug output.
 
 Supported Formats:
 from: apt, confluence, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
-out: apt, docbook, fo, itext, latex, rtf, xdoc, xhtml, xhtml5
+to:   apt, confluence, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
+
 Supported Encoding:
 UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, Shift_JIS, ISO-2022-JP, ISO-2022-CN, ISO-2022-KR, GB18030, EUC-JP, EUC-KR, Big5,
 ISO-8859-1, ISO-8859-2, ISO-8859-5, ISO-8859-6, ISO-8859-7, ISO-8859-8-I, ISO-8859-8, windows-1251, windows-1256, KOI8-R,
