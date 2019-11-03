@@ -47,7 +47,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://builds.apache.org/view/M-R/view/Maven/job/doxia-converter/</url>
+    <url>https://builds.apache.org/view/M-R/view/Maven/job/maven-box/job/maven-doxia-converter/</url>
   </ciManagement>
   <distributionManagement>
     <site>
