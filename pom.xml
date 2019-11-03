@@ -43,7 +43,7 @@ under the License.
   </scm>
   <issueManagement>
     <system>jira</system>
-    <url>https://issues.apache.org/jira/browse/DOXIATOOLS/component/12326004</url>
+    <url>https://issues.apache.org/jira/projects/DOXIATOOLS</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
