@@ -27,12 +27,14 @@ import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.doxia.Converter;
 import org.apache.maven.doxia.ConverterException;
 import org.apache.maven.doxia.DefaultConverter;
 import org.apache.maven.doxia.UnsupportedFormatException;
 import org.apache.maven.doxia.logging.Log;
 import org.apache.maven.doxia.logging.SystemStreamLog;
+import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.codehaus.plexus.util.Os;
@@ -207,6 +209,8 @@ public class ConverterCli
             {
                 System.out.println( "Doxia Converter version: " + properties.getProperty( "version", "unknown" ) );
             }
+            System.out.println( "Doxia version: "
+                    + FieldUtils.readStaticField( AbstractParser.class, "DOXIA_VERSION", true ) );
 
             System.out.println( "Java version: " + System.getProperty( "java.version", "<unknown java version>" ) );
 
@@ -214,7 +218,7 @@ public class ConverterCli
                 + Os.OS_ARCH + "\" family: \"" + Os.OS_FAMILY + "\"" );
 
         }
-        catch ( IOException e )
+        catch ( IOException | IllegalAccessException e )
         {
             System.err.println( "Unable to determine version from JAR file: " + e.getMessage() );
         }
