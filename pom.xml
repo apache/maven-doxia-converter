@@ -25,8 +25,8 @@ under the License.
   <parent>
     <groupId>org.apache.maven.doxia</groupId>
     <artifactId>doxia-tools</artifactId>
-    <version>33</version>
-    <relativePath></relativePath>
+    <version>34</version>
+    <relativePath />
   </parent>
 
   <artifactId>doxia-converter</artifactId>
@@ -59,6 +59,7 @@ under the License.
   <properties>
     <doxiaVersion>1.9</doxiaVersion>
     <javaVersion>7</javaVersion>
+    <project.build.outputTimestamp>2020-03-14T00:00:00Z</project.build.outputTimestamp>
   </properties>
   <dependencyManagement>
     <dependencies>
