@@ -1,0 +1,10 @@
+# see https://s.apache.org/asfyaml
+github:
+  description: "Apache Maven Doxia Converter"
+  homepage: https://maven.apache.org/doxia/doxia-tools/doxia-converter/
+  labels:
+    - java
+    - build-management
+    - apache-maven
+    - doxia
+    - doxia-tools
