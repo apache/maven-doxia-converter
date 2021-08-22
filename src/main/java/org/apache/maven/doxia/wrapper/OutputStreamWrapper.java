@@ -20,6 +20,7 @@ package org.apache.maven.doxia.wrapper;
  */
 
 import java.io.OutputStream;
+import java.util.Objects;
 
 import static org.codehaus.plexus.util.StringUtils.isEmpty;
 
@@ -34,9 +35,9 @@ public class OutputStreamWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 3329037527245430610L;
 
-    private OutputStream out;
+    private final OutputStream out;
 
-    private String encoding;
+    private final String encoding;
 
     /**
      * Private constructor.
@@ -84,10 +85,7 @@ public class OutputStreamWrapper
     public static OutputStreamWrapper valueOf( OutputStream out, String format, String encoding,
             String[] supportedFormat )
     {
-        if ( out == null )
-        {
-            throw new IllegalArgumentException( "output writer is required" );
-        }
+        Objects.requireNonNull( out, "output writer is required" );
         if ( isEmpty( format ) )
         {
             throw new IllegalArgumentException( "output format is required" );

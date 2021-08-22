@@ -32,7 +32,7 @@ public class InputReaderWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 3260213754615748766L;
 
-    private Reader reader;
+    private final Reader reader;
 
     /**
      * Private constructor.

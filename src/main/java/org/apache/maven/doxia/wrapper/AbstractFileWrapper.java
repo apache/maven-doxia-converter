@@ -74,10 +74,9 @@ abstract class AbstractFileWrapper
         if ( isNotEmpty( encoding ) && !encoding.equalsIgnoreCase( encoding )
             && !Charset.isSupported( encoding ) )
         {
-            StringBuilder msg = new StringBuilder();
-            msg.append( "The encoding '" + encoding + "' is not a valid one. The supported charsets are: " );
-            msg.append( StringUtils.join( CharsetDetector.getAllDetectableCharsets(), ", " ) );
-            throw new UnsupportedEncodingException( msg.toString() );
+            throw new UnsupportedEncodingException( "The encoding '" + encoding
+                    + "' is not a valid one. The supported charsets are: "
+                    + StringUtils.join( CharsetDetector.getAllDetectableCharsets(), ", " ) );
         }
         this.encoding = ( isNotEmpty( encoding ) ? encoding : AUTO_ENCODING );
     }

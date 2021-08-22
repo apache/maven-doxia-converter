@@ -36,7 +36,7 @@ public class InputFileWrapper
     /**
      * Private constructor.
      *
-     * @param file not null
+     * @param absolutePath not null
      * @param format could be null
      * @param charsetName could be null
      * @param supportedFormat not null

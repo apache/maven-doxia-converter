@@ -528,8 +528,8 @@ public class DefaultConverter
      * @return the detected encoding for f or <code>null</code> if not able to detect it.
      * @throws IllegalArgumentException if f is not a file.
      * @throws UnsupportedOperationException if could not detect the file encoding.
-     * @see {@link XmlStreamReader#getEncoding()} for xml files
-     * @see {@link CharsetDetector#detect()} for text files
+     * @see XmlStreamReader#getEncoding() for xml files
+     * @see CharsetDetector#detect() for text files
      */
     static String autoDetectEncoding( File f )
     {
@@ -608,6 +608,7 @@ public class DefaultConverter
             String firstTag = getFirstTag( f );
             if ( firstTag == null )
             {
+                //noinspection UnnecessaryContinue
                 continue;
             }
             else if ( "article".equals( firstTag ) && DOCBOOK_PARSER.equalsIgnoreCase( supportedFromFormat ) )

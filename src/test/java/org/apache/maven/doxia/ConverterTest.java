@@ -41,7 +41,6 @@ import org.codehaus.plexus.util.WriterFactory;
  * Tests Doxia converter.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
- * @version $Id$
  */
 public class ConverterTest
     extends PlexusTestCase
@@ -648,24 +647,19 @@ public class ConverterTest
     }
 
     private String autoDetectEncoding( File f )
-        throws Throwable
     {
         return DefaultConverter.autoDetectEncoding( f );
     }
 
     private String autoDetectEncoding( String filename )
-        throws Throwable
     {
         return autoDetectEncoding( new File( getBasedir() + "/src/test/resources/unit/" + filename ) );
     }
 
     /**
      * Test {@link DefaultConverter#autoDetectEncoding(File)}
-     *
-     * @throws Throwable
      */
     public void testAutodetectEncoding()
-        throws Throwable
     {
         assertEquals( autoDetectEncoding( "apt/test.apt" ), "ISO-8859-1" );
         assertEquals( autoDetectEncoding( "confluence/test.confluence" ), "ISO-8859-1" );
@@ -676,13 +670,11 @@ public class ConverterTest
     }
 
     private String autoDetectFormat( File f, String encoding )
-        throws Throwable
     {
         return DefaultConverter.autoDetectFormat( f, encoding );
     }
 
     private String autoDetectFormat( String filename, String encoding )
-        throws Throwable
     {
         return autoDetectFormat( new File( getBasedir() + "/src/test/resources/unit/" + filename ), encoding );
     }
@@ -690,10 +682,8 @@ public class ConverterTest
     /**
      * Test {@link DefaultConverter#autoDetectFormat(File,String)}
      *
-     * @throws Throwable
      */
     public void testAutodetectFormat()
-        throws Throwable
     {
         assertEquals( autoDetectFormat( "apt/test.apt", "UTF-8" ), "apt" );
 

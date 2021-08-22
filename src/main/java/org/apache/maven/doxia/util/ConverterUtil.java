@@ -25,6 +25,8 @@ import org.apache.maven.doxia.sink.SinkFactory;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
+import java.util.Objects;
+
 /**
  * Utility class to play with Doxia objects.
  *
@@ -44,20 +46,9 @@ public class ConverterUtil
     public static Parser getParser( PlexusContainer plexus, String format, String[] supportedFormats )
         throws ComponentLookupException, UnsupportedFormatException
     {
-        if ( plexus == null )
-        {
-            throw new IllegalArgumentException( "plexus is required" );
-        }
-
-        if ( format == null )
-        {
-            throw new IllegalArgumentException( "format is required" );
-        }
-
-        if ( supportedFormats == null )
-        {
-            throw new IllegalArgumentException( "supportedFormats is required" );
-        }
+        Objects.requireNonNull( plexus, "plexus is required" );
+        Objects.requireNonNull( format, "format is required" );
+        Objects.requireNonNull( supportedFormats, "supportedFormats is required" );
 
         Parser parser = null;
 
@@ -89,20 +80,9 @@ public class ConverterUtil
     public static SinkFactory getSinkFactory( PlexusContainer plexus, String format, String[] supportedFormats )
         throws ComponentLookupException, UnsupportedFormatException
     {
-        if ( plexus == null )
-        {
-            throw new IllegalArgumentException( "plexus is required" );
-        }
-
-        if ( format == null )
-        {
-            throw new IllegalArgumentException( "format is required" );
-        }
-
-        if ( supportedFormats == null )
-        {
-            throw new IllegalArgumentException( "supportedFormats is required" );
-        }
+        Objects.requireNonNull( plexus, "plexus is required" );
+        Objects.requireNonNull( format, "format is required" );
+        Objects.requireNonNull( supportedFormats, "supportedFormats is required" );
 
         SinkFactory factory = null;
 

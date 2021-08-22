@@ -63,7 +63,7 @@ public class ConverterCli
     }
 
     /**
-     * @param args
+     * @param args The args
      */
     private static int doMain( String[] args )
     {
