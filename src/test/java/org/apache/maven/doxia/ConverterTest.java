@@ -661,12 +661,12 @@ public class ConverterTest
      */
     public void testAutodetectEncoding()
     {
-        assertEquals( autoDetectEncoding( "apt/test.apt" ), "ISO-8859-1" );
-        assertEquals( autoDetectEncoding( "confluence/test.confluence" ), "ISO-8859-1" );
-        assertEquals( autoDetectEncoding( "docbook/test.xml" ), "UTF-8" );
-        assertEquals( autoDetectEncoding( "fml/test.fml" ), "ISO-8859-1" );
-        assertEquals( autoDetectEncoding( "twiki/test.twiki" ), "ISO-8859-1" );
-        assertEquals( autoDetectEncoding( "xhtml/test.xhtml" ), "UTF-8" );
+        assertEquals( "ISO-8859-1", autoDetectEncoding( "apt/test.apt" ) );
+        assertEquals( "ISO-8859-1", autoDetectEncoding( "confluence/test.confluence" ) );
+        assertEquals( "UTF-8", autoDetectEncoding( "docbook/test.xml" ) );
+        assertEquals( "UTF-8", autoDetectEncoding( "fml/test.fml" ) ); // plexus-utils should detect ISO-8859-1
+        assertEquals( "ISO-8859-1", autoDetectEncoding( "twiki/test.twiki" ) );
+        assertEquals( "UTF-8", autoDetectEncoding( "xhtml/test.xhtml" ) );
     }
 
     private String autoDetectFormat( File f, String encoding )
