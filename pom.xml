@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.doxia</groupId>
     <artifactId>doxia-tools</artifactId>
-    <version>41</version>
+    <version>42-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -223,6 +223,13 @@ under the License.
             <phase>prepare-package</phase>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerReuseStrategy>alwaysNew</compilerReuseStrategy>
+        </configuration>
       </plugin>
     </plugins>
   </build>
