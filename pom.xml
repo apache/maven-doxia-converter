@@ -25,7 +25,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.doxia</groupId>
     <artifactId>doxia-tools</artifactId>
-    <version>34</version>
+    <version>35</version>
     <relativePath />
   </parent>
 
