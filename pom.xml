@@ -66,7 +66,7 @@ under the License.
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.4.1</version><!-- 3.4.0 have issues with BOM -->
+        <version>3.4.2</version><!-- 3.4.0 have issues with BOM -->
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
