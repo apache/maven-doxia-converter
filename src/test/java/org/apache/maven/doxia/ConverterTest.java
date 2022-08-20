@@ -180,42 +180,6 @@ public class ConverterTest
     }
 
     /**
-     * Input confluence file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testConfluenceFileConverter()
-        throws Exception
-    {
-        String in = getBasedir() + "/src/test/resources/unit/confluence/test.confluence";
-        String from = "confluence";
-        String out = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
-        String to = "xhtml";
-
-        InputFileWrapper input =
-            InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
-        OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
-
-        converter.setFormatOutput( formatOutput );
-        converter.convert( input, output );
-        assertTrue( new File( out ).exists() );
-        assertTrue( new File( out ).length() != 0 );
-
-        in = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
-        from = "xhtml";
-        out = getBasedir() + "/target/unit/file/confluence/test.confluence";
-        to = "confluence";
-
-        input = InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
-        output = OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
-
-        converter.setFormatOutput( formatOutput );
-        converter.convert( input, output );
-    }
-
-    /**
      * Input docbook file / output file
      *
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
@@ -495,43 +459,6 @@ public class ConverterTest
     }
 
     /**
-     * Input confluence reader / output writer
-     *
-     * @see Converter#convert(InputReaderWrapper, OutputStreamWrapper)
-     * @throws Exception if any
-     */
-    public void testConfluenceWriterConverter()
-        throws Exception
-    {
-        String in = getBasedir() + "/src/test/resources/unit/confluence/test.confluence";
-        String from = "confluence";
-        String out = getBasedir() + "/target/unit/writer/confluence/test.confluence.xhtml";
-        String to = "xhtml";
-
-        File inFile = new File( in );
-        File outFile = new File( out );
-        outFile.getParentFile().mkdirs();
-
-        try ( OutputStream fo = new FileOutputStream( outFile ) )
-        {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-            InputReaderWrapper input = InputReaderWrapper.valueOf( new FileReader( inFile ), from,
-                    converter.getInputFormats() );
-            OutputStreamWrapper output = OutputStreamWrapper.valueOf( outputStream, to, "UTF-8",
-                    converter.getOutputFormats() );
-
-            converter.setFormatOutput( formatOutput );
-            converter.convert( input, output );
-
-            IOUtil.copy( outputStream.toByteArray(), fo );
-        }
-
-        assertTrue( outFile.exists() );
-        assertTrue( outFile.length() != 0 );
-    }
-
-    /**
      * Input xdoc (autodetect) reader / output writer
      *
      * @see Converter#convert(InputReaderWrapper, OutputStreamWrapper)
@@ -662,7 +589,6 @@ public class ConverterTest
     public void testAutodetectEncoding()
     {
         assertEquals( "ISO-8859-1", autoDetectEncoding( "apt/test.apt" ) );
-        assertEquals( "ISO-8859-1", autoDetectEncoding( "confluence/test.confluence" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "docbook/test.xml" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "fml/test.fml" ) ); // plexus-utils should detect ISO-8859-1
         assertEquals( "ISO-8859-1", autoDetectEncoding( "twiki/test.twiki" ) );
@@ -697,7 +623,6 @@ public class ConverterTest
             assertTrue( true );
         }
 
-        assertEquals( autoDetectFormat( "confluence/test.confluence", "UTF-8" ), "confluence" );
         assertEquals( autoDetectFormat( "docbook/test.xml", "UTF-8" ), "docbook" );
         assertEquals( autoDetectFormat( "fml/test.fml", "UTF-8" ), "fml" );
         assertEquals( autoDetectFormat( "twiki/test.twiki", "UTF-8" ), "twiki" );

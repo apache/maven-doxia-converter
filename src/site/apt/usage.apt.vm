@@ -54,8 +54,8 @@ Options:
 -X,--debug            Produce execution debug output.
 
 Supported Formats:
-from: apt, confluence, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
-to:   apt, confluence, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
+from: apt, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
+to:   apt, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
 
 Supported Encoding:
 UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, Shift_JIS, ISO-2022-JP, ISO-2022-CN, ISO-2022-KR, GB18030, EUC-JP, EUC-KR, Big5,

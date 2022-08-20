@@ -80,8 +80,6 @@ public class DefaultConverter
 {
     private static final String APT_PARSER = "apt";
 
-    private static final String CONFLUENCE_PARSER = "confluence";
-
     private static final String DOCBOOK_PARSER = "docbook";
 
     private static final String FML_PARSER = "fml";
@@ -96,12 +94,10 @@ public class DefaultConverter
 
     /** Supported input format, i.e. supported Doxia parser */
     public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
+        { APT_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
                 XHTML5_PARSER};
 
     private static final String APT_SINK = "apt";
-
-    private static final String CONFLUENCE_SINK = "confluence";
 
     private static final String DOCBOOK_SINK = "docbook";
 
@@ -123,7 +119,7 @@ public class DefaultConverter
 
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, CONFLUENCE_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
+        { APT_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
             XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
@@ -590,11 +586,6 @@ public class DefaultConverter
         {
             // Handle Doxia text files
             if ( APT_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f, supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( CONFLUENCE_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
-                    supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }

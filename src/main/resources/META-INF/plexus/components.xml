@@ -92,20 +92,6 @@
       <description>APT implementation of the Sink factory.</description>
     </component>
 
-    <!-- Doxia confluence -->
-    <component>
-      <role>org.apache.maven.doxia.parser.Parser</role>
-      <role-hint>confluence</role-hint>
-      <implementation>org.apache.maven.doxia.module.confluence.ConfluenceParser</implementation>
-      <description>Parse the &lt;a href=&quot;http://www.</description>
-    </component>
-    <component>
-      <role>org.apache.maven.doxia.sink.SinkFactory</role>
-      <role-hint>confluence</role-hint>
-      <implementation>org.apache.maven.doxia.module.confluence.ConfluenceSinkFactory</implementation>
-      <description>Confluence implementation of the Sink factory.</description>
-    </component>
-
     <!-- Doxia docbook -->
     <component>
       <role>org.apache.maven.doxia.parser.Parser</role>
