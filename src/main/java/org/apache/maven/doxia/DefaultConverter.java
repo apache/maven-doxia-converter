@@ -101,8 +101,6 @@ public class DefaultConverter
 
     private static final String ITEXT_SINK = "itext";
 
-    private static final String RTF_SINK = "rtf";
-
     private static final String TWIKI_SINK = "twiki";
 
     private static final String XDOC_SINK = "xdoc";
@@ -113,7 +111,7 @@ public class DefaultConverter
 
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, FO_SINK, ITEXT_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
+        { APT_SINK, FO_SINK, ITEXT_SINK, TWIKI_SINK, XDOC_SINK,
             XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */

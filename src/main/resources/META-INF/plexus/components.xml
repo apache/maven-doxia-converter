@@ -122,14 +122,6 @@
       <description>IText implementation of the Sink factory.</description>
     </component>
 
-    <!-- Doxia rtf -->
-    <component>
-      <role>org.apache.maven.doxia.sink.SinkFactory</role>
-      <role-hint>rtf</role-hint>
-      <implementation>org.apache.maven.doxia.module.rtf.RtfSinkFactory</implementation>
-      <description>APT implementation of the Sink factory.</description>
-    </component>
-
     <!-- Doxia twiki -->
     <component>
       <role>org.apache.maven.doxia.parser.Parser</role>
