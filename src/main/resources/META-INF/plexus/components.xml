@@ -106,14 +106,6 @@
       </requirements>
     </component>
 
-    <!-- Doxia fo -->
-    <component>
-      <role>org.apache.maven.doxia.sink.SinkFactory</role>
-      <role-hint>fo</role-hint>
-      <implementation>org.apache.maven.doxia.module.fo.FoSinkFactory</implementation>
-      <description>FO implementation of the Sink factory.</description>
-    </component>
-
     <!-- Doxia xdoc -->
     <component>
       <role>org.apache.maven.doxia.parser.Parser</role>
