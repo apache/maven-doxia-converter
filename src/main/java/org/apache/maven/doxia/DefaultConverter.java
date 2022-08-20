@@ -80,8 +80,6 @@ public class DefaultConverter
 {
     private static final String APT_PARSER = "apt";
 
-    private static final String DOCBOOK_PARSER = "docbook";
-
     private static final String FML_PARSER = "fml";
 
     private static final String TWIKI_PARSER = "twiki";
@@ -94,12 +92,10 @@ public class DefaultConverter
 
     /** Supported input format, i.e. supported Doxia parser */
     public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
+        { APT_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
                 XHTML5_PARSER};
 
     private static final String APT_SINK = "apt";
-
-    private static final String DOCBOOK_SINK = "docbook";
 
     private static final String FO_SINK = "fo";
 
@@ -119,7 +115,7 @@ public class DefaultConverter
 
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
+        { APT_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
             XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
@@ -433,17 +429,10 @@ public class DefaultConverter
 
         parse( parser, reader, sink );
 
-        if ( formatOutput && ( DOCBOOK_SINK.equals( output.getFormat() ) || FO_SINK.equals( output.getFormat() )
+        if ( formatOutput && ( FO_SINK.equals( output.getFormat() )
             || ITEXT_SINK.equals( output.getFormat() ) || XDOC_SINK.equals( output.getFormat() )
             || XHTML_SINK.equals( output.getFormat() ) || XHTML5_SINK.equals( output.getFormat() ) ) )
         {
-            // format all xml files excluding docbook which is buggy
-            // TODO Add doc book format
-            if ( DOCBOOK_SINK.equals( output.getFormat() ) || DOCBOOK_PARSER.equals( inputFormat ) )
-            {
-                return;
-            }
-            
             try ( Reader r = ReaderFactory.newXmlReader( outputFile );
                   Writer w = WriterFactory.newXmlWriter( outputFile ) )
             {
@@ -601,10 +590,6 @@ public class DefaultConverter
             {
                 //noinspection UnnecessaryContinue
                 continue;
-            }
-            else if ( "article".equals( firstTag ) && DOCBOOK_PARSER.equalsIgnoreCase( supportedFromFormat ) )
-            {
-                return supportedFromFormat;
             }
             else if ( "faqs".equals( firstTag ) && FML_PARSER.equalsIgnoreCase( supportedFromFormat ) )
             {

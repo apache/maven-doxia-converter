@@ -180,43 +180,6 @@ public class ConverterTest
     }
 
     /**
-     * Input docbook file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testDocbookFileConverter()
-        throws Exception
-    {
-        String in = getBasedir() + "/src/test/resources/unit/docbook/test.xml";
-        String from = "docbook";
-        String out = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
-        String to = "xhtml";
-
-        InputFileWrapper input =
-            InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
-        OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
-
-        converter.setFormatOutput( formatOutput );
-        converter.convert( input, output );
-        assertTrue( new File( out ).exists() );
-        assertTrue( new File( out ).length() != 0 );
-
-         in = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
-         from = "xhtml";
-         out = getBasedir() + "/target/unit/file/docbook/test.docbook";
-         to = "docbook";
-
-         input = InputFileWrapper.valueOf( in, from, converter.getInputFormats() );
-         output = OutputFileWrapper.valueOf( out, to, converter.getOutputFormats() );
-
-         converter.setFormatOutput( formatOutput );
-         converter.convert( input, output );
-         assertTrue( new File( out ).exists() );
-    }
-
-    /**
      * Input fml dir / output dir
      *
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
@@ -589,7 +552,6 @@ public class ConverterTest
     public void testAutodetectEncoding()
     {
         assertEquals( "ISO-8859-1", autoDetectEncoding( "apt/test.apt" ) );
-        assertEquals( "UTF-8", autoDetectEncoding( "docbook/test.xml" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "fml/test.fml" ) ); // plexus-utils should detect ISO-8859-1
         assertEquals( "ISO-8859-1", autoDetectEncoding( "twiki/test.twiki" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "xhtml/test.xhtml" ) );
@@ -623,7 +585,6 @@ public class ConverterTest
             assertTrue( true );
         }
 
-        assertEquals( autoDetectFormat( "docbook/test.xml", "UTF-8" ), "docbook" );
         assertEquals( autoDetectFormat( "fml/test.fml", "UTF-8" ), "fml" );
         assertEquals( autoDetectFormat( "twiki/test.twiki", "UTF-8" ), "twiki" );
         assertEquals( autoDetectFormat( "xhtml/test.xhtml", "UTF-8" ), "xhtml" );
