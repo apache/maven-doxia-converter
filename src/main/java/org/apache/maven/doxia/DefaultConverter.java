@@ -97,8 +97,6 @@ public class DefaultConverter
 
     private static final String FO_SINK = "fo";
 
-    private static final String ITEXT_SINK = "itext";
-
     private static final String XDOC_SINK = "xdoc";
 
     private static final String XHTML_SINK = "xhtml";
@@ -107,7 +105,7 @@ public class DefaultConverter
 
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, FO_SINK, ITEXT_SINK, XDOC_SINK,
+        { APT_SINK, FO_SINK, XDOC_SINK,
             XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
@@ -422,7 +420,7 @@ public class DefaultConverter
         parse( parser, reader, sink );
 
         if ( formatOutput && ( FO_SINK.equals( output.getFormat() )
-            || ITEXT_SINK.equals( output.getFormat() ) || XDOC_SINK.equals( output.getFormat() )
+            || XDOC_SINK.equals( output.getFormat() )
             || XHTML_SINK.equals( output.getFormat() ) || XHTML5_SINK.equals( output.getFormat() ) ) )
         {
             try ( Reader r = ReaderFactory.newXmlReader( outputFile );

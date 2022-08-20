@@ -114,14 +114,6 @@
       <description>FO implementation of the Sink factory.</description>
     </component>
 
-    <!-- Doxia itext -->
-    <component>
-      <role>org.apache.maven.doxia.sink.SinkFactory</role>
-      <role-hint>itext</role-hint>
-      <implementation>org.apache.maven.doxia.module.itext.ITextSinkFactory</implementation>
-      <description>IText implementation of the Sink factory.</description>
-    </component>
-
     <!-- Doxia xdoc -->
     <component>
       <role>org.apache.maven.doxia.parser.Parser</role>

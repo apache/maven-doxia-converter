@@ -35,7 +35,7 @@ Doxia Converter
 
     * input format: apt, fml, xdoc, xhtml, xhtml5 or autodetect
 
-    * output format: apt, fo, itext, xdoc, xhtml, xhtml5
+    * output format: apt, fo, xdoc, xhtml, xhtml5
 
     []
 
