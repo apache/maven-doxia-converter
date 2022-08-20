@@ -55,7 +55,7 @@ Options:
 
 Supported Formats:
 from: apt, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
-to:   apt, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
+to:   apt, fo, itext, rtf, twiki, xdoc, xhtml, xhtml5
 
 Supported Encoding:
 UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, Shift_JIS, ISO-2022-JP, ISO-2022-CN, ISO-2022-KR, GB18030, EUC-JP, EUC-KR, Big5,
@@ -144,16 +144,9 @@ catch ( ConverterException e )
          <param name = "doxia.out.extension" value = "rtf"/>
      </antcall>
  </target>
- <target name="doc.latex">
-     <antcall target="doxia-convert">
-         <param name = "doxia.out.format" value = "latex"/>
-         <param name = "doxia.out.extension" value = "tex"/>
-     </antcall>
- </target>
 
  <target name="doc">
      <antcall target="doc.xhtml" />
      <antcall target="doc.rtf" />
-     <antcall target="doc.latex" />
  </target>
 +---
