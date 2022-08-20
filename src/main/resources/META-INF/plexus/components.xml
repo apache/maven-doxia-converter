@@ -122,20 +122,6 @@
       <description>IText implementation of the Sink factory.</description>
     </component>
 
-    <!-- Doxia twiki -->
-    <component>
-      <role>org.apache.maven.doxia.parser.Parser</role>
-      <role-hint>twiki</role-hint>
-      <implementation>org.apache.maven.doxia.module.twiki.TWikiParser</implementation>
-      <description>Parse the &lt;a href=&quot;http://twiki.</description>
-    </component>
-    <component>
-      <role>org.apache.maven.doxia.sink.SinkFactory</role>
-      <role-hint>twiki</role-hint>
-      <implementation>org.apache.maven.doxia.module.twiki.TWikiSinkFactory</implementation>
-      <description>TWiki implementation of the Sink factory.</description>
-    </component>
-
     <!-- Doxia xdoc -->
     <component>
       <role>org.apache.maven.doxia.parser.Parser</role>

@@ -82,8 +82,6 @@ public class DefaultConverter
 
     private static final String FML_PARSER = "fml";
 
-    private static final String TWIKI_PARSER = "twiki";
-
     private static final String XDOC_PARSER = "xdoc";
 
     private static final String XHTML_PARSER = "xhtml";
@@ -92,7 +90,7 @@ public class DefaultConverter
 
     /** Supported input format, i.e. supported Doxia parser */
     public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
+        { APT_PARSER, FML_PARSER, XDOC_PARSER, XHTML_PARSER,
                 XHTML5_PARSER};
 
     private static final String APT_SINK = "apt";
@@ -100,8 +98,6 @@ public class DefaultConverter
     private static final String FO_SINK = "fo";
 
     private static final String ITEXT_SINK = "itext";
-
-    private static final String TWIKI_SINK = "twiki";
 
     private static final String XDOC_SINK = "xdoc";
 
@@ -111,7 +107,7 @@ public class DefaultConverter
 
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, FO_SINK, ITEXT_SINK, TWIKI_SINK, XDOC_SINK,
+        { APT_SINK, FO_SINK, ITEXT_SINK, XDOC_SINK,
             XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
@@ -571,11 +567,6 @@ public class DefaultConverter
         {
             // Handle Doxia text files
             if ( APT_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f, supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( TWIKI_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
-                    supportedFromFormat ) )
             {
                 return supportedFromFormat;
             }

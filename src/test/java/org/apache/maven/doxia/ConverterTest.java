@@ -225,53 +225,6 @@ public class ConverterTest
     }
 
     /**
-     * Input twiki file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testTwikiFileConverter()
-        throws Exception
-    {
-        String in = getBasedir() + "/src/test/resources/unit/twiki/test.twiki";
-        String from = "twiki";
-        String out = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
-        String to = "xhtml";
-
-        InputFileWrapper input =
-            InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
-        OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
-
-        converter.setFormatOutput( formatOutput );
-        converter.convert( input, output );
-        assertTrue( new File( out ).exists() );
-        assertTrue( new File( out ).length() != 0 );
-
-        in = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
-        from = "xhtml";
-        out = getBasedir() + "/target/unit/file/twiki/test.twiki";
-        to = "twiki";
-
-        input = InputFileWrapper.valueOf( in, from, ReaderFactory.UTF_8, converter.getInputFormats() );
-        output = OutputFileWrapper.valueOf( out, to, WriterFactory.UTF_8, converter.getOutputFormats() );
-
-        converter.setFormatOutput( formatOutput );
-        try
-        {
-            converter.convert( input, output );
-        }
-        catch ( ConverterException e )
-        {
-            // The TWiki parser is wrong for *  <pre>some text</pre>
-            if ( !e.getMessage().contains( "Error validating the model" ) )
-            {
-                throw e;
-            }
-        }
-    }
-
-    /**
      * Input xdoc file / output dir
      *
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
@@ -553,7 +506,6 @@ public class ConverterTest
     {
         assertEquals( "ISO-8859-1", autoDetectEncoding( "apt/test.apt" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "fml/test.fml" ) ); // plexus-utils should detect ISO-8859-1
-        assertEquals( "ISO-8859-1", autoDetectEncoding( "twiki/test.twiki" ) );
         assertEquals( "UTF-8", autoDetectEncoding( "xhtml/test.xhtml" ) );
     }
 
@@ -586,7 +538,6 @@ public class ConverterTest
         }
 
         assertEquals( autoDetectFormat( "fml/test.fml", "UTF-8" ), "fml" );
-        assertEquals( autoDetectFormat( "twiki/test.twiki", "UTF-8" ), "twiki" );
         assertEquals( autoDetectFormat( "xhtml/test.xhtml", "UTF-8" ), "xhtml" );
     }
 }
