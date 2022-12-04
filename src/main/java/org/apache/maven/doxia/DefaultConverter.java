@@ -94,10 +94,12 @@ public class DefaultConverter
 
     private static final String XHTML5_PARSER = "xhtml5";
 
+    private static final String MARKDOWN_PARSER = "markdown";
+
     /** Supported input format, i.e. supported Doxia parser */
     public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, TWIKI_PARSER, XDOC_PARSER, XHTML_PARSER,
-                XHTML5_PARSER};
+        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, MARKDOWN_PARSER, TWIKI_PARSER,
+            XDOC_PARSER, XHTML_PARSER, XHTML5_PARSER };
 
     private static final String APT_SINK = "apt";
 
@@ -121,10 +123,12 @@ public class DefaultConverter
 
     private static final String XHTML5_SINK = "xhtml5";
 
+    private static final String MARKDOWN_SINK = "markdown";
+
     /** Supported output format, i.e. supported Doxia Sink */
     public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, CONFLUENCE_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, RTF_SINK, TWIKI_SINK, XDOC_SINK,
-            XHTML_SINK, XHTML5_SINK };
+        { APT_SINK, CONFLUENCE_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, MARKDOWN_SINK, RTF_SINK, TWIKI_SINK,
+            XDOC_SINK, XHTML_SINK, XHTML5_SINK };
 
     /** Flag to format the generated files, actually only for XML based sinks. */
     private boolean formatOutput;
