@@ -34,7 +34,7 @@ Usage
 
 * Command Line Help
 
-+-----+
+-------
 # java -jar target/doxia-converter-${project.version}-jar-with-dependencies.jar -h
 
 usage: doxia-converter [options] -in <arg> [-from <arg>] [-inEncoding <arg>] -out
@@ -61,19 +61,19 @@ Supported Encoding:
 UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE, Shift_JIS, ISO-2022-JP, ISO-2022-CN, ISO-2022-KR, GB18030, EUC-JP, EUC-KR, Big5,
 ISO-8859-1, ISO-8859-2, ISO-8859-5, ISO-8859-6, ISO-8859-7, ISO-8859-8-I, ISO-8859-8, windows-1251, windows-1256, KOI8-R,
 ISO-8859-9, IBM424_rtl, IBM424_ltr, IBM420_rtl, IBM420_ltr
-+-----+
+-------
 
  <<Note>>: The input parameters (i.e. encoding and format) can be autodetected.
 
 * Command Line Execution
 
-+-----+
+-------
 # java -jar target/doxia-converter-${project.version}-jar-with-dependencies.jar \
     -in /path/to/xhtml.file \
     -from xhtml \
     -out /path/to/outputdir \
     -to apt
-+-----+
+-------
 
   <<Note>>: The <<<from>>> parameter can be empty. In that case, Doxia converter tries to autodetect the <<<from>>>
   input from the <<<in>>> file parameter.
@@ -106,7 +106,7 @@ catch ( ConverterException e )
 
 * Ant Usage
 
-+---
++-----+
  <target name="doxia-convert">
      <java
          jar="./lib/doxia-converter-${project.version}-jar-with-dependencies.jar"
@@ -163,4 +163,4 @@ catch ( ConverterException e )
      <antcall target="doc.rtf" />
      <antcall target="doc.latex" />
  </target>
-+---
++-----+

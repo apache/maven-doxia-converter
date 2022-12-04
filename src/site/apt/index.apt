@@ -33,9 +33,9 @@ Doxia Converter
 
   Currently, the supported Doxia formats are:
 
-    * input format: apt, confluence, docbook, fml, twiki, xdoc, xhtml, xhtml5 or autodetect
+    * input format: <<<apt>>>, <<<confluence>>>, <<<docbook>>>, <<<fml>>>, <<<markdown>>>, <<<twiki>>>, <<<xdoc>>>, <<<xhtml>>>, <<<xhtml5>>> or <<<autodetect>>>
 
-    * output format: apt, confluence, docbook, fo, itext, latex, rtf, twiki, xdoc, xhtml, xhtml5
+    * output format: <<<apt>>>, <<<confluence>>>, <<<docbook>>>, <<<fo>>>, <<<itext>>>, <<<latex>>>, <<<markdown>>>, <<<rtf>>>, <<<twiki>>>, <<<xdoc>>>, <<<xhtml>>>, <<<xhtml5>>>
 
     []
 
@@ -44,5 +44,5 @@ Doxia Converter
 * Usage
 
   Doxia Converter can be conveniently used from the command-line,
-  or embedded in a java application.
+  or embedded in a Java application.
   Instructions on how to use the Doxia Converter can be found {{{./usage.html}here}}.
