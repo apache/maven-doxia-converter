@@ -17,7 +17,7 @@
 Contributing to [Apache Maven Doxia Converter](https://maven.apache.org/doxia/doxia-tools/doxia-converter/)
 ======================
 
-[![ASF Jira](https://img.shields.io/endpoint?url=https%3A%2F%2Fmaven.apache.org%2Fbadges%2Fasf_jira-DOXIA.json)][jira]
+[![ASF Jira](https://img.shields.io/endpoint?url=https%3A%2F%2Fmaven.apache.org%2Fbadges%2Fasf_jira-DOXIATOOLS.json)][jira]
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/apache/maven.svg?label=License)][license]
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.maven.doxia/doxia-converter.svg?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.maven.doxia/doxia-converter)
 [![Jenkins Status](https://img.shields.io/jenkins/s/https/ci-maven.apache.org/job/Maven/job/maven-box/job/maven-doxia-converter/job/master.svg)][build]
@@ -61,7 +61,7 @@ There are some guidelines which will make applying PRs easier for us:
   + Check for unnecessary whitespace with `git diff --check` before committing.
 + Make sure your commit messages are in the proper format. Your commit message should contain the key of the JIRA issue.
 ```
-[DOXIA-XXX] - Subject of the JIRA Ticket
+[DOXIATOOLS-XXX] - Subject of the JIRA Ticket
  Optional supplemental description.
 ```
 + Make sure you have added the necessary tests (JUnit/IT) for your changes.
@@ -89,7 +89,7 @@ Additional Resources
 + [Apache Maven Twitter Account](https://twitter.com/ASFMavenProject)
 + #Maven IRC channel on freenode.org
 
-[jira]: https://issues.apache.org/jira/projects/DOXIA/
+[jira]: https://issues.apache.org/jira/projects/DOXIATOOLS/
 [license]: https://www.apache.org/licenses/LICENSE-2.0
 [ml-list]: https://maven.apache.org/mailing-lists.html
 [code-style]: https://maven.apache.org/developers/conventions/code.html
