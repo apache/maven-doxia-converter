@@ -22,6 +22,9 @@ package org.apache.maven.doxia.wrapper;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.maven.doxia.DefaultConverter;
+import org.codehaus.plexus.util.WriterFactory;
+
 /**
  * Wrapper for an input file.
  *
@@ -33,21 +36,23 @@ public class InputFileWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 6510443036267371188L;
 
+    private final DefaultConverter.ParserFormat format;
+
     /**
      * Private constructor.
      *
      * @param absolutePath not null
-     * @param format could be null
+     * @param format not null
      * @param charsetName could be null
-     * @param supportedFormat not null
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    private InputFileWrapper( String absolutePath, String format, String charsetName, String[] supportedFormat )
+    private InputFileWrapper( String absolutePath, DefaultConverter.ParserFormat format, String charsetName )
         throws UnsupportedEncodingException, FileNotFoundException
     {
-        super( absolutePath, format, charsetName, supportedFormat );
+        super( absolutePath, charsetName );
 
+        this.format = format;
         if ( !getFile().exists() )
         {
             throw new FileNotFoundException( "The file '" + getFile().getAbsolutePath() + "' doesn't exist." );
@@ -56,32 +61,35 @@ public class InputFileWrapper
 
     /**
      * @param absolutePath for a file or a directory not null.
-     * @param format could be null
-     * @param supportedFormat not null
+     * @param format not null
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
-     * @see #valueOf(String, String, String, String[]) using AUTO_FORMAT
+     * @see #valueOf(String, DefaultConverter.ParserFormat, String) using WriterFactory.UTF_8
      */
-    public static InputFileWrapper valueOf( String absolutePath, String format, String[] supportedFormat )
+    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.ParserFormat format )
         throws UnsupportedEncodingException, FileNotFoundException
     {
-        return valueOf( absolutePath, format, AUTO_FORMAT, supportedFormat );
+        return valueOf( absolutePath, format, WriterFactory.UTF_8 );
     }
 
     /**
      * @param absolutePath for a wanted file or a wanted directory, not null.
-     * @param format could be null
+     * @param format not null
      * @param charsetName could be null
-     * @param supportedFormat not null
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    public static InputFileWrapper valueOf( String absolutePath, String format, String charsetName,
-                                            String[] supportedFormat )
+    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.ParserFormat format,
+            String charsetName )
         throws UnsupportedEncodingException, FileNotFoundException
     {
-        return new InputFileWrapper( absolutePath, format, charsetName, supportedFormat );
+        return new InputFileWrapper( absolutePath, format, charsetName );
+    }
+
+    public DefaultConverter.ParserFormat getFormat()
+    {
+        return format;
     }
 }

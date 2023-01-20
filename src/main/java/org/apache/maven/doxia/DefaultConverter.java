@@ -29,13 +29,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.maven.doxia.logging.Log;
 import org.apache.maven.doxia.logging.SystemStreamLog;
@@ -43,7 +42,6 @@ import org.apache.maven.doxia.parser.ParseException;
 import org.apache.maven.doxia.parser.Parser;
 import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.sink.SinkFactory;
-import org.apache.maven.doxia.util.ConverterUtil;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
@@ -55,6 +53,7 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.PathTool;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -96,10 +95,6 @@ public class DefaultConverter
 
     private static final String MARKDOWN_PARSER = "markdown";
 
-    /** Supported input format, i.e. supported Doxia parser */
-    public static final String[] SUPPORTED_FROM_FORMAT =
-        { APT_PARSER, CONFLUENCE_PARSER, DOCBOOK_PARSER, FML_PARSER, MARKDOWN_PARSER, TWIKI_PARSER,
-            XDOC_PARSER, XHTML_PARSER, XHTML5_PARSER };
 
     private static final String APT_SINK = "apt";
 
@@ -125,10 +120,172 @@ public class DefaultConverter
 
     private static final String MARKDOWN_SINK = "markdown";
 
-    /** Supported output format, i.e. supported Doxia Sink */
-    public static final String[] SUPPORTED_TO_FORMAT =
-        { APT_SINK, CONFLUENCE_SINK, DOCBOOK_SINK, FO_SINK, ITEXT_SINK, LATEX_SINK, MARKDOWN_SINK, RTF_SINK, TWIKI_SINK,
-            XDOC_SINK, XHTML_SINK, XHTML5_SINK };
+    /**
+     * All supported source formats
+     */
+    public enum ParserFormat
+    {
+        APT( APT_PARSER, "apt" ),
+        CONFLUENCE( CONFLUENCE_PARSER, "confluence" ),
+        DOCBOOK( DOCBOOK_PARSER, "xml", "article" ),
+        FML( FML_PARSER, "fml", "faqs" ),
+        TWIKI( TWIKI_PARSER, "twiki" ),
+        XDOC( XDOC_PARSER, "xml", "document" ),
+        XHTML( XHTML_PARSER, "html", "html" ),
+        XHTML5( XHTML5_PARSER, "html" ), // no autodetect support
+        MARKDOWN( MARKDOWN_PARSER, "md" );
+
+        private final String parserName;
+        private final String extension;
+        private final String firstElement;
+
+        ParserFormat( String parserName, String extension )
+        {
+            this( parserName, extension, null );
+        }
+
+        ParserFormat( String parserName, String extension, String firstElement )
+        {
+            this.parserName = parserName;
+            this.extension = extension;
+            this.firstElement = firstElement;
+        }
+
+        /**
+         * 
+         * @return the primary extension used with this format
+         */
+        public String getExtension()
+        {
+            return extension;
+        }
+
+        /**
+         * 
+         * @return {@code true} in case this format is XML based
+         */
+        public boolean isXml()
+        {
+            return firstElement != null;
+        }
+
+        /**
+         * @param plexus not null
+         * @return an instance of <code>Parser</code> depending on the format.
+         * @throws ComponentLookupException if could not find the Parser for the given format.
+         * @throws IllegalArgumentException if any parameter is null
+         */
+        public Parser getParser( PlexusContainer plexus )
+            throws ComponentLookupException
+        {
+            Objects.requireNonNull( plexus, "plexus is required" );
+
+            return (Parser) plexus.lookup( Parser.ROLE, parserName );
+        }
+
+        /**
+         * Auto detect Doxia format for the given file depending on:
+         * <ul>
+         * <li>the file name for TextMarkup based Doxia files</li>
+         * <li>the file content for XMLMarkup based Doxia files</li>
+         * </ul>
+         *
+         * @param f not null file
+         * @return the detected encoding from f.
+         * @throws IllegalArgumentException if f is not a file.
+         * @throws UnsupportedOperationException if could not detect the Doxia format.
+         */
+        public static ParserFormat autoDetectFormat( File f )
+        {
+            if ( !f.isFile() )
+            {
+                throw new IllegalArgumentException( "The path '" + f.getAbsolutePath()
+                    + "' does not locate a file, could not detect format." );
+            }
+
+            for ( ParserFormat format : EnumSet.allOf( ParserFormat.class ) )
+            {
+                if ( format.isXml() )
+                {
+                    // Handle Doxia xml files
+                    String firstTag = getFirstTag( f );
+                    if ( firstTag == null )
+                    {
+                        //noinspection UnnecessaryContinue
+                        continue;
+                    }
+                    if ( firstTag.equals( format.firstElement ) )
+                    {
+                        return format;
+                    }
+                }
+                else
+                {
+                    if ( hasFileExtensionIgnoreCase( f.getName(), format.getExtension() ) )
+                    {
+                        return format;
+                    }
+                }
+            }
+            throw new UnsupportedOperationException(
+                    format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
+                            f.getAbsolutePath() ) );
+        }
+    }
+
+    /**
+     * All supported target formats.
+     */
+    public enum SinkFormat
+    {
+        APT( APT_SINK, "apt", false ),
+        CONFLUENCE( CONFLUENCE_SINK, "confluence", false ),
+        DOCBOOK( DOCBOOK_SINK, "xml", true ),
+        FO( FO_SINK, "fo", true ),
+        ITEXT( ITEXT_SINK, "itext", false ),
+        LATEXT( LATEX_SINK, "tex", false ),
+        RTF( RTF_SINK, "rtf", false ),
+        TWIKI( TWIKI_SINK, "twiki", false ),
+        XDOC( XDOC_SINK, "xdoc", true ),
+        XHTML( XHTML_SINK, "html", true ),
+        XHTML5( XHTML5_SINK, "html", true ),
+        MARKDOWN( MARKDOWN_SINK, "md", false );
+
+        private final String sinkName;
+        private final String extension;
+        private final boolean isXml;
+
+        SinkFormat( String sinkName, String extension, boolean isXml )
+        {
+            this.sinkName = sinkName;
+            this.extension = extension;
+            this.isXml = isXml;
+        }
+
+        public String getExtension()
+        {
+            return extension;
+        }
+
+        /**
+         * @param plexus not null
+         * @return an instance of <code>SinkFactory</code> depending on the given format.
+         * @throws ComponentLookupException if could not find the SinkFactory for the given format.
+         * @throws IllegalArgumentException if any parameter is null
+         */
+        public SinkFactory getSinkFactory( PlexusContainer plexus )
+            throws ComponentLookupException
+        {
+            Objects.requireNonNull( plexus, "plexus is required" );
+
+            return (SinkFactory) plexus.lookup( SinkFactory.ROLE, sinkName );
+        }
+
+        boolean isXml()
+        {
+            return isXml;
+        }
+    }
 
     /** Flag to format the generated files, actually only for XML based sinks. */
     private boolean formatOutput;
@@ -164,20 +321,6 @@ public class DefaultConverter
 
     /** {@inheritDoc} */
     @Override
-    public String[] getInputFormats()
-    {
-        return SUPPORTED_FROM_FORMAT;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String[] getOutputFormats()
-    {
-        return SUPPORTED_TO_FORMAT;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void convert( InputFileWrapper input, OutputFileWrapper output )
         throws UnsupportedFormatException, ConverterException
     {
@@ -204,7 +347,7 @@ public class DefaultConverter
                 List<File> files;
                 try
                 {
-                    files = FileUtils.getFiles( input.getFile(), "**/*." + input.getFormat(),
+                    files = FileUtils.getFiles( input.getFile(), "**/*." + input.getFormat().getExtension(),
                                             StringUtils.join( FileUtils.getDefaultExcludes(), ", " ) );
                 }
                 catch ( IOException e )
@@ -218,7 +361,9 @@ public class DefaultConverter
 
                 for ( File f : files )
                 {
-                    parse( f, input.getEncoding(), input.getFormat(), output );
+                    File relativeOutputDirectory = new File( 
+                            PathTool.getRelativeFilePath( input.getFile().getAbsolutePath(), f.getParent() ) );
+                    parse( f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory );
                 }
             }
         }
@@ -250,7 +395,7 @@ public class DefaultConverter
             Parser parser;
             try
             {
-                parser = ConverterUtil.getParser( plexus, input.getFormat(), SUPPORTED_FROM_FORMAT );
+                parser = input.getFormat().getParser( plexus );
                 parser.enableLogging( log );
             }
             catch ( ComponentLookupException e )
@@ -266,7 +411,7 @@ public class DefaultConverter
             SinkFactory sinkFactory;
             try
             {
-                sinkFactory = ConverterUtil.getSinkFactory( plexus, output.getFormat(), SUPPORTED_TO_FORMAT );
+                sinkFactory = output.getFormat().getSinkFactory( plexus );
             }
             catch ( ComponentLookupException e )
             {
@@ -311,19 +456,38 @@ public class DefaultConverter
     /**
      * @param inputFile a not null existing file.
      * @param inputEncoding a not null supported encoding or {@link InputFileWrapper#AUTO_ENCODING}
-     * @param inputFormat  a not null supported format or {@link InputFileWrapper#AUTO_FORMAT}
+     * @param parserFormat  a not null supported format or {@link InputFileWrapper#AUTO_FORMAT}
      * @param output not null OutputFileWrapper object
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void parse( File inputFile, String inputEncoding, String inputFormat, OutputFileWrapper output )
+    private void parse( File inputFile, String inputEncoding, ParserFormat parserFormat, OutputFileWrapper output )
         throws ConverterException, UnsupportedFormatException
     {
+        parse( inputFile, inputEncoding, parserFormat, output, null );
+    }
+
+    /**
+     * @param inputFile a not null existing file.
+     * @param inputEncoding a not null supported encoding or {@link InputFileWrapper#AUTO_ENCODING}
+     * @param parserFormat  a not null supported format
+     * @param output not null OutputFileWrapper object
+     * @param relativeOutputDirectory the relative output directory (may be null, created if it does not exist yet)
+     * @throws ConverterException if any
+     * @throws UnsupportedFormatException if any
+     */
+    private void parse( File inputFile, String inputEncoding, ParserFormat parserFormat, OutputFileWrapper output,
+            File relativeOutputDirectory )
+        throws ConverterException, UnsupportedFormatException
+    {
+        File outputDirectoryOrFile = relativeOutputDirectory != null 
+                ? new File( output.getFile(), relativeOutputDirectory.getPath() ) 
+                : output.getFile();
         if ( getLog().isDebugEnabled() )
         {
             getLog().debug(
                             "Parsing file from '" + inputFile.getAbsolutePath() + "' with the encoding '"
-                                + inputEncoding + "' to '" + output.getFile().getAbsolutePath()
+                                + inputEncoding + "' to '" + outputDirectoryOrFile.getAbsolutePath()
                                 + "' with the encoding '" + output.getEncoding() + "'" );
         }
 
@@ -336,19 +500,11 @@ public class DefaultConverter
             }
         }
 
-        if ( InputFileWrapper.AUTO_FORMAT.equals( inputFormat ) )
-        {
-            inputFormat = autoDetectFormat( inputFile, inputEncoding );
-            if ( getLog().isDebugEnabled() )
-            {
-                getLog().debug( "Auto detect input format: " + inputFormat );
-            }
-        }
 
         Parser parser;
         try
         {
-            parser = ConverterUtil.getParser( plexus, inputFormat, SUPPORTED_FROM_FORMAT );
+            parser = parserFormat.getParser( plexus );
             parser.enableLogging( log );
         }
         catch ( ComponentLookupException e )
@@ -357,23 +513,19 @@ public class DefaultConverter
         }
 
         File outputFile;
-        if ( output.getFile().isDirectory() )
+        if ( outputDirectoryOrFile.isDirectory() 
+             || !SelectorUtils.match( "**.*", output.getFile().getName() ) 
+             || relativeOutputDirectory != null )
         {
-            outputFile = new File( output.getFile(), inputFile.getName() + "." + output.getFormat() );
+            // assume it is a directory
+            outputDirectoryOrFile.mkdirs();
+            outputFile = new File( outputDirectoryOrFile, 
+                    FileUtils.removeExtension( inputFile.getName() ) + "." + output.getFormat().getExtension() );
         }
         else
         {
-            if ( !SelectorUtils.match( "**.*", output.getFile().getName() ) )
-            {
-                // assume it is a directory
-                output.getFile().mkdirs();
-                outputFile = new File( output.getFile(), inputFile.getName() + "." + output.getFormat() );
-            }
-            else
-            {
-                output.getFile().getParentFile().mkdirs();
-                outputFile = output.getFile();
-            }
+            outputDirectoryOrFile.getParentFile().mkdirs();
+            outputFile = output.getFile();
         }
 
         Reader reader;
@@ -403,7 +555,7 @@ public class DefaultConverter
         SinkFactory sinkFactory;
         try
         {
-            sinkFactory = ConverterUtil.getSinkFactory( plexus, output.getFormat(), SUPPORTED_TO_FORMAT );
+            sinkFactory = output.getFormat().getSinkFactory( plexus );
         }
         catch ( ComponentLookupException e )
         {
@@ -441,13 +593,11 @@ public class DefaultConverter
 
         parse( parser, reader, sink );
 
-        if ( formatOutput && ( DOCBOOK_SINK.equals( output.getFormat() ) || FO_SINK.equals( output.getFormat() )
-            || ITEXT_SINK.equals( output.getFormat() ) || XDOC_SINK.equals( output.getFormat() )
-            || XHTML_SINK.equals( output.getFormat() ) || XHTML5_SINK.equals( output.getFormat() ) ) )
+        if ( formatOutput && output.getFormat().isXml() )
         {
             // format all xml files excluding docbook which is buggy
             // TODO Add doc book format
-            if ( DOCBOOK_SINK.equals( output.getFormat() ) || DOCBOOK_PARSER.equals( inputFormat ) )
+            if ( DOCBOOK_SINK.equals( output.getFormat() ) || DOCBOOK_PARSER.equals( parserFormat ) )
             {
                 return;
             }
@@ -569,88 +719,18 @@ public class DefaultConverter
                 + "Specify explicitly the encoding.", f.getAbsolutePath() ) );
     }
 
-    /**
-     * Auto detect Doxia format for the given file depending:
-     * <ul>
-     * <li>the file name for TextMarkup based Doxia files</li>
-     * <li>the file content for XMLMarkup based Doxia files</li>
-     * </ul>
-     *
-     * @param f not null file
-     * @param encoding a not null encoding.
-     * @return the detected encoding from f.
-     * @throws IllegalArgumentException if f is not a file.
-     * @throws UnsupportedOperationException if could not detect the Doxia format.
-     */
-    static String autoDetectFormat( File f, String encoding )
-    {
-        if ( !f.isFile() )
-        {
-            throw new IllegalArgumentException( "The file '" + f.getAbsolutePath()
-                + "' is not a file, could not detect format." );
-        }
-
-        for ( String supportedFromFormat : SUPPORTED_FROM_FORMAT )
-        {
-            // Handle Doxia text files
-            if ( APT_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f, supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( CONFLUENCE_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
-                    supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( TWIKI_PARSER.equalsIgnoreCase( supportedFromFormat ) && isDoxiaFileName( f,
-                    supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-
-            // Handle Doxia xml files
-            String firstTag = getFirstTag( f );
-            if ( firstTag == null )
-            {
-                //noinspection UnnecessaryContinue
-                continue;
-            }
-            else if ( "article".equals( firstTag ) && DOCBOOK_PARSER.equalsIgnoreCase( supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( "faqs".equals( firstTag ) && FML_PARSER.equalsIgnoreCase( supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( "document".equals( firstTag ) && XDOC_PARSER.equalsIgnoreCase( supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-            else if ( "html".equals( firstTag ) && XHTML_PARSER.equalsIgnoreCase( supportedFromFormat ) )
-            {
-                return supportedFromFormat;
-            }
-        }
-
-        throw new UnsupportedOperationException(
-                format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
-                        f.getAbsolutePath() ) );
-    }
+    
 
     /**
      * @param f not null
      * @param format could be null
-     * @return <code>true</code> if the file name computes the format.
+     * @return <code>true</code> if the file extension matches
      */
-    private static boolean isDoxiaFileName( File f, String format )
+    private static boolean hasFileExtensionIgnoreCase( String name, String extension )
     {
-        Objects.requireNonNull( f, "f is required." );
+        Objects.requireNonNull( name, "name is required." );
 
-        Pattern pattern = Pattern.compile( "(.*?)\\." + format.toLowerCase( Locale.ENGLISH ) + "$" );
-        Matcher matcher = pattern.matcher( f.getName().toLowerCase( Locale.ENGLISH ) );
-
-        return matcher.matches();
+        return extension.equals( FileUtils.getExtension( name.toLowerCase( Locale.ENGLISH ) ) );
     }
 
     /**

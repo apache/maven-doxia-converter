@@ -19,6 +19,9 @@ package org.apache.maven.doxia.cli;
  * under the License.
  */
 
+import java.util.EnumSet;
+import java.util.stream.Collectors;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -70,6 +73,8 @@ class CLIManager
 
     /** e character */
     static final String ERRORS = "e";
+
+    public static final String AUTO_FORMAT = "auto";
 
     private static final Options OPTIONS;
 
@@ -159,8 +164,12 @@ class CLIManager
 
     private static String getSupportedFormat()
     {
-        return "\nSupported Formats:\n from: " + join( DefaultConverter.SUPPORTED_FROM_FORMAT, ", " )
-            + " or autodetect" + "\n to:   " + join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
+        String fromFormats = EnumSet.allOf( DefaultConverter.ParserFormat.class ).stream()
+                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
+        String toFormats = EnumSet.allOf( DefaultConverter.SinkFormat.class ).stream()
+                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
+        return "\nSupported Formats:\n from: " + fromFormats
+            + " or " + AUTO_FORMAT + "\n to:   " + toFormats
             + "\n";
     }
 

@@ -37,7 +37,6 @@ import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 abstract class AbstractFileWrapper
-    extends AbstractWrapper
 {
     public static final String AUTO_ENCODING = "auto";
 
@@ -48,17 +47,13 @@ abstract class AbstractFileWrapper
     /**
      *
      * @param absolutePath not null
-     * @param format could be null
      * @param encoding could be null
-     * @param supportedFormat not null
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws IllegalArgumentException if any
      */
-    AbstractFileWrapper( String absolutePath, String format, String encoding, String[] supportedFormat )
+    AbstractFileWrapper( String absolutePath, String encoding )
         throws UnsupportedEncodingException
     {
-        super( format, supportedFormat );
-
         if ( isEmpty( absolutePath ) )
         {
             throw new IllegalArgumentException( "absolutePath is required" );

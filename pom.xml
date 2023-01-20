@@ -213,7 +213,7 @@ under the License.
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes combine.children="append">
-              <exclude>src/test/resources/unit/*/test.*</exclude>
+              <exclude>src/test/resources/unit/**/test.*</exclude>
               <exclude>src/test/resources/book-1/section-*.apt</exclude>
             </excludes>            
           </configuration>
