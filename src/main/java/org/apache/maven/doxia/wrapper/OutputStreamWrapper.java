@@ -40,7 +40,7 @@ public class OutputStreamWrapper
 
     private final String encoding;
 
-    private final DefaultConverter.SinkFormat format;
+    private final DefaultConverter.DoxiaFormat format;
 
     /**
      * Private constructor.
@@ -51,12 +51,12 @@ public class OutputStreamWrapper
      */
     private OutputStreamWrapper( OutputStream out, String format, String encoding )
     {
-        this.format = DefaultConverter.SinkFormat.valueOf( format.toUpperCase() );
+        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
         this.out = out;
         this.encoding = encoding;
     }
 
-    public DefaultConverter.SinkFormat getFormat()
+    public DefaultConverter.DoxiaFormat getFormat()
     {
         return format;
     }

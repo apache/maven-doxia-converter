@@ -77,78 +77,45 @@ import static java.lang.String.format;
 public class DefaultConverter
     implements Converter
 {
-    private static final String APT_PARSER = "apt";
-
-    private static final String CONFLUENCE_PARSER = "confluence";
-
-    private static final String DOCBOOK_PARSER = "docbook";
-
-    private static final String FML_PARSER = "fml";
-
-    private static final String TWIKI_PARSER = "twiki";
-
-    private static final String XDOC_PARSER = "xdoc";
-
-    private static final String XHTML_PARSER = "xhtml";
-
-    private static final String XHTML5_PARSER = "xhtml5";
-
-    private static final String MARKDOWN_PARSER = "markdown";
-
-
-    private static final String APT_SINK = "apt";
-
-    private static final String CONFLUENCE_SINK = "confluence";
-
-    private static final String DOCBOOK_SINK = "docbook";
-
-    private static final String FO_SINK = "fo";
-
-    private static final String ITEXT_SINK = "itext";
-
-    private static final String LATEX_SINK = "latex";
-
-    private static final String RTF_SINK = "rtf";
-
-    private static final String TWIKI_SINK = "twiki";
-
-    private static final String XDOC_SINK = "xdoc";
-
-    private static final String XHTML_SINK = "xhtml";
-
-    private static final String XHTML5_SINK = "xhtml5";
-
-    private static final String MARKDOWN_SINK = "markdown";
-
     /**
-     * All supported source formats
+     * All supported Doxia formats (either only parser, only sink or both)
      */
-    public enum ParserFormat
+    public enum DoxiaFormat
     {
-        APT( APT_PARSER, "apt" ),
-        CONFLUENCE( CONFLUENCE_PARSER, "confluence" ),
-        DOCBOOK( DOCBOOK_PARSER, "xml", "article" ),
-        FML( FML_PARSER, "fml", "faqs" ),
-        TWIKI( TWIKI_PARSER, "twiki" ),
-        XDOC( XDOC_PARSER, "xml", "document" ),
-        XHTML( XHTML_PARSER, "html", "html" ),
-        XHTML5( XHTML5_PARSER, "html" ), // no autodetect support
-        MARKDOWN( MARKDOWN_PARSER, "md" );
+        APT( "apt", "apt", true, true ),
+        CONFLUENCE( "confluence", "confluence", true, true ),
+        DOCBOOK( "docbook", "xml", "article", true, true ),
+        FML( "fml", "fml", "faqs", true, false ),
+        FO( "fo", "fo", false, true ),
+        ITEXT( "itext", "itext", false, true ),
+        LATEX( "latex", "tex", false, true ),
+        TWIKI( "twiki", "twiki", true, true ),
+        RTF( "rtf", "rtf", false, true ),
+        XDOC( "xdoc", "xml", "document", true, true ),
+        XHTML( "xhtml", "html", "html", true, true ),
+        XHTML5( "xhtml5", "html", true, true ), // no autodetect support
+        MARKDOWN( "markdown", "md", false, true );
 
-        private final String parserName;
+        /** Plexus role hint for Doxia sink/parser */
+        private final String roleHint;
         private final String extension;
+        /** The name of the first element in case this is an XML format, otherwise {@code null} */
         private final String firstElement;
+        private final boolean hasParser;
+        private final boolean hasSink;
 
-        ParserFormat( String parserName, String extension )
+        DoxiaFormat( String roleHint, String extension, boolean hasParser, boolean hasSink )
         {
-            this( parserName, extension, null );
+            this( roleHint, extension, null, hasParser, hasSink );
         }
 
-        ParserFormat( String parserName, String extension, String firstElement )
+        DoxiaFormat( String roleHint, String extension, String firstElement, boolean hasParser, boolean hasSink )
         {
-            this.parserName = parserName;
+            this.roleHint = roleHint;
             this.extension = extension;
             this.firstElement = firstElement;
+            this.hasParser = hasParser;
+            this.hasSink = hasSink;
         }
 
         /**
@@ -158,6 +125,16 @@ public class DefaultConverter
         public String getExtension()
         {
             return extension;
+        }
+
+        public boolean hasParser()
+        {
+            return hasParser;
+        }
+
+        public boolean hasSink()
+        {
+            return hasSink;
         }
 
         /**
@@ -178,9 +155,31 @@ public class DefaultConverter
         public Parser getParser( PlexusContainer plexus )
             throws ComponentLookupException
         {
+            if ( !hasParser )
+            {
+                throw new IllegalStateException( "The format " + this.toString() + " is not supported as parser!" );
+            }
             Objects.requireNonNull( plexus, "plexus is required" );
 
-            return (Parser) plexus.lookup( Parser.ROLE, parserName );
+            return (Parser) plexus.lookup( Parser.ROLE, roleHint );
+        }
+
+        /**
+         * @param plexus not null
+         * @return an instance of <code>SinkFactory</code> depending on the given format.
+         * @throws ComponentLookupException if could not find the SinkFactory for the given format.
+         * @throws IllegalArgumentException if any parameter is null
+         */
+        public SinkFactory getSinkFactory( PlexusContainer plexus )
+            throws ComponentLookupException
+        {
+            if ( !hasSink )
+            {
+                throw new IllegalStateException( "The format " + this.toString() + " is not supported as sink!" );
+            }
+            Objects.requireNonNull( plexus, "plexus is required" );
+
+            return (SinkFactory) plexus.lookup( SinkFactory.ROLE, roleHint );
         }
 
         /**
@@ -195,7 +194,7 @@ public class DefaultConverter
          * @throws IllegalArgumentException if f is not a file.
          * @throws UnsupportedOperationException if could not detect the Doxia format.
          */
-        public static ParserFormat autoDetectFormat( File f )
+        public static DoxiaFormat autoDetectFormat( File f )
         {
             if ( !f.isFile() )
             {
@@ -203,11 +202,11 @@ public class DefaultConverter
                     + "' does not locate a file, could not detect format." );
             }
 
-            for ( ParserFormat format : EnumSet.allOf( ParserFormat.class ) )
+            for ( DoxiaFormat format : EnumSet.allOf( DoxiaFormat.class ) )
             {
                 if ( format.isXml() )
                 {
-                    // Handle Doxia xml files
+                    // Handle XML files
                     String firstTag = getFirstTag( f );
                     if ( firstTag == null )
                     {
@@ -228,62 +227,8 @@ public class DefaultConverter
                 }
             }
             throw new UnsupportedOperationException(
-                    format( "Could not detect the Doxia format for file: %s\n Specify explicitly the Doxia format.",
+                    format( "Could not detect the Doxia format for file: %s%nSpecify explicitly the Doxia format.",
                             f.getAbsolutePath() ) );
-        }
-    }
-
-    /**
-     * All supported target formats.
-     */
-    public enum SinkFormat
-    {
-        APT( APT_SINK, "apt", false ),
-        CONFLUENCE( CONFLUENCE_SINK, "confluence", false ),
-        DOCBOOK( DOCBOOK_SINK, "xml", true ),
-        FO( FO_SINK, "fo", true ),
-        ITEXT( ITEXT_SINK, "itext", false ),
-        LATEXT( LATEX_SINK, "tex", false ),
-        RTF( RTF_SINK, "rtf", false ),
-        TWIKI( TWIKI_SINK, "twiki", false ),
-        XDOC( XDOC_SINK, "xdoc", true ),
-        XHTML( XHTML_SINK, "html", true ),
-        XHTML5( XHTML5_SINK, "html", true ),
-        MARKDOWN( MARKDOWN_SINK, "md", false );
-
-        private final String sinkName;
-        private final String extension;
-        private final boolean isXml;
-
-        SinkFormat( String sinkName, String extension, boolean isXml )
-        {
-            this.sinkName = sinkName;
-            this.extension = extension;
-            this.isXml = isXml;
-        }
-
-        public String getExtension()
-        {
-            return extension;
-        }
-
-        /**
-         * @param plexus not null
-         * @return an instance of <code>SinkFactory</code> depending on the given format.
-         * @throws ComponentLookupException if could not find the SinkFactory for the given format.
-         * @throws IllegalArgumentException if any parameter is null
-         */
-        public SinkFactory getSinkFactory( PlexusContainer plexus )
-            throws ComponentLookupException
-        {
-            Objects.requireNonNull( plexus, "plexus is required" );
-
-            return (SinkFactory) plexus.lookup( SinkFactory.ROLE, sinkName );
-        }
-
-        boolean isXml()
-        {
-            return isXml;
         }
     }
 
@@ -461,7 +406,7 @@ public class DefaultConverter
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void parse( File inputFile, String inputEncoding, ParserFormat parserFormat, OutputFileWrapper output )
+    private void parse( File inputFile, String inputEncoding, DoxiaFormat parserFormat, OutputFileWrapper output )
         throws ConverterException, UnsupportedFormatException
     {
         parse( inputFile, inputEncoding, parserFormat, output, null );
@@ -476,7 +421,7 @@ public class DefaultConverter
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void parse( File inputFile, String inputEncoding, ParserFormat parserFormat, OutputFileWrapper output,
+    private void parse( File inputFile, String inputEncoding, DoxiaFormat parserFormat, OutputFileWrapper output,
             File relativeOutputDirectory )
         throws ConverterException, UnsupportedFormatException
     {
@@ -597,7 +542,7 @@ public class DefaultConverter
         {
             // format all xml files excluding docbook which is buggy
             // TODO Add doc book format
-            if ( DOCBOOK_SINK.equals( output.getFormat() ) || DOCBOOK_PARSER.equals( parserFormat ) )
+            if ( DoxiaFormat.DOCBOOK.equals( output.getFormat() ) )
             {
                 return;
             }

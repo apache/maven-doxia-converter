@@ -166,9 +166,11 @@ class CLIManager
 
     private static String getSupportedFormat()
     {
-        String fromFormats = EnumSet.allOf( DefaultConverter.ParserFormat.class ).stream()
+        String fromFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
+                .filter( DefaultConverter.DoxiaFormat::hasParser )
                 .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
-        String toFormats = EnumSet.allOf( DefaultConverter.SinkFormat.class ).stream()
+        String toFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
+                .filter( DefaultConverter.DoxiaFormat::hasSink )
                 .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
         return EOL + "Supported Formats:" + EOL + " from: " + fromFormats
             + " or " + AUTO_FORMAT + EOL + " to:   " + toFormats

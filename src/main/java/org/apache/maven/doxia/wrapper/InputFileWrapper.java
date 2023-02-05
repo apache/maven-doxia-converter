@@ -36,7 +36,7 @@ public class InputFileWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 6510443036267371188L;
 
-    private final DefaultConverter.ParserFormat format;
+    private final DefaultConverter.DoxiaFormat format;
 
     /**
      * Private constructor.
@@ -47,7 +47,7 @@ public class InputFileWrapper
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    private InputFileWrapper( String absolutePath, DefaultConverter.ParserFormat format, String charsetName )
+    private InputFileWrapper( String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName )
         throws UnsupportedEncodingException, FileNotFoundException
     {
         super( absolutePath, charsetName );
@@ -65,9 +65,9 @@ public class InputFileWrapper
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
-     * @see #valueOf(String, DefaultConverter.ParserFormat, String) using WriterFactory.UTF_8
+     * @see #valueOf(String, DefaultConverter.DoxiaFormat, String) using WriterFactory.UTF_8
      */
-    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.ParserFormat format )
+    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format )
         throws UnsupportedEncodingException, FileNotFoundException
     {
         return valueOf( absolutePath, format, WriterFactory.UTF_8 );
@@ -81,14 +81,14 @@ public class InputFileWrapper
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.ParserFormat format,
+    public static InputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format,
             String charsetName )
         throws UnsupportedEncodingException, FileNotFoundException
     {
         return new InputFileWrapper( absolutePath, format, charsetName );
     }
 
-    public DefaultConverter.ParserFormat getFormat()
+    public DefaultConverter.DoxiaFormat getFormat()
     {
         return format;
     }

@@ -35,7 +35,7 @@ public class InputReaderWrapper
 
     private final Reader reader;
 
-    private final DefaultConverter.ParserFormat format;
+    private final DefaultConverter.DoxiaFormat format;
 
     /**
      * Private constructor.
@@ -46,7 +46,7 @@ public class InputReaderWrapper
      */
     private InputReaderWrapper( Reader reader, String format )
     {
-        this.format = DefaultConverter.ParserFormat.valueOf( format.toUpperCase() );
+        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
 
         if ( reader == null )
         {
@@ -63,7 +63,7 @@ public class InputReaderWrapper
         return this.reader;
     }
 
-    public DefaultConverter.ParserFormat getFormat()
+    public DefaultConverter.DoxiaFormat getFormat()
     {
         return format;
     }

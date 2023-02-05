@@ -123,11 +123,11 @@ public class ConverterCli
         try
         {
             String sourceFormat = commandLine.getOptionValue( CLIManager.FROM, CLIManager.AUTO_FORMAT );
-            final DefaultConverter.ParserFormat parserFormat;
+            final DefaultConverter.DoxiaFormat parserFormat;
             if ( CLIManager.AUTO_FORMAT.equalsIgnoreCase( sourceFormat ) )
             {
                 File inputFile = new File( commandLine.getOptionValue( CLIManager.IN ) );
-                parserFormat = DefaultConverter.ParserFormat.autoDetectFormat( inputFile );
+                parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat( inputFile );
                 if ( log.isDebugEnabled() )
                 {
                     log.debug( "Auto detected input format: " + parserFormat );
@@ -135,11 +135,11 @@ public class ConverterCli
             }
             else 
             {
-                parserFormat = DefaultConverter.ParserFormat.valueOf( sourceFormat.toUpperCase() );
+                parserFormat = DefaultConverter.DoxiaFormat.valueOf( sourceFormat.toUpperCase() );
             }
             String targetFormat = commandLine.getOptionValue( CLIManager.TO );
-            final DefaultConverter.SinkFormat sinkFormat = 
-                    DefaultConverter.SinkFormat.valueOf( targetFormat.toUpperCase() );
+            final DefaultConverter.DoxiaFormat sinkFormat = 
+                    DefaultConverter.DoxiaFormat.valueOf( targetFormat.toUpperCase() );
             input =
                 InputFileWrapper.valueOf( commandLine.getOptionValue( CLIManager.IN ),
                                           parserFormat,

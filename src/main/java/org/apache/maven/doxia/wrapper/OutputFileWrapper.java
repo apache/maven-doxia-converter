@@ -36,7 +36,7 @@ public class OutputFileWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 804499615902780116L;
 
-    private final DefaultConverter.SinkFormat format;
+    private final DefaultConverter.DoxiaFormat format;
 
     /**
      * Private constructor.
@@ -48,14 +48,14 @@ public class OutputFileWrapper
      * @throws IllegalArgumentException if any.
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    private OutputFileWrapper( String absolutePath, DefaultConverter.SinkFormat format, String charsetName )
+    private OutputFileWrapper( String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName )
         throws UnsupportedEncodingException
     {
         super( absolutePath, charsetName );
         this.format = Objects.requireNonNull( format, "format is required" );
     }
 
-    public DefaultConverter.SinkFormat getFormat()
+    public DefaultConverter.DoxiaFormat getFormat()
     {
         return format;
     }
@@ -66,7 +66,7 @@ public class OutputFileWrapper
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.SinkFormat format )
+    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format )
         throws UnsupportedEncodingException
     {
         return valueOf( absolutePath, format, WriterFactory.UTF_8 );
@@ -79,7 +79,7 @@ public class OutputFileWrapper
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.SinkFormat format,
+    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format,
             String charsetName )
         throws UnsupportedEncodingException
     {

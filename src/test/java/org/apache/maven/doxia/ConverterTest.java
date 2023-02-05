@@ -27,8 +27,7 @@ import java.io.FileWriter;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-import org.apache.maven.doxia.DefaultConverter.ParserFormat;
-import org.apache.maven.doxia.DefaultConverter.SinkFormat;
+import org.apache.maven.doxia.DefaultConverter.DoxiaFormat;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
@@ -86,9 +85,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/";
 
         InputFileWrapper input =
-                InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
+                InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-                OutputFileWrapper.valueOf( out, SinkFormat.APT, WriterFactory.UTF_8 );
+                OutputFileWrapper.valueOf( out, DoxiaFormat.APT, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -111,9 +110,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.APT, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.APT, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.MARKDOWN, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.MARKDOWN, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -138,9 +137,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/Doxia.apt";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.APT, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.APT, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -163,9 +162,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.APT, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.APT, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -175,8 +174,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
         out = getBasedir() + "/target/unit/file/apt/test.apt";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.APT, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.APT, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -197,9 +196,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.CONFLUENCE, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.CONFLUENCE, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -209,8 +208,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
         out = getBasedir() + "/target/unit/file/confluence/test.confluence";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.CONFLUENCE, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.CONFLUENCE, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -229,9 +228,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.DOCBOOK, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.DOCBOOK, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -241,8 +240,8 @@ public class ConverterTest
          in = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
          out = getBasedir() + "/target/unit/file/docbook/test.docbook";
 
-         input = InputFileWrapper.valueOf( in, ParserFormat.XHTML );
-         output = OutputFileWrapper.valueOf( out, SinkFormat.DOCBOOK );
+         input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML );
+         output = OutputFileWrapper.valueOf( out, DoxiaFormat.DOCBOOK );
 
          converter.setFormatOutput( formatOutput );
          converter.convert( input, output );
@@ -262,9 +261,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/fml/test.fml.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.FML, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.FML, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -287,9 +286,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.TWIKI, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.TWIKI, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -299,8 +298,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
         out = getBasedir() + "/target/unit/file/twiki/test.twiki";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.TWIKI, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.TWIKI, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         try
@@ -330,9 +329,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.XDOC, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.XDOC, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -342,8 +341,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
         out = getBasedir() + "/target/unit/file/xdoc/test.xdoc";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.XDOC, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.XDOC, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -364,9 +363,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
 
         InputFileWrapper input =
-            InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
+            InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-            OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+            OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -376,8 +375,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
         out = getBasedir() + "/target/unit/file/xhtml/test.xhtml";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.XHTML, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -397,9 +396,9 @@ public class ConverterTest
         String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
 
         InputFileWrapper input =
-                InputFileWrapper.valueOf( in, ParserFormat.XHTML5, ReaderFactory.UTF_8 );
+                InputFileWrapper.valueOf( in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8 );
         OutputFileWrapper output =
-                OutputFileWrapper.valueOf( out, SinkFormat.XHTML5, WriterFactory.UTF_8 );
+                OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML5, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -409,8 +408,8 @@ public class ConverterTest
         in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
         out = getBasedir() + "/target/unit/file/xhtml/test.xhtml5";
 
-        input = InputFileWrapper.valueOf( in, ParserFormat.XHTML5, ReaderFactory.UTF_8 );
-        output = OutputFileWrapper.valueOf( out, SinkFormat.XHTML5, WriterFactory.UTF_8 );
+        input = InputFileWrapper.valueOf( in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8 );
+        output = OutputFileWrapper.valueOf( out, DoxiaFormat.XHTML5, WriterFactory.UTF_8 );
 
         converter.setFormatOutput( formatOutput );
         converter.convert( input, output );
@@ -509,9 +508,9 @@ public class ConverterTest
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), ParserFormat.autoDetectFormat( inFile ) );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat( inFile ) );
             OutputFileWrapper output =
-                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), SinkFormat.XHTML );
+                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), DoxiaFormat.XHTML );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
@@ -534,9 +533,9 @@ public class ConverterTest
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), ParserFormat.autoDetectFormat( inFile ) );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat( inFile ) );
             OutputFileWrapper output =
-                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), SinkFormat.XHTML );
+                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), DoxiaFormat.XHTML );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
@@ -557,9 +556,9 @@ public class ConverterTest
         try (FileWriter fw = new FileWriter( outFile ))
         {
             InputFileWrapper input =
-                InputFileWrapper.valueOf( inFile.getAbsolutePath(), ParserFormat.autoDetectFormat( inFile ) );
+                InputFileWrapper.valueOf( inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat( inFile ) );
             OutputFileWrapper output =
-                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), SinkFormat.XHTML );
+                OutputFileWrapper.valueOf( outFile.getAbsolutePath(), DoxiaFormat.XHTML );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
@@ -583,9 +582,9 @@ public class ConverterTest
             StringWriter writer = new StringWriter();
 
             InputFileWrapper input =
-                    InputFileWrapper.valueOf( inFile.getAbsolutePath(), ParserFormat.autoDetectFormat( inFile ) );
+                    InputFileWrapper.valueOf( inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat( inFile ) );
             OutputFileWrapper output =
-                    OutputFileWrapper.valueOf( outFile.getAbsolutePath(), SinkFormat.XHTML5 );
+                    OutputFileWrapper.valueOf( outFile.getAbsolutePath(), DoxiaFormat.XHTML5 );
 
             converter.setFormatOutput( formatOutput );
             converter.convert( input, output );
@@ -622,23 +621,23 @@ public class ConverterTest
         assertEquals( "UTF-8", autoDetectEncoding( "xhtml/test.xhtml" ) );
     }
 
-    private ParserFormat autoDetectFormat( File f )
+    private DoxiaFormat autoDetectFormat( File f )
     {
-        return DefaultConverter.ParserFormat.autoDetectFormat( f );
+        return DefaultConverter.DoxiaFormat.autoDetectFormat( f );
     }
 
-    private ParserFormat autoDetectFormat( String filename )
+    private DoxiaFormat autoDetectFormat( String filename )
     {
         return autoDetectFormat( new File( getBasedir() + "/src/test/resources/unit/" + filename ) );
     }
 
     /**
-     * Test {@link DefaultConverter.ParserFormat#autoDetectFormat(File)}
+     * Test {@link DefaultConverter.DoxiaFormat#autoDetectFormat(File)}
      *
      */
     public void testAutodetectFormat()
     {
-        assertEquals( autoDetectFormat( "apt/test.apt" ), ParserFormat.APT );
+        assertEquals( autoDetectFormat( "apt/test.apt" ), DoxiaFormat.APT );
 
         try
         {
@@ -650,10 +649,10 @@ public class ConverterTest
             assertTrue( true );
         }
 
-        assertEquals( autoDetectFormat( "confluence/test.confluence" ), ParserFormat.CONFLUENCE );
-        assertEquals( autoDetectFormat( "docbook/test.xml" ), ParserFormat.DOCBOOK );
-        assertEquals( autoDetectFormat( "fml/test.fml" ), ParserFormat.FML );
-        assertEquals( autoDetectFormat( "twiki/test.twiki" ), ParserFormat.TWIKI );
-        assertEquals( autoDetectFormat( "xhtml/test.xhtml" ), ParserFormat.XHTML );
+        assertEquals( autoDetectFormat( "confluence/test.confluence" ), DoxiaFormat.CONFLUENCE );
+        assertEquals( autoDetectFormat( "docbook/test.xml" ), DoxiaFormat.DOCBOOK );
+        assertEquals( autoDetectFormat( "fml/test.fml" ), DoxiaFormat.FML );
+        assertEquals( autoDetectFormat( "twiki/test.twiki" ), DoxiaFormat.TWIKI );
+        assertEquals( autoDetectFormat( "xhtml/test.xhtml" ), DoxiaFormat.XHTML );
     }
 }
