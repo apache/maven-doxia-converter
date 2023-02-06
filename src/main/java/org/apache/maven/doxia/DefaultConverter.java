@@ -157,7 +157,7 @@ public class DefaultConverter
         {
             if ( !hasParser )
             {
-                throw new IllegalStateException( "The format " + this.toString() + " is not supported as parser!" );
+                throw new IllegalStateException( "The format " + this + " is not supported as parser!" );
             }
             Objects.requireNonNull( plexus, "plexus is required" );
 
@@ -175,7 +175,7 @@ public class DefaultConverter
         {
             if ( !hasSink )
             {
-                throw new IllegalStateException( "The format " + this.toString() + " is not supported as sink!" );
+                throw new IllegalStateException( "The format " + this + " is not supported as sink!" );
             }
             Objects.requireNonNull( plexus, "plexus is required" );
 
