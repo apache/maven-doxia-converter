@@ -19,6 +19,7 @@ package org.apache.maven.doxia.cli;
  * under the License.
  */
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,16 +122,32 @@ public class ConverterCli
         OutputFileWrapper output;
         try
         {
+            String sourceFormat = commandLine.getOptionValue( CLIManager.FROM, CLIManager.AUTO_FORMAT );
+            final DefaultConverter.DoxiaFormat parserFormat;
+            if ( CLIManager.AUTO_FORMAT.equalsIgnoreCase( sourceFormat ) )
+            {
+                File inputFile = new File( commandLine.getOptionValue( CLIManager.IN ) );
+                parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat( inputFile );
+                if ( log.isDebugEnabled() )
+                {
+                    log.debug( "Auto detected input format: " + parserFormat );
+                }
+            }
+            else 
+            {
+                parserFormat = DefaultConverter.DoxiaFormat.valueOf( sourceFormat.toUpperCase() );
+            }
+            String targetFormat = commandLine.getOptionValue( CLIManager.TO );
+            final DefaultConverter.DoxiaFormat sinkFormat = 
+                    DefaultConverter.DoxiaFormat.valueOf( targetFormat.toUpperCase() );
             input =
                 InputFileWrapper.valueOf( commandLine.getOptionValue( CLIManager.IN ),
-                                          commandLine.getOptionValue( CLIManager.FROM ),
-                                          commandLine.getOptionValue( CLIManager.INENCODING ),
-                                          converter.getInputFormats() );
+                                          parserFormat,
+                                          commandLine.getOptionValue( CLIManager.INENCODING ) );
             output =
                 OutputFileWrapper.valueOf( commandLine.getOptionValue( CLIManager.OUT ),
-                                           commandLine.getOptionValue( CLIManager.TO ),
-                                           commandLine.getOptionValue( CLIManager.OUTENCODING ),
-                                           converter.getOutputFormats() );
+                                           sinkFormat,
+                                           commandLine.getOptionValue( CLIManager.OUTENCODING ) );
         }
         catch ( IllegalArgumentException e )
         {

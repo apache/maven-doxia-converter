@@ -21,18 +21,21 @@ package org.apache.maven.doxia.wrapper;
 
 import java.io.Reader;
 
+import org.apache.maven.doxia.DefaultConverter;
+
 /**
  * Wrapper for an input reader.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 public class InputReaderWrapper
-    extends AbstractWrapper
 {
     /** serialVersionUID */
     static final long serialVersionUID = 3260213754615748766L;
 
     private final Reader reader;
+
+    private final DefaultConverter.DoxiaFormat format;
 
     /**
      * Private constructor.
@@ -41,14 +44,9 @@ public class InputReaderWrapper
      * @param supportedFormat not null
      * @throws IllegalArgumentException if the format equals AUTO_FORMAT.
      */
-    private InputReaderWrapper( Reader reader, String format, String[] supportedFormat )
+    private InputReaderWrapper( Reader reader, String format )
     {
-        super( format, supportedFormat );
-
-        if ( getFormat().equalsIgnoreCase( AUTO_FORMAT ) )
-        {
-            throw new IllegalArgumentException( "input format is required" );
-        }
+        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
 
         if ( reader == null )
         {
@@ -65,14 +63,17 @@ public class InputReaderWrapper
         return this.reader;
     }
 
+    public DefaultConverter.DoxiaFormat getFormat()
+    {
+        return format;
+    }
     /**
      * @param reader not null
      * @param format not null
-     * @param supportedFormat not null
      * @return a type safe input reader
      */
-    public static InputReaderWrapper valueOf( Reader reader, String format, String[] supportedFormat )
+    public static InputReaderWrapper valueOf( Reader reader, String format )
     {
-        return new InputReaderWrapper( reader, format, supportedFormat );
+        return new InputReaderWrapper( reader, format );
     }
 }

@@ -34,16 +34,6 @@ public interface Converter
     extends LogEnabled
 {
     /**
-     * @return a not null array containing supported input formats, i.e. <code>apt</code>.
-     */
-    String[] getInputFormats();
-
-    /**
-     * @return a not null array containing supported output formats, i.e. <code>xhtml</code>.
-     */
-    String[] getOutputFormats();
-
-    /**
      * @param input an input file wrapper, not null.
      * @param output an output file wrapper, not null.
      * @throws UnsupportedFormatException if any

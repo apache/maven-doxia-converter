@@ -19,6 +19,9 @@ package org.apache.maven.doxia.cli;
  * under the License.
  */
 
+import java.util.EnumSet;
+import java.util.stream.Collectors;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -71,7 +74,11 @@ class CLIManager
     /** e character */
     static final String ERRORS = "e";
 
+    public static final String AUTO_FORMAT = "auto";
+
     private static final Options OPTIONS;
+
+    private static final String EOL = System.lineSeparator();
 
     static
     {
@@ -149,7 +156,7 @@ class CLIManager
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth( 128 );
-        formatter.printHelp( "doxia-converter", "\nOptions:", OPTIONS, getSupportedFormatAndEncoding(), true );
+        formatter.printHelp( "doxia-converter", EOL + "Options:", OPTIONS, getSupportedFormatAndEncoding(), true );
     }
 
     private static String getSupportedFormatAndEncoding()
@@ -159,13 +166,19 @@ class CLIManager
 
     private static String getSupportedFormat()
     {
-        return "\nSupported Formats:\n from: " + join( DefaultConverter.SUPPORTED_FROM_FORMAT, ", " )
-            + " or autodetect" + "\n to:   " + join( DefaultConverter.SUPPORTED_TO_FORMAT, ", " )
-            + "\n";
+        String fromFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
+                .filter( DefaultConverter.DoxiaFormat::hasParser )
+                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
+        String toFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
+                .filter( DefaultConverter.DoxiaFormat::hasSink )
+                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
+        return EOL + "Supported Formats:" + EOL + " from: " + fromFormats
+            + " or " + AUTO_FORMAT + EOL + " to:   " + toFormats
+            + EOL;
     }
 
     private static String getSupportedEncoding()
     {
-        return "\nSupported Encoding:\n " + join( CharsetDetector.getAllDetectableCharsets(), ", " );
+        return EOL + "Supported Encoding:" + EOL + " " + join( CharsetDetector.getAllDetectableCharsets(), ", " );
     }
 }

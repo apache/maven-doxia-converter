@@ -22,6 +22,8 @@ package org.apache.maven.doxia.wrapper;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import org.apache.maven.doxia.DefaultConverter;
+
 import static org.codehaus.plexus.util.StringUtils.isEmpty;
 
 /**
@@ -30,7 +32,6 @@ import static org.codehaus.plexus.util.StringUtils.isEmpty;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 public class OutputStreamWrapper
-    extends AbstractWrapper
 {
     /** serialVersionUID */
     static final long serialVersionUID = 3329037527245430610L;
@@ -39,6 +40,8 @@ public class OutputStreamWrapper
 
     private final String encoding;
 
+    private final DefaultConverter.DoxiaFormat format;
+
     /**
      * Private constructor.
      *
@@ -46,17 +49,16 @@ public class OutputStreamWrapper
      * @param supportedFormat not null
      * @throws IllegalArgumentException if any.
      */
-    private OutputStreamWrapper( OutputStream out, String format, String encoding, String[] supportedFormat )
+    private OutputStreamWrapper( OutputStream out, String format, String encoding )
     {
-        super( format, supportedFormat );
-
-        if ( getFormat().equalsIgnoreCase( AUTO_FORMAT ) )
-        {
-            throw new IllegalArgumentException( "output format is required" );
-        }
-
+        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
         this.out = out;
         this.encoding = encoding;
+    }
+
+    public DefaultConverter.DoxiaFormat getFormat()
+    {
+        return format;
     }
 
     /**
@@ -79,11 +81,9 @@ public class OutputStreamWrapper
      * @param out not null
      * @param format not null
      * @param encoding not null
-     * @param supportedFormat not null
      * @return a type safe output stream wrapper
      */
-    public static OutputStreamWrapper valueOf( OutputStream out, String format, String encoding,
-            String[] supportedFormat )
+    public static OutputStreamWrapper valueOf( OutputStream out, String format, String encoding )
     {
         Objects.requireNonNull( out, "output writer is required" );
         if ( isEmpty( format ) )
@@ -91,6 +91,6 @@ public class OutputStreamWrapper
             throw new IllegalArgumentException( "output format is required" );
         }
 
-        return new OutputStreamWrapper( out, format, encoding, supportedFormat );
+        return new OutputStreamWrapper( out, format, encoding );
     }
 }

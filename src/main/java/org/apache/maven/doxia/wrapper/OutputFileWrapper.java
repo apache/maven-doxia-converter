@@ -20,10 +20,10 @@ package org.apache.maven.doxia.wrapper;
  */
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
+import org.apache.maven.doxia.DefaultConverter;
 import org.codehaus.plexus.util.WriterFactory;
-
-import static org.codehaus.plexus.util.StringUtils.isEmpty;
 
 /**
  * Wrapper for an output file.
@@ -36,6 +36,8 @@ public class OutputFileWrapper
     /** serialVersionUID */
     static final long serialVersionUID = 804499615902780116L;
 
+    private final DefaultConverter.DoxiaFormat format;
+
     /**
      * Private constructor.
      *
@@ -46,46 +48,41 @@ public class OutputFileWrapper
      * @throws IllegalArgumentException if any.
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    private OutputFileWrapper( String absolutePath, String format, String charsetName, String[] supportedFormat )
+    private OutputFileWrapper( String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName )
         throws UnsupportedEncodingException
     {
-        super( absolutePath, format, charsetName, supportedFormat );
+        super( absolutePath, charsetName );
+        this.format = Objects.requireNonNull( format, "format is required" );
+    }
 
-        if ( getFormat().equalsIgnoreCase( AUTO_FORMAT ) )
-        {
-            throw new IllegalArgumentException( "output format could not be " + AUTO_FORMAT );
-        }
+    public DefaultConverter.DoxiaFormat getFormat()
+    {
+        return format;
     }
 
     /**
      * @param absolutePath not null
      * @param format not null
-     * @param supportedFormat not null
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, String format, String[] supportedFormat )
+    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format )
         throws UnsupportedEncodingException
     {
-        return valueOf( absolutePath, format, WriterFactory.UTF_8, supportedFormat );
+        return valueOf( absolutePath, format, WriterFactory.UTF_8 );
     }
 
     /**
      * @param absolutePath not null
      * @param format not null
      * @param charsetName could be null
-     * @param supportedFormat not null
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, String format, String charsetName,
-                                             String[] supportedFormat )
+    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format,
+            String charsetName )
         throws UnsupportedEncodingException
     {
-        if ( isEmpty( format ) )
-        {
-            throw new IllegalArgumentException( "output format is required" );
-        }
-        return new OutputFileWrapper( absolutePath, format, charsetName, supportedFormat );
+        return new OutputFileWrapper( absolutePath, format, charsetName );
     }
 }
