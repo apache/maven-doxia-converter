@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.wrapper;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia.wrapper;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.wrapper;
 
 import java.io.OutputStream;
 import java.util.Objects;
@@ -31,8 +30,7 @@ import static org.codehaus.plexus.util.StringUtils.isEmpty;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class OutputStreamWrapper
-{
+public class OutputStreamWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 3329037527245430610L;
 
@@ -49,31 +47,27 @@ public class OutputStreamWrapper
      * @param supportedFormat not null
      * @throws IllegalArgumentException if any.
      */
-    private OutputStreamWrapper( OutputStream out, String format, String encoding )
-    {
-        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
+    private OutputStreamWrapper(OutputStream out, String format, String encoding) {
+        this.format = DefaultConverter.DoxiaFormat.valueOf(format.toUpperCase());
         this.out = out;
         this.encoding = encoding;
     }
 
-    public DefaultConverter.DoxiaFormat getFormat()
-    {
+    public DefaultConverter.DoxiaFormat getFormat() {
         return format;
     }
 
     /**
      * @return the output stream
      */
-    public OutputStream getOutputStream()
-    {
+    public OutputStream getOutputStream() {
         return this.out;
     }
 
     /**
      * @return the encoding
      */
-    public String getEncoding()
-    {
+    public String getEncoding() {
         return encoding;
     }
 
@@ -83,14 +77,12 @@ public class OutputStreamWrapper
      * @param encoding not null
      * @return a type safe output stream wrapper
      */
-    public static OutputStreamWrapper valueOf( OutputStream out, String format, String encoding )
-    {
-        Objects.requireNonNull( out, "output writer is required" );
-        if ( isEmpty( format ) )
-        {
-            throw new IllegalArgumentException( "output format is required" );
+    public static OutputStreamWrapper valueOf(OutputStream out, String format, String encoding) {
+        Objects.requireNonNull(out, "output writer is required");
+        if (isEmpty(format)) {
+            throw new IllegalArgumentException("output format is required");
         }
 
-        return new OutputStreamWrapper( out, format, encoding );
+        return new OutputStreamWrapper(out, format, encoding);
     }
 }

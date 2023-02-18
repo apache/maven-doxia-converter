@@ -1,5 +1,3 @@
-package org.apache.maven.doxia;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia;
 
 import org.apache.maven.doxia.logging.LogEnabled;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
@@ -30,17 +29,15 @@ import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public interface Converter
-    extends LogEnabled
-{
+public interface Converter extends LogEnabled {
     /**
      * @param input an input file wrapper, not null.
      * @param output an output file wrapper, not null.
      * @throws UnsupportedFormatException if any
      * @throws ConverterException if any
      */
-    void convert( InputFileWrapper input, OutputFileWrapper output )
-        throws UnsupportedFormatException, ConverterException;
+    void convert(InputFileWrapper input, OutputFileWrapper output)
+            throws UnsupportedFormatException, ConverterException;
 
     /**
      * @param input an input reader wrapper, not null.
@@ -48,8 +45,8 @@ public interface Converter
      * @throws UnsupportedFormatException if any
      * @throws ConverterException if any
      */
-    void convert( InputReaderWrapper input, OutputStreamWrapper output )
-        throws UnsupportedFormatException, ConverterException;
+    void convert(InputReaderWrapper input, OutputStreamWrapper output)
+            throws UnsupportedFormatException, ConverterException;
 
     /**
      * Make the generated files human readable.
@@ -58,5 +55,5 @@ public interface Converter
      *
      * @param formatOutput <code>true</code> to format the generated files, <code>false</code> otherwise.
      */
-    void setFormatOutput( boolean formatOutput );
+    void setFormatOutput(boolean formatOutput);
 }

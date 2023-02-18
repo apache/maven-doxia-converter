@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.wrapper;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia.wrapper;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.wrapper;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
@@ -30,9 +29,7 @@ import org.codehaus.plexus.util.WriterFactory;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class OutputFileWrapper
-    extends AbstractFileWrapper
-{
+public class OutputFileWrapper extends AbstractFileWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 804499615902780116L;
 
@@ -48,15 +45,13 @@ public class OutputFileWrapper
      * @throws IllegalArgumentException if any.
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    private OutputFileWrapper( String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName )
-        throws UnsupportedEncodingException
-    {
-        super( absolutePath, charsetName );
-        this.format = Objects.requireNonNull( format, "format is required" );
+    private OutputFileWrapper(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
+            throws UnsupportedEncodingException {
+        super(absolutePath, charsetName);
+        this.format = Objects.requireNonNull(format, "format is required");
     }
 
-    public DefaultConverter.DoxiaFormat getFormat()
-    {
+    public DefaultConverter.DoxiaFormat getFormat() {
         return format;
     }
 
@@ -66,10 +61,9 @@ public class OutputFileWrapper
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format )
-        throws UnsupportedEncodingException
-    {
-        return valueOf( absolutePath, format, WriterFactory.UTF_8 );
+    public static OutputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format)
+            throws UnsupportedEncodingException {
+        return valueOf(absolutePath, format, WriterFactory.UTF_8);
     }
 
     /**
@@ -79,10 +73,9 @@ public class OutputFileWrapper
      * @return a type safe output writer
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      */
-    public static OutputFileWrapper valueOf( String absolutePath, DefaultConverter.DoxiaFormat format,
-            String charsetName )
-        throws UnsupportedEncodingException
-    {
-        return new OutputFileWrapper( absolutePath, format, charsetName );
+    public static OutputFileWrapper valueOf(
+            String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
+            throws UnsupportedEncodingException {
+        return new OutputFileWrapper(absolutePath, format, charsetName);
     }
 }
