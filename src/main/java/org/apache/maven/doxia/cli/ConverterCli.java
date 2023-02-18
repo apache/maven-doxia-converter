@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.cli;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia.cli;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.cli;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,8 +44,7 @@ import org.codehaus.plexus.util.Os;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class ConverterCli
-{
+public class ConverterCli {
     /**
      * Default main which terminates the JVM with <code>0</code> if no errors occurs.
      *
@@ -54,20 +52,17 @@ public class ConverterCli
      * @see #doMain(String[])
      * @see System#exit(int)
      */
-    public static void main( String[] args )
-    {
-        if ( args == null || args.length == 0 )
-        {
-            args = new String[] { "-h" };
+    public static void main(String[] args) {
+        if (args == null || args.length == 0) {
+            args = new String[] {"-h"};
         }
-        System.exit( ConverterCli.doMain( args ) );
+        System.exit(ConverterCli.doMain(args));
     }
 
     /**
      * @param args The args
      */
-    private static int doMain( String[] args )
-    {
+    private static int doMain(String[] args) {
         // ----------------------------------------------------------------------
         // Setup the command line parser
         // ----------------------------------------------------------------------
@@ -75,123 +70,98 @@ public class ConverterCli
         CLIManager cliManager = new CLIManager();
 
         CommandLine commandLine;
-        try
-        {
-            commandLine = cliManager.parse( args );
-        }
-        catch ( ParseException e )
-        {
-            System.err.println( "Unable to parse command line options: " + e.getMessage() );
+        try {
+            commandLine = cliManager.parse(args);
+        } catch (ParseException e) {
+            System.err.println("Unable to parse command line options: " + e.getMessage());
             CLIManager.displayHelp();
 
             return 1;
         }
 
-        if ( commandLine.hasOption( CLIManager.HELP ) )
-        {
+        if (commandLine.hasOption(CLIManager.HELP)) {
             CLIManager.displayHelp();
 
             return 0;
         }
 
-        if ( commandLine.hasOption( CLIManager.VERSION ) )
-        {
+        if (commandLine.hasOption(CLIManager.VERSION)) {
             showVersion();
 
             return 0;
         }
 
-        boolean debug = commandLine.hasOption( CLIManager.DEBUG );
+        boolean debug = commandLine.hasOption(CLIManager.DEBUG);
 
-        boolean showErrors = debug || commandLine.hasOption( CLIManager.ERRORS );
+        boolean showErrors = debug || commandLine.hasOption(CLIManager.ERRORS);
 
-        if ( showErrors )
-        {
-            System.out.println( "+ Error stacktraces are turned on." );
+        if (showErrors) {
+            System.out.println("+ Error stacktraces are turned on.");
         }
 
         Converter converter = new DefaultConverter();
         Log log = new SystemStreamLog();
-        if ( debug )
-        {
-            log.setLogLevel( Log.LEVEL_DEBUG );
+        if (debug) {
+            log.setLogLevel(Log.LEVEL_DEBUG);
         }
-        converter.enableLogging( log );
+        converter.enableLogging(log);
 
         InputFileWrapper input;
         OutputFileWrapper output;
-        try
-        {
-            String sourceFormat = commandLine.getOptionValue( CLIManager.FROM, CLIManager.AUTO_FORMAT );
+        try {
+            String sourceFormat = commandLine.getOptionValue(CLIManager.FROM, CLIManager.AUTO_FORMAT);
             final DefaultConverter.DoxiaFormat parserFormat;
-            if ( CLIManager.AUTO_FORMAT.equalsIgnoreCase( sourceFormat ) )
-            {
-                File inputFile = new File( commandLine.getOptionValue( CLIManager.IN ) );
-                parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat( inputFile );
-                if ( log.isDebugEnabled() )
-                {
-                    log.debug( "Auto detected input format: " + parserFormat );
+            if (CLIManager.AUTO_FORMAT.equalsIgnoreCase(sourceFormat)) {
+                File inputFile = new File(commandLine.getOptionValue(CLIManager.IN));
+                parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
+                if (log.isDebugEnabled()) {
+                    log.debug("Auto detected input format: " + parserFormat);
                 }
+            } else {
+                parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
             }
-            else 
-            {
-                parserFormat = DefaultConverter.DoxiaFormat.valueOf( sourceFormat.toUpperCase() );
-            }
-            String targetFormat = commandLine.getOptionValue( CLIManager.TO );
-            final DefaultConverter.DoxiaFormat sinkFormat = 
-                    DefaultConverter.DoxiaFormat.valueOf( targetFormat.toUpperCase() );
-            input =
-                InputFileWrapper.valueOf( commandLine.getOptionValue( CLIManager.IN ),
-                                          parserFormat,
-                                          commandLine.getOptionValue( CLIManager.INENCODING ) );
-            output =
-                OutputFileWrapper.valueOf( commandLine.getOptionValue( CLIManager.OUT ),
-                                           sinkFormat,
-                                           commandLine.getOptionValue( CLIManager.OUTENCODING ) );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            showFatalError( "Illegal argument: " + e.getMessage(), e, showErrors );
+            String targetFormat = commandLine.getOptionValue(CLIManager.TO);
+            final DefaultConverter.DoxiaFormat sinkFormat =
+                    DefaultConverter.DoxiaFormat.valueOf(targetFormat.toUpperCase());
+            input = InputFileWrapper.valueOf(
+                    commandLine.getOptionValue(CLIManager.IN),
+                    parserFormat,
+                    commandLine.getOptionValue(CLIManager.INENCODING));
+            output = OutputFileWrapper.valueOf(
+                    commandLine.getOptionValue(CLIManager.OUT),
+                    sinkFormat,
+                    commandLine.getOptionValue(CLIManager.OUTENCODING));
+        } catch (IllegalArgumentException e) {
+            showFatalError("Illegal argument: " + e.getMessage(), e, showErrors);
 
             CLIManager.displayHelp();
 
             return 1;
-        }
-        catch ( UnsupportedEncodingException | FileNotFoundException e )
-        {
-            showFatalError( e.getMessage(), e, showErrors );
+        } catch (UnsupportedEncodingException | FileNotFoundException e) {
+            showFatalError(e.getMessage(), e, showErrors);
 
             return 1;
         }
 
-        boolean format = commandLine.hasOption( CLIManager.FORMAT );
-        converter.setFormatOutput( format );
+        boolean format = commandLine.hasOption(CLIManager.FORMAT);
+        converter.setFormatOutput(format);
 
-        try
-        {
-            converter.convert( input, output );
-        }
-        catch ( UnsupportedFormatException e )
-        {
-            showFatalError( e.getMessage(), e, showErrors );
+        try {
+            converter.convert(input, output);
+        } catch (UnsupportedFormatException e) {
+            showFatalError(e.getMessage(), e, showErrors);
 
             return 1;
-        }
-        catch ( ConverterException e )
-        {
-            showFatalError( "Converter exception: " + e.getMessage(), e, showErrors );
+        } catch (ConverterException e) {
+            showFatalError("Converter exception: " + e.getMessage(), e, showErrors);
 
             return 1;
-        }
-        catch ( IllegalArgumentException e )
-        {
-            showFatalError( "Illegal argument: " + e.getMessage(), e, showErrors );
+        } catch (IllegalArgumentException e) {
+            showFatalError("Illegal argument: " + e.getMessage(), e, showErrors);
 
             return 1;
-        }
-        catch ( RuntimeException e )
-        {
-            showFatalError( "Runtime exception: " + e.getMessage(), e, showErrors );
+        } catch (RuntimeException e) {
+            showFatalError("Runtime exception: " + e.getMessage(), e, showErrors);
 
             return 1;
         }
@@ -199,60 +169,47 @@ public class ConverterCli
         return 0;
     }
 
-    private static void showVersion()
-    {
+    private static void showVersion() {
         InputStream resourceAsStream;
-        try
-        {
+        try {
             Properties properties = new Properties();
-            resourceAsStream = ConverterCli.class.getClassLoader()
-                .getResourceAsStream( "META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties" );
+            resourceAsStream = ConverterCli.class
+                    .getClassLoader()
+                    .getResourceAsStream("META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties");
 
-            if ( resourceAsStream != null )
-            {
-                properties.load( resourceAsStream );
+            if (resourceAsStream != null) {
+                properties.load(resourceAsStream);
 
-                if ( properties.getProperty( "builtOn" ) != null )
-                {
-                    System.out.println( "Doxia Converter version: " + properties.getProperty( "version", "unknown" )
-                        + " built on " + properties.getProperty( "builtOn" ) );
+                if (properties.getProperty("builtOn") != null) {
+                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown")
+                            + " built on " + properties.getProperty("builtOn"));
+                } else {
+                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
                 }
-                else
-                {
-                    System.out.println( "Doxia Converter version: " + properties.getProperty( "version", "unknown" ) );
-                }
+            } else {
+                System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
             }
-            else
-            {
-                System.out.println( "Doxia Converter version: " + properties.getProperty( "version", "unknown" ) );
-            }
-            System.out.println( "Doxia version: "
-                    + FieldUtils.readStaticField( AbstractParser.class, "DOXIA_VERSION", true ) );
+            System.out.println(
+                    "Doxia version: " + FieldUtils.readStaticField(AbstractParser.class, "DOXIA_VERSION", true));
 
-            System.out.println( "Java version: " + System.getProperty( "java.version", "<unknown java version>" ) );
+            System.out.println("Java version: " + System.getProperty("java.version", "<unknown java version>"));
 
-            System.out.println( "OS name: \"" + Os.OS_NAME + "\" version: \"" + Os.OS_VERSION + "\" arch: \""
-                + Os.OS_ARCH + "\" family: \"" + Os.OS_FAMILY + "\"" );
+            System.out.println("OS name: \"" + Os.OS_NAME + "\" version: \"" + Os.OS_VERSION + "\" arch: \""
+                    + Os.OS_ARCH + "\" family: \"" + Os.OS_FAMILY + "\"");
 
-        }
-        catch ( IOException | IllegalAccessException e )
-        {
-            System.err.println( "Unable to determine version from JAR file: " + e.getMessage() );
+        } catch (IOException | IllegalAccessException e) {
+            System.err.println("Unable to determine version from JAR file: " + e.getMessage());
         }
     }
 
-    private static void showFatalError( String message, Exception e, boolean show )
-    {
-        System.err.println( "FATAL ERROR: " + message );
-        if ( show )
-        {
-            System.err.println( "Error stacktrace:" );
+    private static void showFatalError(String message, Exception e, boolean show) {
+        System.err.println("FATAL ERROR: " + message);
+        if (show) {
+            System.err.println("Error stacktrace:");
 
             e.printStackTrace();
-        }
-        else
-        {
-            System.err.println( "For more information, run with the -e flag" );
+        } else {
+            System.err.println("For more information, run with the -e flag");
         }
     }
 }

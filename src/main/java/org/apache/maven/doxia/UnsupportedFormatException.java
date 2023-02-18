@@ -1,5 +1,3 @@
-package org.apache.maven.doxia;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia;
 
 import org.codehaus.plexus.util.StringUtils;
 
@@ -26,9 +25,7 @@ import org.codehaus.plexus.util.StringUtils;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class UnsupportedFormatException
-    extends Exception
-{
+public class UnsupportedFormatException extends Exception {
     /** serialVersionUID */
     static final long serialVersionUID = -4334290887832961366L;
 
@@ -39,10 +36,9 @@ public class UnsupportedFormatException
      * @param format the unsupported format, not null
      * @param supportedFormat the supported formats, not null
      */
-    public UnsupportedFormatException( String format, String[] supportedFormat )
-    {
-        super( "Unsupported format '" + format + "'. The allowed format are: "
-            + StringUtils.join( supportedFormat, ", " ) );
+    public UnsupportedFormatException(String format, String[] supportedFormat) {
+        super("Unsupported format '" + format + "'. The allowed format are: "
+                + StringUtils.join(supportedFormat, ", "));
     }
 
     /**
@@ -56,9 +52,10 @@ public class UnsupportedFormatException
      * Throwable.getCause() method. (A null value is permitted, and indicates
      * that the cause is nonexistent or unknown.)
      */
-    public UnsupportedFormatException( String format, String[] supportedFormat, Throwable cause )
-    {
-        super( "Unsupported format '" + format + "'. The allowed format are: "
-            + StringUtils.join( supportedFormat, ", " ), cause );
+    public UnsupportedFormatException(String format, String[] supportedFormat, Throwable cause) {
+        super(
+                "Unsupported format '" + format + "'. The allowed format are: "
+                        + StringUtils.join(supportedFormat, ", "),
+                cause);
     }
 }

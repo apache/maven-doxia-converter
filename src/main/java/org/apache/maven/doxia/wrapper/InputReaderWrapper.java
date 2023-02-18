@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.wrapper;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.doxia.wrapper;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.wrapper;
 
 import java.io.Reader;
 
@@ -28,8 +27,7 @@ import org.apache.maven.doxia.DefaultConverter;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class InputReaderWrapper
-{
+public class InputReaderWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 3260213754615748766L;
 
@@ -44,13 +42,11 @@ public class InputReaderWrapper
      * @param supportedFormat not null
      * @throws IllegalArgumentException if the format equals AUTO_FORMAT.
      */
-    private InputReaderWrapper( Reader reader, String format )
-    {
-        this.format = DefaultConverter.DoxiaFormat.valueOf( format.toUpperCase() );
+    private InputReaderWrapper(Reader reader, String format) {
+        this.format = DefaultConverter.DoxiaFormat.valueOf(format.toUpperCase());
 
-        if ( reader == null )
-        {
-            throw new IllegalArgumentException( "input reader is required" );
+        if (reader == null) {
+            throw new IllegalArgumentException("input reader is required");
         }
         this.reader = reader;
     }
@@ -58,13 +54,11 @@ public class InputReaderWrapper
     /**
      * @return the reader
      */
-    public Reader getReader()
-    {
+    public Reader getReader() {
         return this.reader;
     }
 
-    public DefaultConverter.DoxiaFormat getFormat()
-    {
+    public DefaultConverter.DoxiaFormat getFormat() {
         return format;
     }
     /**
@@ -72,8 +66,7 @@ public class InputReaderWrapper
      * @param format not null
      * @return a type safe input reader
      */
-    public static InputReaderWrapper valueOf( Reader reader, String format )
-    {
-        return new InputReaderWrapper( reader, format );
+    public static InputReaderWrapper valueOf(Reader reader, String format) {
+        return new InputReaderWrapper(reader, format);
     }
 }

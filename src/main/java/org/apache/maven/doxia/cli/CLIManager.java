@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.cli;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,10 +16,12 @@ package org.apache.maven.doxia.cli;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.cli;
 
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
+import com.ibm.icu.text.CharsetDetector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -30,8 +30,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.maven.doxia.DefaultConverter;
 
-import com.ibm.icu.text.CharsetDetector;
-
 import static org.codehaus.plexus.util.StringUtils.join;
 
 /**
@@ -39,8 +37,7 @@ import static org.codehaus.plexus.util.StringUtils.join;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-class CLIManager
-{
+class CLIManager {
     /** h character */
     static final String HELP = "h";
 
@@ -80,56 +77,52 @@ class CLIManager
 
     private static final String EOL = System.lineSeparator();
 
-    static
-    {
+    static {
         OPTIONS = new Options();
 
-        OPTIONS.addOption( Option.builder( HELP )
-                .longOpt( "help" )
-                .desc( "Display help information." )
-                .build() );
-        OPTIONS.addOption( Option.builder( VERSION )
-                .longOpt( "version" )
-                .desc( "Display version information." )
-                .build() );
-        OPTIONS.addOption( Option.builder( IN )
-                .longOpt( "input" )
-                .desc( "Input file or directory." )
+        OPTIONS.addOption(Option.builder(HELP)
+                .longOpt("help")
+                .desc("Display help information.")
+                .build());
+        OPTIONS.addOption(Option.builder(VERSION)
+                .longOpt("version")
+                .desc("Display version information.")
+                .build());
+        OPTIONS.addOption(Option.builder(IN)
+                .longOpt("input")
+                .desc("Input file or directory.")
                 .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( OUT )
-                .longOpt( "output" )
-                .desc( "Output file or directory." )
+                .build());
+        OPTIONS.addOption(Option.builder(OUT)
+                .longOpt("output")
+                .desc("Output file or directory.")
                 .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( FROM )
-                .desc( "From format. If not specified, try to autodetect it." )
+                .build());
+        OPTIONS.addOption(Option.builder(FROM)
+                .desc("From format. If not specified, try to autodetect it.")
                 .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( TO )
-                .desc( "To format." )
+                .build());
+        OPTIONS.addOption(Option.builder(TO).desc("To format.").hasArg().build());
+        OPTIONS.addOption(Option.builder(INENCODING)
+                .desc("Input file encoding. If not specified, try to autodetect it.")
                 .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( INENCODING )
-                .desc( "Input file encoding. If not specified, try to autodetect it." )
+                .build());
+        OPTIONS.addOption(Option.builder(FORMAT)
+                .longOpt("format")
+                .desc("Format the output (actually only xml based outputs) to be human readable.")
+                .build());
+        OPTIONS.addOption(Option.builder(OUTENCODING)
+                .desc("Output file encoding. If not specified, use the input encoding (or autodetected).")
                 .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( FORMAT )
-                .longOpt( "format" )
-                .desc( "Format the output (actually only xml based outputs) to be human readable." )
-                .build() );
-        OPTIONS.addOption( Option.builder( OUTENCODING )
-                .desc( "Output file encoding. If not specified, use the input encoding (or autodetected)." )
-                .hasArg()
-                .build() );
-        OPTIONS.addOption( Option.builder( DEBUG )
-                .longOpt( "debug" )
-                .desc( "Produce execution debug output." )
-                .build() );
-        OPTIONS.addOption( Option.builder( ERRORS )
-                .longOpt( "errors" )
-                .desc( "Produce execution error messages." )
-                .build() );
+                .build());
+        OPTIONS.addOption(Option.builder(DEBUG)
+                .longOpt("debug")
+                .desc("Produce execution debug output.")
+                .build());
+        OPTIONS.addOption(Option.builder(ERRORS)
+                .longOpt("errors")
+                .desc("Produce execution error messages.")
+                .build());
     }
 
     /**
@@ -138,47 +131,42 @@ class CLIManager
      * @throws ParseException if any
      * @throws IllegalArgumentException is args is null
      */
-    CommandLine parse( String[] args )
-        throws ParseException
-    {
-        if ( args == null )
-        {
-            throw new IllegalArgumentException( "args is required." );
+    CommandLine parse(String[] args) throws ParseException {
+        if (args == null) {
+            throw new IllegalArgumentException("args is required.");
         }
 
         DefaultParser parser = new DefaultParser();
-        return parser.parse( OPTIONS, args );
+        return parser.parse(OPTIONS, args);
     }
 
-    static void displayHelp()
-    {
+    static void displayHelp() {
         System.out.println();
 
         HelpFormatter formatter = new HelpFormatter();
-        formatter.setWidth( 128 );
-        formatter.printHelp( "doxia-converter", EOL + "Options:", OPTIONS, getSupportedFormatAndEncoding(), true );
+        formatter.setWidth(128);
+        formatter.printHelp("doxia-converter", EOL + "Options:", OPTIONS, getSupportedFormatAndEncoding(), true);
     }
 
-    private static String getSupportedFormatAndEncoding()
-    {
+    private static String getSupportedFormatAndEncoding() {
         return getSupportedFormat() + "\n" + getSupportedEncoding();
     }
 
-    private static String getSupportedFormat()
-    {
-        String fromFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
-                .filter( DefaultConverter.DoxiaFormat::hasParser )
-                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
-        String toFormats = EnumSet.allOf( DefaultConverter.DoxiaFormat.class ).stream()
-                .filter( DefaultConverter.DoxiaFormat::hasSink )
-                .map( f -> f.toString().toLowerCase() ).collect( Collectors.joining( ", " ) );
+    private static String getSupportedFormat() {
+        String fromFormats = EnumSet.allOf(DefaultConverter.DoxiaFormat.class).stream()
+                .filter(DefaultConverter.DoxiaFormat::hasParser)
+                .map(f -> f.toString().toLowerCase())
+                .collect(Collectors.joining(", "));
+        String toFormats = EnumSet.allOf(DefaultConverter.DoxiaFormat.class).stream()
+                .filter(DefaultConverter.DoxiaFormat::hasSink)
+                .map(f -> f.toString().toLowerCase())
+                .collect(Collectors.joining(", "));
         return EOL + "Supported Formats:" + EOL + " from: " + fromFormats
-            + " or " + AUTO_FORMAT + EOL + " to:   " + toFormats
-            + EOL;
+                + " or " + AUTO_FORMAT + EOL + " to:   " + toFormats
+                + EOL;
     }
 
-    private static String getSupportedEncoding()
-    {
-        return EOL + "Supported Encoding:" + EOL + " " + join( CharsetDetector.getAllDetectableCharsets(), ", " );
+    private static String getSupportedEncoding() {
+        return EOL + "Supported Encoding:" + EOL + " " + join(CharsetDetector.getAllDetectableCharsets(), ", ");
     }
 }

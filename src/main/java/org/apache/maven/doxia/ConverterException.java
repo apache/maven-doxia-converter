@@ -1,5 +1,3 @@
-package org.apache.maven.doxia;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,15 +16,14 @@ package org.apache.maven.doxia;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia;
 
 /**
  * Wrap an exception that occurs during the conversion.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class ConverterException
-    extends Exception
-{
+public class ConverterException extends Exception {
     /** The serialVersionUID */
     static final long serialVersionUID = -5251213141888260575L;
 
@@ -36,9 +33,8 @@ public class ConverterException
      * @param message The detailed message.
      * This can later be retrieved by the Throwable.getMessage() method.
      */
-    public ConverterException( String message )
-    {
-        super( message );
+    public ConverterException(String message) {
+        super(message);
     }
 
     /**
@@ -51,8 +47,7 @@ public class ConverterException
      * Throwable.getCause() method. (A null value is permitted, and indicates
      * that the cause is nonexistent or unknown.)
      */
-    public ConverterException( String message, Throwable cause )
-    {
-        super( message, cause );
+    public ConverterException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

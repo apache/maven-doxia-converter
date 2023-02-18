@@ -1,5 +1,3 @@
-package org.apache.maven.doxia.wrapper;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,15 +16,15 @@ package org.apache.maven.doxia.wrapper;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.doxia.wrapper;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
-import org.codehaus.plexus.util.StringUtils;
-
 import com.ibm.icu.text.CharsetDetector;
+import org.codehaus.plexus.util.StringUtils;
 
 import static org.codehaus.plexus.util.StringUtils.isEmpty;
 import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
@@ -36,8 +34,7 @@ import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-abstract class AbstractFileWrapper
-{
+abstract class AbstractFileWrapper {
     public static final String AUTO_ENCODING = "auto";
 
     private File file;
@@ -51,92 +48,76 @@ abstract class AbstractFileWrapper
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws IllegalArgumentException if any
      */
-    AbstractFileWrapper( String absolutePath, String encoding )
-        throws UnsupportedEncodingException
-    {
-        if ( isEmpty( absolutePath ) )
-        {
-            throw new IllegalArgumentException( "absolutePath is required" );
+    AbstractFileWrapper(String absolutePath, String encoding) throws UnsupportedEncodingException {
+        if (isEmpty(absolutePath)) {
+            throw new IllegalArgumentException("absolutePath is required");
         }
 
-        File filetoset = new File( absolutePath );
-        if ( !filetoset.isAbsolute() )
-        {
-            filetoset = new File( new File( "" ).getAbsolutePath(), absolutePath );
+        File filetoset = new File(absolutePath);
+        if (!filetoset.isAbsolute()) {
+            filetoset = new File(new File("").getAbsolutePath(), absolutePath);
         }
         this.file = filetoset;
 
-        if ( isNotEmpty( encoding ) && !encoding.equalsIgnoreCase( encoding )
-            && !Charset.isSupported( encoding ) )
-        {
-            throw new UnsupportedEncodingException( "The encoding '" + encoding
+        if (isNotEmpty(encoding) && !encoding.equalsIgnoreCase(encoding) && !Charset.isSupported(encoding)) {
+            throw new UnsupportedEncodingException("The encoding '" + encoding
                     + "' is not a valid one. The supported charsets are: "
-                    + StringUtils.join( CharsetDetector.getAllDetectableCharsets(), ", " ) );
+                    + StringUtils.join(CharsetDetector.getAllDetectableCharsets(), ", "));
         }
-        this.encoding = ( isNotEmpty( encoding ) ? encoding : AUTO_ENCODING );
+        this.encoding = (isNotEmpty(encoding) ? encoding : AUTO_ENCODING);
     }
 
     /**
      * @return the file
      */
-    public File getFile()
-    {
+    public File getFile() {
         return file;
     }
 
     /**
      * @param file new file.
      */
-    void setFile( File file )
-    {
+    void setFile(File file) {
         this.file = file;
     }
 
     /**
      * @return the encoding used for the file or <code>null</code> if not specified.
      */
-    public String getEncoding()
-    {
+    public String getEncoding() {
         return encoding;
     }
 
     /**
      * @param encoding new encoding.
      */
-    void setEncoding( String encoding )
-    {
+    void setEncoding(String encoding) {
         this.encoding = encoding;
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if ( !super.equals( o ) )
-        {
+        if (!super.equals(o)) {
             return false;
         }
         AbstractFileWrapper that = (AbstractFileWrapper) o;
-        return Objects.equals( getFile(), that.getFile() );
+        return Objects.equals(getFile(), that.getFile());
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash( super.hashCode(), getFile() );
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getFile());
     }
 
     /** {@inheritDoc} */
     @Override
-    public java.lang.String toString()
-    {
+    public java.lang.String toString() {
         return super.toString() + "\n" + "file= '" + getFile() + "'";
     }
 }
