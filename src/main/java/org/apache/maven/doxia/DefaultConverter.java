@@ -38,8 +38,6 @@ import java.util.Objects;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import org.apache.commons.io.input.XmlStreamReader;
-import org.apache.maven.doxia.logging.Log;
-import org.apache.maven.doxia.logging.SystemStreamLog;
 import org.apache.maven.doxia.parser.ParseException;
 import org.apache.maven.doxia.parser.Parser;
 import org.apache.maven.doxia.sink.Sink;
@@ -51,6 +49,7 @@ import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -64,6 +63,8 @@ import org.codehaus.plexus.util.xml.XmlUtil;
 import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.lang.String.format;
 
@@ -78,17 +79,9 @@ public class DefaultConverter implements Converter {
      */
     public enum DoxiaFormat {
         APT("apt", "apt", true, true),
-        CONFLUENCE("confluence", "confluence", true, true),
-        DOCBOOK("docbook", "xml", "article", true, true),
         FML("fml", "fml", "faqs", true, false),
-        FO("fo", "fo", false, true),
-        ITEXT("itext", "itext", false, true),
-        LATEX("latex", "tex", false, true),
-        TWIKI("twiki", "twiki", true, true),
-        RTF("rtf", "rtf", false, true),
         XDOC("xdoc", "xml", "document", true, true),
-        XHTML("xhtml", "html", "html", true, true),
-        XHTML5("xhtml5", "html", true, true), // no autodetect support
+        XHTML5("xhtml5", "html", "html", true, true),
         MARKDOWN("markdown", "md", false, true);
 
         /** Plexus role hint for Doxia sink/parser */
@@ -149,7 +142,7 @@ public class DefaultConverter implements Converter {
             }
             Objects.requireNonNull(plexus, "plexus is required");
 
-            return (Parser) plexus.lookup(Parser.ROLE, roleHint);
+            return (Parser) plexus.lookup(Parser.class, roleHint);
         }
 
         /**
@@ -164,7 +157,7 @@ public class DefaultConverter implements Converter {
             }
             Objects.requireNonNull(plexus, "plexus is required");
 
-            return (SinkFactory) plexus.lookup(SinkFactory.ROLE, roleHint);
+            return (SinkFactory) plexus.lookup(SinkFactory.class, roleHint);
         }
 
         /**
@@ -214,28 +207,8 @@ public class DefaultConverter implements Converter {
     /** Plexus container */
     private PlexusContainer plexus;
 
-    /** Doxia logger */
-    private Log log;
-
-    /** {@inheritDoc} */
-    @Override
-    public void enableLogging(Log log) {
-        this.log = log;
-    }
-
-    /**
-     * Returns a logger for this sink.
-     * If no logger has been configured, a new SystemStreamLog is returned.
-     *
-     * @return Log
-     */
-    protected Log getLog() {
-        if (log == null) {
-            log = new SystemStreamLog();
-        }
-
-        return log;
-    }
+    /** SLF4J logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConverter.class);
 
     /** {@inheritDoc} */
     @Override
@@ -294,14 +267,10 @@ public class DefaultConverter implements Converter {
             Parser parser;
             try {
                 parser = input.getFormat().getParser(plexus);
-                parser.enableLogging(log);
             } catch (ComponentLookupException e) {
                 throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
             }
-
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Parser used: " + parser.getClass().getName());
-            }
+            LOGGER.debug("Parser used: {}", parser.getClass().getName());
 
             SinkFactory sinkFactory;
             try {
@@ -316,11 +285,7 @@ public class DefaultConverter implements Converter {
             } catch (IOException e) {
                 throw new ConverterException("IOException: " + e.getMessage(), e);
             }
-            sink.enableLogging(log);
-
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Sink used: " + sink.getClass().getName());
-            }
+            LOGGER.debug("Sink used: {}", sink.getClass().getName());
 
             parse(parser, input.getReader(), sink);
         } finally {
@@ -370,23 +335,21 @@ public class DefaultConverter implements Converter {
         File outputDirectoryOrFile = relativeOutputDirectory != null
                 ? new File(output.getFile(), relativeOutputDirectory.getPath())
                 : output.getFile();
-        if (getLog().isDebugEnabled()) {
-            getLog().debug("Parsing file from '" + inputFile.getAbsolutePath() + "' with the encoding '"
-                    + inputEncoding + "' to '" + outputDirectoryOrFile.getAbsolutePath()
-                    + "' with the encoding '" + output.getEncoding() + "'");
-        }
+        LOGGER.debug(
+                "Parsing file from '{}' with the encoding '{}'" + " to '{}' with the encoding '{}'",
+                inputFile.getAbsolutePath(),
+                inputEncoding,
+                outputDirectoryOrFile.getAbsolutePath(),
+                output.getEncoding());
 
         if (InputFileWrapper.AUTO_ENCODING.equals(inputEncoding)) {
             inputEncoding = autoDetectEncoding(inputFile);
-            if (getLog().isDebugEnabled()) {
-                getLog().debug("Auto detect encoding: " + inputEncoding);
-            }
+            LOGGER.debug("Auto detected encoding: '{}'", inputEncoding);
         }
 
         Parser parser;
         try {
             parser = parserFormat.getParser(plexus);
-            parser.enableLogging(log);
         } catch (ComponentLookupException e) {
             throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
         }
@@ -444,21 +407,10 @@ public class DefaultConverter implements Converter {
             throw new ConverterException("IOException: " + e.getMessage(), e);
         }
 
-        sink.enableLogging(log);
-
-        if (getLog().isDebugEnabled()) {
-            getLog().debug("Sink used: " + sink.getClass().getName());
-        }
-
+        LOGGER.debug("Sink used: {}", sink.getClass().getName());
         parse(parser, reader, sink);
 
         if (formatOutput && output.getFormat().isXml()) {
-            // format all xml files excluding docbook which is buggy
-            // TODO Add doc book format
-            if (DoxiaFormat.DOCBOOK.equals(output.getFormat())) {
-                return;
-            }
-
             try (Reader r = ReaderFactory.newXmlReader(outputFile);
                     Writer w = WriterFactory.newXmlWriter(outputFile)) {
                 CharArrayWriter caw = new CharArrayWriter();
@@ -503,6 +455,9 @@ public class DefaultConverter implements Converter {
         ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
         containerConfiguration.setName("Doxia");
         containerConfiguration.setContext(context);
+        containerConfiguration.setAutoWiring(true);
+        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON); // TODO switch to INDEX once
+        // https://github.com/apache/maven-doxia/commit/218b5afaa4e677fcbf3ae6a39ec8e59430f3be1a is released
 
         plexus = new DefaultPlexusContainer(containerConfiguration);
     }

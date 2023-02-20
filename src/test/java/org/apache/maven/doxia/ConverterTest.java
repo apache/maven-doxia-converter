@@ -75,7 +75,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
         OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -119,7 +119,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/Doxia.apt";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
         OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -141,7 +141,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -151,70 +151,13 @@ public class ConverterTest extends PlexusTestCase {
         in = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
         out = getBasedir() + "/target/unit/file/apt/test.apt";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
         output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
         assertTrue(new File(out).exists());
         assertTrue(new File(out).length() != 0);
-    }
-
-    /**
-     * Input confluence file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testConfluenceFileConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/confluence/test.confluence";
-        String out = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
-
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.CONFLUENCE, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
-        assertTrue(new File(out).length() != 0);
-
-        in = getBasedir() + "/target/unit/file/confluence/test.confluence.xhtml";
-        out = getBasedir() + "/target/unit/file/confluence/test.confluence";
-
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.CONFLUENCE, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-    }
-
-    /**
-     * Input docbook file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testDocbookFileConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/docbook/test.xml";
-        String out = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
-
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.DOCBOOK, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
-        assertTrue(new File(out).length() != 0);
-
-        in = getBasedir() + "/target/unit/file/docbook/test.docbook.xhtml";
-        out = getBasedir() + "/target/unit/file/docbook/test.docbook";
-
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.DOCBOOK);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
     }
 
     /**
@@ -228,7 +171,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/fml/test.fml.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.FML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -236,41 +179,6 @@ public class ConverterTest extends PlexusTestCase {
         assertTrue(new File(out).length() != 0);
 
         // opposite conversion not supported
-    }
-
-    /**
-     * Input twiki file / output file
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testTwikiFileConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/twiki/test.twiki";
-        String out = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
-
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.TWIKI, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
-        assertTrue(new File(out).length() != 0);
-
-        in = getBasedir() + "/target/unit/file/twiki/test.twiki.xhtml";
-        out = getBasedir() + "/target/unit/file/twiki/test.twiki";
-
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.TWIKI, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        try {
-            converter.convert(input, output);
-        } catch (ConverterException e) {
-            // The TWiki parser is wrong for *  <pre>some text</pre>
-            if (!e.getMessage().contains("Error validating the model")) {
-                throw e;
-            }
-        }
     }
 
     /**
@@ -284,7 +192,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XDOC, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -294,7 +202,7 @@ public class ConverterTest extends PlexusTestCase {
         in = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
         out = getBasedir() + "/target/unit/file/xdoc/test.xdoc";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
         output = OutputFileWrapper.valueOf(out, DoxiaFormat.XDOC, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -303,35 +211,6 @@ public class ConverterTest extends PlexusTestCase {
         assertTrue(new File(out).length() != 0);
     }
 
-    /**
-     * Input xhtml file / output dir
-     *
-     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
-     * @throws Exception if any
-     */
-    public void testXhtmlFileConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
-        String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
-
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
-        assertTrue(new File(out).length() != 0);
-
-        in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
-        out = getBasedir() + "/target/unit/file/xhtml/test.xhtml";
-
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
-
-        converter.setFormatOutput(formatOutput);
-        converter.convert(input, output);
-        assertTrue(new File(out).exists());
-        assertTrue(new File(out).length() != 0);
-    }
     /**
      * Input xhtml5 file / output dir
      *
@@ -372,39 +251,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
         String from = "apt";
         String out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
-        String to = "xhtml";
-
-        File inFile = new File(in);
-        File outFile = new File(out);
-        outFile.getParentFile().mkdirs();
-
-        try (OutputStream fo = new FileOutputStream(outFile)) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-            InputReaderWrapper input = InputReaderWrapper.valueOf(new FileReader(inFile), from);
-            OutputStreamWrapper output = OutputStreamWrapper.valueOf(outputStream, to, "UTF-8");
-
-            converter.setFormatOutput(formatOutput);
-            converter.convert(input, output);
-
-            IOUtil.copy(outputStream.toByteArray(), fo);
-        }
-
-        assertTrue(outFile.exists());
-        assertTrue(outFile.length() != 0);
-    }
-
-    /**
-     * Input confluence reader / output writer
-     *
-     * @see Converter#convert(InputReaderWrapper, OutputStreamWrapper)
-     * @throws Exception if any
-     */
-    public void testConfluenceWriterConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/confluence/test.confluence";
-        String from = "confluence";
-        String out = getBasedir() + "/target/unit/writer/confluence/test.confluence.xhtml";
-        String to = "xhtml";
+        String to = "xhtml5";
 
         File inFile = new File(in);
         File outFile = new File(out);
@@ -445,7 +292,7 @@ public class ConverterTest extends PlexusTestCase {
 
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -468,7 +315,7 @@ public class ConverterTest extends PlexusTestCase {
 
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -489,7 +336,7 @@ public class ConverterTest extends PlexusTestCase {
         try (FileWriter fw = new FileWriter(outFile)) {
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -536,10 +383,7 @@ public class ConverterTest extends PlexusTestCase {
      */
     public void testAutodetectEncoding() {
         assertEquals("ISO-8859-1", autoDetectEncoding("apt/test.apt"));
-        assertEquals("ISO-8859-1", autoDetectEncoding("confluence/test.confluence"));
-        assertEquals("UTF-8", autoDetectEncoding("docbook/test.xml"));
         assertEquals("UTF-8", autoDetectEncoding("fml/test.fml")); // plexus-utils should detect ISO-8859-1
-        assertEquals("ISO-8859-1", autoDetectEncoding("twiki/test.twiki"));
         assertEquals("UTF-8", autoDetectEncoding("xhtml/test.xhtml"));
     }
 
@@ -565,10 +409,7 @@ public class ConverterTest extends PlexusTestCase {
             assertTrue(true);
         }
 
-        assertEquals(autoDetectFormat("confluence/test.confluence"), DoxiaFormat.CONFLUENCE);
-        assertEquals(autoDetectFormat("docbook/test.xml"), DoxiaFormat.DOCBOOK);
         assertEquals(autoDetectFormat("fml/test.fml"), DoxiaFormat.FML);
-        assertEquals(autoDetectFormat("twiki/test.twiki"), DoxiaFormat.TWIKI);
-        assertEquals(autoDetectFormat("xhtml/test.xhtml"), DoxiaFormat.XHTML);
+        assertEquals(autoDetectFormat("xhtml/test.xhtml"), DoxiaFormat.XHTML5);
     }
 }

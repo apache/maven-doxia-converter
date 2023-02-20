@@ -32,8 +32,6 @@ import org.apache.maven.doxia.Converter;
 import org.apache.maven.doxia.ConverterException;
 import org.apache.maven.doxia.DefaultConverter;
 import org.apache.maven.doxia.UnsupportedFormatException;
-import org.apache.maven.doxia.logging.Log;
-import org.apache.maven.doxia.logging.SystemStreamLog;
 import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
@@ -100,11 +98,9 @@ public class ConverterCli {
         }
 
         Converter converter = new DefaultConverter();
-        Log log = new SystemStreamLog();
         if (debug) {
-            log.setLogLevel(Log.LEVEL_DEBUG);
+            // TODO: programmatically adjust log level
         }
-        converter.enableLogging(log);
 
         InputFileWrapper input;
         OutputFileWrapper output;
@@ -114,9 +110,9 @@ public class ConverterCli {
             if (CLIManager.AUTO_FORMAT.equalsIgnoreCase(sourceFormat)) {
                 File inputFile = new File(commandLine.getOptionValue(CLIManager.IN));
                 parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
-                if (log.isDebugEnabled()) {
+                /*if (log.isDebugEnabled()) {
                     log.debug("Auto detected input format: " + parserFormat);
-                }
+                }*/
             } else {
                 parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
             }
