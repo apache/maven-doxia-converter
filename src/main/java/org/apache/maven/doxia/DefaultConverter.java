@@ -336,7 +336,7 @@ public class DefaultConverter implements Converter {
                 ? new File(output.getFile(), relativeOutputDirectory.getPath())
                 : output.getFile();
         LOGGER.debug(
-                "Parsing file from '{}' with the encoding '{}'" + " to '{}' with the encoding '{}'",
+                "Parsing file from '{}' with the encoding '{}' to '{}' with the encoding '{}'",
                 inputFile.getAbsolutePath(),
                 inputEncoding,
                 outputDirectoryOrFile.getAbsolutePath(),

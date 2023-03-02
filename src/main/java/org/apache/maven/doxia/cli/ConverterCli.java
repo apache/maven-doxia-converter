@@ -99,7 +99,7 @@ public class ConverterCli {
 
         Converter converter = new DefaultConverter();
         if (debug) {
-            // TODO: programmatically adjust log level
+            System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         }
 
         InputFileWrapper input;
@@ -110,9 +110,9 @@ public class ConverterCli {
             if (CLIManager.AUTO_FORMAT.equalsIgnoreCase(sourceFormat)) {
                 File inputFile = new File(commandLine.getOptionValue(CLIManager.IN));
                 parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
-                /*if (log.isDebugEnabled()) {
-                    log.debug("Auto detected input format: " + parserFormat);
-                }*/
+                if (debug) {
+                    System.out.println("Auto detected input format: " + parserFormat);
+                }
             } else {
                 parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
             }
