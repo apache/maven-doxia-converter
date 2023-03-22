@@ -218,14 +218,6 @@ public class ConverterTest extends PlexusTestCase {
      * @throws Exception if any
      */
     public void testXhtml5FileConverter() throws Exception {
-//        String inApt = getBasedir() + "/src/test/resources/unit/apt/maven-features.apt";
-//        String outXdoc = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
-//
-//        InputFileWrapper inputApt = InputFileWrapper.valueOf(inApt, DoxiaFormat.APT, ReaderFactory.UTF_8);
-//        OutputFileWrapper outputXdoc = OutputFileWrapper.valueOf(outXdoc, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
-//
-//        converter.setFormatOutput(true);
-//        converter.convert(inputApt, outputXdoc);
         String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
         String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
 

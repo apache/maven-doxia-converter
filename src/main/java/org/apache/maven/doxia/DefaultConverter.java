@@ -456,8 +456,7 @@ public class DefaultConverter implements Converter {
         containerConfiguration.setName("Doxia");
         containerConfiguration.setContext(context);
         containerConfiguration.setAutoWiring(true);
-        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON); // TODO switch to INDEX once
-        // https://github.com/apache/maven-doxia/commit/218b5afaa4e677fcbf3ae6a39ec8e59430f3be1a is released
+        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_INDEX);
 
         plexus = new DefaultPlexusContainer(containerConfiguration);
     }
