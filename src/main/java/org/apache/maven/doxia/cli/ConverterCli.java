@@ -166,22 +166,16 @@ public class ConverterCli {
     }
 
     private static void showVersion() {
-        InputStream resourceAsStream;
-        try {
+        try (InputStream resourceAsStream = ConverterCli.class
+                .getClassLoader()
+                .getResourceAsStream("META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties")) {
             Properties properties = new Properties();
-            resourceAsStream = ConverterCli.class
-                    .getClassLoader()
-                    .getResourceAsStream("META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties");
-
             if (resourceAsStream != null) {
                 properties.load(resourceAsStream);
-
-                if (properties.getProperty("builtOn") != null) {
-                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown")
-                            + " built on " + properties.getProperty("builtOn"));
-                } else {
-                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
-                }
+            }
+            if (properties.getProperty("builtOn") != null) {
+                System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown")
+                        + " built on " + properties.getProperty("builtOn"));
             } else {
                 System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
             }
