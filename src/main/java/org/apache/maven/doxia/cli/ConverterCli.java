@@ -32,8 +32,6 @@ import org.apache.maven.doxia.Converter;
 import org.apache.maven.doxia.ConverterException;
 import org.apache.maven.doxia.DefaultConverter;
 import org.apache.maven.doxia.UnsupportedFormatException;
-import org.apache.maven.doxia.logging.Log;
-import org.apache.maven.doxia.logging.SystemStreamLog;
 import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
@@ -100,11 +98,9 @@ public class ConverterCli {
         }
 
         Converter converter = new DefaultConverter();
-        Log log = new SystemStreamLog();
         if (debug) {
-            log.setLogLevel(Log.LEVEL_DEBUG);
+            System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         }
-        converter.enableLogging(log);
 
         InputFileWrapper input;
         OutputFileWrapper output;
@@ -114,8 +110,8 @@ public class ConverterCli {
             if (CLIManager.AUTO_FORMAT.equalsIgnoreCase(sourceFormat)) {
                 File inputFile = new File(commandLine.getOptionValue(CLIManager.IN));
                 parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
-                if (log.isDebugEnabled()) {
-                    log.debug("Auto detected input format: " + parserFormat);
+                if (debug) {
+                    System.out.println("Auto detected input format: " + parserFormat);
                 }
             } else {
                 parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
@@ -170,22 +166,16 @@ public class ConverterCli {
     }
 
     private static void showVersion() {
-        InputStream resourceAsStream;
-        try {
+        try (InputStream resourceAsStream = ConverterCli.class
+                .getClassLoader()
+                .getResourceAsStream("META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties")) {
             Properties properties = new Properties();
-            resourceAsStream = ConverterCli.class
-                    .getClassLoader()
-                    .getResourceAsStream("META-INF/maven/org.apache.maven.doxia/doxia-converter/pom.properties");
-
             if (resourceAsStream != null) {
                 properties.load(resourceAsStream);
-
-                if (properties.getProperty("builtOn") != null) {
-                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown")
-                            + " built on " + properties.getProperty("builtOn"));
-                } else {
-                    System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
-                }
+            }
+            if (properties.getProperty("builtOn") != null) {
+                System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown")
+                        + " built on " + properties.getProperty("builtOn"));
             } else {
                 System.out.println("Doxia Converter version: " + properties.getProperty("version", "unknown"));
             }
