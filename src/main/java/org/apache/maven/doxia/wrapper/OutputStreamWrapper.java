@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import org.apache.maven.doxia.DefaultConverter;
 
-import static org.codehaus.plexus.util.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Wrapper for an output stream.

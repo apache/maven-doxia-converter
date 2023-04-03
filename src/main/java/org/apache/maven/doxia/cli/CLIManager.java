@@ -30,7 +30,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.maven.doxia.DefaultConverter;
 
-import static org.codehaus.plexus.util.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.join;
 
 /**
  * Manager for Doxia converter CLI options.
