@@ -18,7 +18,7 @@
  */
 package org.apache.maven.doxia;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Wrap an exception that occurs if a format is not supported.

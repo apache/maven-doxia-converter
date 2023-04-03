@@ -24,10 +24,10 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 
 import com.ibm.icu.text.CharsetDetector;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import static org.codehaus.plexus.util.StringUtils.isEmpty;
-import static org.codehaus.plexus.util.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
  * Abstract File wrapper for Doxia converter.
