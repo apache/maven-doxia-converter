@@ -26,9 +26,6 @@ import java.util.Objects;
 import com.ibm.icu.text.CharsetDetector;
 import org.apache.commons.lang3.StringUtils;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 /**
  * Abstract File wrapper for Doxia converter.
  *
@@ -49,7 +46,7 @@ abstract class AbstractFileWrapper {
      * @throws IllegalArgumentException if any
      */
     AbstractFileWrapper(String absolutePath, String encoding) throws UnsupportedEncodingException {
-        if (isEmpty(absolutePath)) {
+        if (absolutePath == null || absolutePath.isEmpty()) {
             throw new IllegalArgumentException("absolutePath is required");
         }
 
@@ -59,12 +56,12 @@ abstract class AbstractFileWrapper {
         }
         this.file = filetoset;
 
-        if (isNotEmpty(encoding) && !encoding.equalsIgnoreCase(encoding) && !Charset.isSupported(encoding)) {
+        if ((encoding != null && !encoding.isEmpty()) && !encoding.equalsIgnoreCase(encoding) && !Charset.isSupported(encoding)) {
             throw new UnsupportedEncodingException("The encoding '" + encoding
                     + "' is not a valid one. The supported charsets are: "
                     + StringUtils.join(CharsetDetector.getAllDetectableCharsets(), ", "));
         }
-        this.encoding = (isNotEmpty(encoding) ? encoding : AUTO_ENCODING);
+        this.encoding = (encoding != null && !encoding.isEmpty()) ? encoding : AUTO_ENCODING;
     }
 
     /**

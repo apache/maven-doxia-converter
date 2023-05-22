@@ -23,8 +23,6 @@ import java.util.Objects;
 
 import org.apache.maven.doxia.DefaultConverter;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 /**
  * Wrapper for an output stream.
  *
@@ -79,7 +77,7 @@ public class OutputStreamWrapper {
      */
     public static OutputStreamWrapper valueOf(OutputStream out, String format, String encoding) {
         Objects.requireNonNull(out, "output writer is required");
-        if (isEmpty(format)) {
+        if (format == null || format.isEmpty()) {
             throw new IllegalArgumentException("output format is required");
         }
 
