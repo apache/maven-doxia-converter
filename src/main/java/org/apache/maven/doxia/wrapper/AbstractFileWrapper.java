@@ -56,7 +56,9 @@ abstract class AbstractFileWrapper {
         }
         this.file = filetoset;
 
-        if ((encoding != null && !encoding.isEmpty()) && !encoding.equalsIgnoreCase(encoding) && !Charset.isSupported(encoding)) {
+        if ((encoding != null && !encoding.isEmpty())
+                && !encoding.equalsIgnoreCase(encoding)
+                && !Charset.isSupported(encoding)) {
             throw new UnsupportedEncodingException("The encoding '" + encoding
                     + "' is not a valid one. The supported charsets are: "
                     + StringUtils.join(CharsetDetector.getAllDetectableCharsets(), ", "));
