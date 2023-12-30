@@ -31,25 +31,32 @@ import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.WriterFactory;
+import org.eclipse.sisu.launch.InjectedTest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests Doxia converter.
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class ConverterTest extends PlexusTestCase {
+class ConverterTest extends InjectedTest {
     private Converter converter;
 
     private boolean formatOutput;
 
     /** {@inheritDoc} */
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         super.setUp();
 
         converter = new DefaultConverter();
@@ -58,8 +65,8 @@ public class ConverterTest extends PlexusTestCase {
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         super.tearDown();
 
         converter = null;
@@ -71,7 +78,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testFileConverterWithInputFileOutputDir() throws Exception {
+    @Test
+    void fileConverterWithInputFileOutputDir() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/";
 
@@ -92,7 +100,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testFileConverterWithInputDirOutputDir() throws Exception {
+    @Test
+    void fileConverterWithInputDirOutputDir() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/apt";
         String out = getBasedir() + "/target/unit/";
 
@@ -115,7 +124,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testFileConverterWithInputFileOutputFile() throws Exception {
+    @Test
+    void fileConverterWithInputFileOutputFile() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/Doxia.apt";
 
@@ -136,7 +146,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testAptFileConverter() throws Exception {
+    @Test
+    void aptFileConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
         String out = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
 
@@ -166,7 +177,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testFmlFileConverter() throws Exception {
+    @Test
+    void fmlFileConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/fml/test.fml";
         String out = getBasedir() + "/target/unit/file/fml/test.fml.xhtml";
 
@@ -187,7 +199,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testXdocFileConverter() throws Exception {
+    @Test
+    void xdocFileConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/xdoc/test.xml";
         String out = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
 
@@ -217,7 +230,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testXhtmlFileConverter() throws Exception {
+    @Test
+    void xhtmlFileConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
         String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
 
@@ -247,7 +261,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputReaderWrapper, OutputStreamWrapper)
      * @throws Exception if any
      */
-    public void testAptWriterConverter() throws Exception {
+    @Test
+    void aptWriterConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
         String from = "apt";
         String out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
@@ -279,7 +294,8 @@ public class ConverterTest extends PlexusTestCase {
      * @see Converter#convert(InputReaderWrapper, OutputStreamWrapper)
      * @throws Exception if any
      */
-    public void testAutoDetectConverter() throws Exception {
+    @Test
+    void autoDetectConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/xdoc/test.xml";
         String out = getBasedir() + "/target/unit/writer/apt/test.xdoc.apt";
 
@@ -381,7 +397,8 @@ public class ConverterTest extends PlexusTestCase {
     /**
      * Test {@link DefaultConverter#autoDetectEncoding(File)}
      */
-    public void testAutodetectEncoding() {
+    @Test
+    void autodetectEncoding() {
         assertEquals("ISO-8859-1", autoDetectEncoding("apt/test.apt"));
         assertEquals("UTF-8", autoDetectEncoding("fml/test.fml")); // plexus-utils should detect ISO-8859-1
         assertEquals("UTF-8", autoDetectEncoding("xhtml/test.xhtml"));
@@ -399,8 +416,9 @@ public class ConverterTest extends PlexusTestCase {
      * Test {@link DefaultConverter.DoxiaFormat#autoDetectFormat(File)}
      *
      */
-    public void testAutodetectFormat() {
-        assertEquals(autoDetectFormat("apt/test.apt"), DoxiaFormat.APT);
+    @Test
+    void autodetectFormat() {
+        assertEquals(DoxiaFormat.APT, autoDetectFormat("apt/test.apt"));
 
         try {
             autoDetectFormat("apt/test.unknown");
@@ -409,7 +427,7 @@ public class ConverterTest extends PlexusTestCase {
             assertTrue(true);
         }
 
-        assertEquals(autoDetectFormat("fml/test.fml"), DoxiaFormat.FML);
-        assertEquals(autoDetectFormat("xhtml/test.xhtml"), DoxiaFormat.XHTML);
+        assertEquals(DoxiaFormat.FML, autoDetectFormat("fml/test.fml"));
+        assertEquals(DoxiaFormat.XHTML, autoDetectFormat("xhtml/test.xhtml"));
     }
 }
