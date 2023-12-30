@@ -18,6 +18,8 @@
  */
 package org.apache.maven.doxia;
 
+import javax.inject.Named;
+
 import java.io.BufferedInputStream;
 import java.io.CharArrayWriter;
 import java.io.File;
@@ -73,6 +75,7 @@ import static java.lang.String.format;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
+@Named
 public class DefaultConverter implements Converter {
     /**
      * All supported Doxia formats (either only parser, only sink or both)
@@ -142,7 +145,7 @@ public class DefaultConverter implements Converter {
             }
             Objects.requireNonNull(plexus, "plexus is required");
 
-            return (Parser) plexus.lookup(Parser.class, roleHint);
+            return plexus.lookup(Parser.class, roleHint);
         }
 
         /**
@@ -157,7 +160,7 @@ public class DefaultConverter implements Converter {
             }
             Objects.requireNonNull(plexus, "plexus is required");
 
-            return (SinkFactory) plexus.lookup(SinkFactory.class, roleHint);
+            return plexus.lookup(SinkFactory.class, roleHint);
         }
 
         /**
@@ -459,7 +462,7 @@ public class DefaultConverter implements Converter {
         containerConfiguration.setName("Doxia");
         containerConfiguration.setContext(context);
         containerConfiguration.setAutoWiring(true);
-        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_INDEX);
+        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON);
 
         plexus = new DefaultPlexusContainer(containerConfiguration);
     }

@@ -18,6 +18,8 @@
  */
 package org.apache.maven.doxia;
 
+import javax.inject.Inject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,6 +52,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 class ConverterTest extends InjectedTest {
+    @Inject
     private Converter converter;
 
     private boolean formatOutput;
@@ -58,9 +61,6 @@ class ConverterTest extends InjectedTest {
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-
-        converter = new DefaultConverter();
-
         formatOutput = Boolean.parseBoolean(System.getProperty("format", "false"));
     }
 
@@ -68,7 +68,6 @@ class ConverterTest extends InjectedTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-
         converter = null;
     }
 
