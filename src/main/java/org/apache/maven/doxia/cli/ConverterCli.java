@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -35,6 +37,13 @@ import org.apache.maven.doxia.UnsupportedFormatException;
 import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.DefaultContainerConfiguration;
+import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.PlexusContainerException;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.Os;
 
 /**
@@ -50,7 +59,7 @@ public class ConverterCli {
      * @see #doMain(String[])
      * @see System#exit(int)
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws PlexusContainerException, ComponentLookupException {
         if (args == null || args.length == 0) {
             args = new String[] {"-h"};
         }
@@ -60,7 +69,7 @@ public class ConverterCli {
     /**
      * @param args The args
      */
-    private static int doMain(String[] args) {
+    private static int doMain(String[] args) throws PlexusContainerException, ComponentLookupException {
         // ----------------------------------------------------------------------
         // Setup the command line parser
         // ----------------------------------------------------------------------
@@ -96,11 +105,12 @@ public class ConverterCli {
         if (showErrors) {
             System.out.println("+ Error stacktraces are turned on.");
         }
-
-        Converter converter = new DefaultConverter();
         if (debug) {
             System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         }
+
+        PlexusContainer container = getPlexusContainer();
+        Converter converter = container.lookup(Converter.class);
 
         InputFileWrapper input;
         OutputFileWrapper output;
@@ -201,5 +211,22 @@ public class ConverterCli {
         } else {
             System.err.println("For more information, run with the -e flag");
         }
+    }
+    /**
+     * Start the Plexus container.
+     *
+     * @throws PlexusContainerException if any
+     */
+    private static PlexusContainer getPlexusContainer() throws PlexusContainerException {
+        Map<Object, Object> context = new HashMap<>();
+        context.put("basedir", new File("").getAbsolutePath());
+
+        ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
+        containerConfiguration.setName("Doxia");
+        containerConfiguration.setContext(context);
+        containerConfiguration.setAutoWiring(true);
+        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON);
+
+        return new DefaultPlexusContainer(containerConfiguration);
     }
 }
