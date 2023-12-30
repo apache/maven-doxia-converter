@@ -55,7 +55,7 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <doxiaVersion>2.0.0-M6</doxiaVersion>
+    <doxiaVersion>2.0.0-M9-SNAPSHOT</doxiaVersion>
     <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
@@ -150,8 +150,7 @@ under the License.
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <version>4.2.3</version>
-      <classifier>no_aop</classifier>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
@@ -182,6 +181,10 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.6.0</version>
