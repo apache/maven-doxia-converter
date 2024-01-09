@@ -59,15 +59,7 @@ under the License.
     <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>4.0.0</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+
   <dependencies>
     <!-- doxia -->
     <dependency>
@@ -141,7 +133,6 @@ under the License.
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xml</artifactId>
-      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
@@ -187,7 +178,6 @@ under the License.
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.6.0</version>
         <configuration>
           <archive>
             <manifest>
