@@ -238,7 +238,10 @@ public class DefaultConverter implements Converter {
                 } catch (IllegalStateException e) {
                     throw new ConverterException("IllegalStateException: " + e.getMessage(), e);
                 }
-
+                if (files.isEmpty()) {
+                    throw new ConverterException("ConverterException: No files with extension "
+                            + input.getFormat().getExtension() + " found in directory " + input.getFile());
+                }
                 for (File f : files) {
                     File relativeOutputDirectory = new File(
                             PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
