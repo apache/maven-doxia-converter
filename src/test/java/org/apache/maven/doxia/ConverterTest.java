@@ -224,7 +224,6 @@ public class ConverterTest extends PlexusTestCase {
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
         OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
 
-        // output has missing section end tag (3 opening, but only 2 closing ones)
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
         assertTrue(new File(out).exists());
