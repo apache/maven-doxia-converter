@@ -75,7 +75,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
         OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -119,7 +119,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/Doxia.apt";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
         OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -141,7 +141,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -151,7 +151,7 @@ public class ConverterTest extends PlexusTestCase {
         in = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
         out = getBasedir() + "/target/unit/file/apt/test.apt";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
         output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -171,7 +171,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/fml/test.fml.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.FML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -192,7 +192,7 @@ public class ConverterTest extends PlexusTestCase {
         String out = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
 
         InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XDOC, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -202,7 +202,7 @@ public class ConverterTest extends PlexusTestCase {
         in = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
         out = getBasedir() + "/target/unit/file/xdoc/test.xdoc";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
         output = OutputFileWrapper.valueOf(out, DoxiaFormat.XDOC, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
@@ -212,28 +212,28 @@ public class ConverterTest extends PlexusTestCase {
     }
 
     /**
-     * Input xhtml5 file / output dir
+     * Input xhtml file / output dir
      *
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
      * @throws Exception if any
      */
-    public void testXhtml5FileConverter() throws Exception {
-        String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
-        String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
+    public void testXhtmlFileConverter() throws Exception {
+        String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
+        String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
         assertTrue(new File(out).exists());
         assertTrue(new File(out).length() != 0);
 
-        in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml5";
-        out = getBasedir() + "/target/unit/file/xhtml/test.xhtml5";
+        in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
+        out = getBasedir() + "/target/unit/file/xhtml/test.xhtml";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML5, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML5, WriterFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
+        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -251,7 +251,7 @@ public class ConverterTest extends PlexusTestCase {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
         String from = "apt";
         String out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
-        String to = "xhtml5";
+        String to = "xhtml";
 
         File inFile = new File(in);
         File outFile = new File(out);
@@ -292,7 +292,7 @@ public class ConverterTest extends PlexusTestCase {
 
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -315,7 +315,7 @@ public class ConverterTest extends PlexusTestCase {
 
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -336,7 +336,7 @@ public class ConverterTest extends PlexusTestCase {
         try (FileWriter fw = new FileWriter(outFile)) {
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -346,8 +346,8 @@ public class ConverterTest extends PlexusTestCase {
             assertTrue(true);
         }
 
-        in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml5";
-        out = getBasedir() + "/target/unit/writer/xhtml/test.html5.xhtml5";
+        in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
+        out = getBasedir() + "/target/unit/writer/xhtml/test.html5.xhtml";
 
         inFile = new File(in);
         outFile = new File(out);
@@ -358,7 +358,7 @@ public class ConverterTest extends PlexusTestCase {
 
             InputFileWrapper input =
                     InputFileWrapper.valueOf(inFile.getAbsolutePath(), DoxiaFormat.autoDetectFormat(inFile));
-            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML5);
+            OutputFileWrapper output = OutputFileWrapper.valueOf(outFile.getAbsolutePath(), DoxiaFormat.XHTML);
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -410,6 +410,6 @@ public class ConverterTest extends PlexusTestCase {
         }
 
         assertEquals(autoDetectFormat("fml/test.fml"), DoxiaFormat.FML);
-        assertEquals(autoDetectFormat("xhtml/test.xhtml"), DoxiaFormat.XHTML5);
+        assertEquals(autoDetectFormat("xhtml/test.xhtml"), DoxiaFormat.XHTML);
     }
 }

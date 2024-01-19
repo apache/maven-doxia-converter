@@ -81,7 +81,7 @@ public class DefaultConverter implements Converter {
         APT("apt", "apt", true, true),
         FML("fml", "fml", "faqs", true, false),
         XDOC("xdoc", "xml", "document", true, true),
-        XHTML5("xhtml5", "html", "html", true, true),
+        XHTML("xhtml", "html", "html", true, true),
         MARKDOWN("markdown", "md", false, true);
 
         /** Plexus role hint for Doxia sink/parser */
