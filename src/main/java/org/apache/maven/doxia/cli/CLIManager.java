@@ -99,13 +99,12 @@ class CLIManager {
                 .hasArg()
                 .build());
         OPTIONS.addOption(Option.builder(FROM)
-                .desc("From format. If not specified, try to autodetect it.")
+                .desc("From format. If not specified, try to autodetect it (only works if input is a single file).")
                 .hasArg()
                 .build());
         OPTIONS.addOption(Option.builder(TO).desc("To format.").hasArg().build());
         OPTIONS.addOption(Option.builder(INENCODING)
-                .desc(
-                        "Input file encoding. If not specified, try to autodetect it (only works if input is a single file)")
+                .desc("Input file encoding. If not specified, try to autodetect it.")
                 .hasArg()
                 .build());
         OPTIONS.addOption(Option.builder(FORMAT)
