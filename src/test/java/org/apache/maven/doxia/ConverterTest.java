@@ -161,6 +161,26 @@ public class ConverterTest extends PlexusTestCase {
     }
 
     /**
+     * Input apt file / output file
+     *
+     * @see Converter#convert(InputFileWrapper, OutputFileWrapper)
+     * @throws Exception if any
+     */
+    public void testAptVelocityFileConverter() throws Exception {
+        String in = getBasedir() + "/src/test/resources/unit/apt/test.apt.vm";
+        String out = getBasedir() + "/target/unit/file/apt/test.md";
+
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, ReaderFactory.UTF_8);
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.MARKDOWN, WriterFactory.UTF_8);
+
+        converter.setFormatOutput(formatOutput);
+        converter.convert(input, output);
+        assertTrue(new File(out).exists());
+        assertTrue(new File(out).length() != 0);
+
+    }
+
+    /**
      * Input fml dir / output dir
      *
      * @see Converter#convert(InputFileWrapper, OutputFileWrapper)

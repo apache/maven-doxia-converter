@@ -47,6 +47,7 @@ import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
+import org.apache.maven.doxia.wrapper.PreserveVelocityStatements;
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -411,6 +412,11 @@ public class DefaultConverter implements Converter {
         }
 
         LOGGER.debug("Sink used: {}", sink.getClass().getName());
+        // is it a Velocity file
+        if (inputFile.getName().endsWith(".vm")) {
+            LOGGER.info("Preserving Velocity statements in file {}", inputFile.getPath());
+            sink = new PreserveVelocityStatements(sink);
+        }
         parse(parser, reader, sink);
 
         if (formatOutput && output.getFormat().isXml()) {

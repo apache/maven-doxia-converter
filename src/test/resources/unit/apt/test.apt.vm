@@ -1,0 +1,166 @@
+ -----
+ Maven Project Parent POM
+ -----
+ Benson Margulies
+ Hervé Boutemy
+ Karl Heinz Marbaise
+ -----
+ 2015-09-20
+ -----
+
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
+
+~~ NOTE: For help with the syntax of this file, see:
+~~ https://maven.apache.org/doxia/references/apt-format.html
+
+Maven Project Parent POM
+
+    This POM is the common parent of all of the Maven components
+    in the Apache Maven project. Most of its contents are
+    pinning down version numbers of plugins. It does 
+    provide {{{./dependency-management.html}minimal dependencyManagement}} for
+    plexus-component and plugin-tools annotations.
+
+    This POM contains Maven developers information for the {{{./team.html}Project Team report}},
+    sorted by role and id.
+    See the LDAP extract for more accurate {{{https://people.apache.org/committers-by-project.html#maven}committers}}
+    and {{{https://people.apache.org/committers-by-project.html#maven-pmc}PMC members}} lists. 
+
+* The <<<reporting>>> Profile
+
+    This POM provides <<<reporting>>> profile for rendering documentation during site generation:
+
++-----+
+mvn -Preporting site
++-----+
+
+    See {{{./plugins.html}Plugins report}} for a list of configured report plugins.
+
+* The <<<jdk-toolchain>>> Profile
+
+    This POM provides <<<jdk-toolchain>>> profile to activate JDK selection as a toolchain with version
+    requirement configured as minimum java version for the project.
+
+* The <<<format>>> Profile
+
+    Since version 38 the <<<format>>> profile can be used to explicitly format source files with
+    {{{https://github.com/diffplug/spotless/tree/main/plugin-maven}spotless-maven-plugin}} according to 
+    {{{/developers/conventions/code.html}Maven standards}}.
+    This requires the phase {{{/guides/introduction/introduction-to-the-lifecycle.html#default-lifecycle}process-sources}}.
+    After applying bigger reformatting it is recommended to add or update a <<<.git-blame-ignore-revs>>> file in the root of the repository
+    containing a line with the SHA1 of the formatting commit to ignore those changes when using <<<git blame>>> (or equivalent concepts).
+    This is automatically considered by {{{https://docs.github.com/en/repositories/working-with-files/using-files/viewing-a-file#bypassing-git-blame-ignore-revs-in-the-blame-view}GitHub}}
+    and can optionally be considered with {{{https://git-scm.com/docs/git-blame#Documentation/git-blame.txt---ignore-revs-fileltfilegt}local <<<git blame>>>}}
+
+* Site Publication
+
+    This POM prepares site publication to {{{/developers/website/index.html}Apache Maven's site svnpubsub}}.
+    Every inheriting POM needs to define <<<maven.site.path>>> property
+    with relative path to <<<$\{project.artifactId}-LATEST>>> publication uri, and define <<<distributionManagement>>> to avoid
+    automatic inheritance from parent:
+
++-----+
+  <properties>
+    <maven.site.path>xxx-archives/\${project.artifactId}-LATEST</maven.site.path>
+  </properties>
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}</url>
+    </site>
+  </distributionManagement>
++-----+
+
+    Once this is configured, the site can be published with:
+
++-----+
+mvn -Preporting site site:stage
+mvn scm-publish:publish-scm
++-----+
+
+    See {{{/developers/website/deploy-component-reference-documentation.html}deploying Maven components reference documentation}}
+    for more information.
+
+* History
+
+#if( $project.version.endsWith( "SNAPSHOT" ) )
+#**##set( $prev = 40 )
+  master: {{{https://github.com/apache/maven-parent/tree/master/pom.xml}$project.version}}
+  ({{{https://github.com/apache/maven-parent/compare/maven-parent-$prev...master#diff}diff}},
+  {{{https://github.com/apache/maven-parent/compare/maven-parent-$prev...master}commits}})
+#end
+#macro ( display $version $date )
+#**##if ( $version == 30 ) #set( $prev = 27 )#else#set( $prev = $version - 1 )#end
+|  {{{https://github.com/apache/maven-parent/tree/maven-parent-$version/pom.xml}$version}}
+| ({{{https://github.com/apache/maven-parent/compare/maven-parent-$prev...maven-parent-$version#diff}diff}},
+|  {{{https://github.com/apache/maven-parent/compare/maven-parent-$prev...maven-parent-$version}commits}}) | $date |
+#end
+
+    As of version 38, this POM sets the Java source and target versions to 1.8. Thus, as any plugin (or other component)
+    moved to version 38+ of this POM, it moves to requiring Java 1.8 (was Java 1.5 since version 21, Java 1.6 since
+    version 27, and Java 1.7 since version 34).
+
+*--------------+------------+
+|| <<Version>> || <<Release Date>> ||
+*--------------+------------+
+#display( 41, '2023-11-08' )
+*--------------+------------+
+#display( 40, '2023-06-12' )
+*--------------+------------+
+#display( 39, '2022-12-11' )
+*--------------+------------+
+#display( 38, '2022-11-21' )
+*--------------+------------+
+#display( 37, '2022-07-20' )
+*--------------+------------+
+#display( 36, '2022-04-18' )
+*--------------+------------+
+#display( 35, '2022-03-02' )
+*--------------+------------+
+#display( 34, '2020-01-30' )
+*--------------+------------+
+#display( 33, '2018-09-11' )
+*--------------+------------+
+#display( 32, '2018-07-18' )
+*--------------+------------+
+#display( 31, '2018-02-05' )
+*--------------+------------+
+#display( 30, '2016-05-26' )
+*--------------+------------+
+#display( 27, '2015-09-23' )
+*--------------+------------+
+#display( 26, '2014-11-13' )
+*--------------+------------+
+#display( 25, '2014-10-22' )
+*--------------+------------+
+#display( 24, '2014-03-27' )
+*--------------+------------+
+#display( 23, '2013-01-21' )
+*--------------+------------+
+#display( 22, '2012-08-08' )
+*--------------+------------+
+#display( 21, '2011-08-18' )
+*--------------+------------+
+#display( 20, '2011-06-15' )
+*--------------+------------+
+#display( 19, '2011-02-15' )
+*--------------+------------+
+#display( 18, '2010-11-26' )
+*--------------+------------+
+#display( 17, '2010-11-04' )
+*--------------+------------+

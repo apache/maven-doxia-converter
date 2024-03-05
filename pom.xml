@@ -56,10 +56,22 @@ under the License.
 
   <properties>
     <doxiaVersion>2.0.0-M10-SNAPSHOT</doxiaVersion>
+    <junit5Version>5.10.2</junit5Version>
     <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit5Version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
   <dependencies>
     <!-- doxia -->
     <dependency>
@@ -135,6 +147,11 @@ under the License.
       <artifactId>plexus-xml</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-velocity</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
     </dependency>
@@ -155,6 +172,11 @@ under the License.
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -169,6 +191,22 @@ under the License.
               <exclude>src/test/resources/book-1/section-*.apt</exclude>
             </excludes>
           </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <dependencies>
+            <!-- execute both JUnit3/4 and JUnit5 tests -->
+            <dependency>
+              <groupId>org.junit.jupiter</groupId>
+              <artifactId>junit-jupiter-engine</artifactId>
+              <version>${junit5Version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.junit.vintage</groupId>
+              <artifactId>junit-vintage-engine</artifactId>
+              <version>${junit5Version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
