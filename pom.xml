@@ -55,7 +55,7 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <doxiaVersion>2.0.0-M10-SNAPSHOT</doxiaVersion>
+    <doxiaVersion>2.0.0-M12</doxiaVersion>
     <javaVersion>8</javaVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
