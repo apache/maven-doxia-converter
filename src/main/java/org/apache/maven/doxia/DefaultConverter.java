@@ -228,7 +228,8 @@ public class DefaultConverter implements Converter {
 
         try {
             if (input.getFile().isFile()) {
-                parse(input.getFile(), input.getEncoding(), input.getFormat(), output);
+                convert(input.getFile(), input.getEncoding(), input.getFormat(), output);
+                cleanUp(input, input.getFile());
             } else {
                 List<File> files;
                 try {
@@ -248,11 +249,18 @@ public class DefaultConverter implements Converter {
                 for (File f : files) {
                     File relativeOutputDirectory = new File(
                             PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
-                    parse(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
+                    convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
+                    cleanUp(input, f);
                 }
             }
         } finally {
             stopPlexusContainer();
+        }
+    }
+
+    private void cleanUp(InputFileWrapper input, File f) {
+        if (input.cleanUp(f)) {
+            LOGGER.info("Removed input file \"{}\" after successfull conversion", f);
         }
     }
 
@@ -317,9 +325,9 @@ public class DefaultConverter implements Converter {
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void parse(File inputFile, String inputEncoding, DoxiaFormat parserFormat, OutputFileWrapper output)
+    private void convert(File inputFile, String inputEncoding, DoxiaFormat parserFormat, OutputFileWrapper output)
             throws ConverterException, UnsupportedFormatException {
-        parse(inputFile, inputEncoding, parserFormat, output, null);
+        convert(inputFile, inputEncoding, parserFormat, output, null);
     }
 
     /**
@@ -331,7 +339,7 @@ public class DefaultConverter implements Converter {
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void parse(
+    private void convert(
             File inputFile,
             String inputEncoding,
             DoxiaFormat parserFormat,
@@ -426,6 +434,10 @@ public class DefaultConverter implements Converter {
                 throw new ConverterException("IOException: " + e.getMessage(), e);
             }
         }
+        LOGGER.info(
+                "Successfully converted file \"{}\" to \"{}\"",
+                inputFile.getAbsolutePath(),
+                outputFile.getAbsolutePath());
     }
 
     /**
