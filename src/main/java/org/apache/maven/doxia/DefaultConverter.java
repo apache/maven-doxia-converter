@@ -35,16 +35,22 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.maven.doxia.macro.MacroExecutionException;
+import org.apache.maven.doxia.macro.MacroExecutor;
+import org.apache.maven.doxia.macro.MacroRequest;
+import org.apache.maven.doxia.macro.manager.MacroNotFoundException;
 import org.apache.maven.doxia.parser.ParseException;
 import org.apache.maven.doxia.parser.Parser;
 import org.apache.maven.doxia.sink.Sink;
@@ -81,6 +87,73 @@ import static java.lang.String.format;
  */
 @Named
 public class DefaultConverter implements Converter {
+
+    /** Macro formatter for different Doxia formats.
+     * @see <a href="https://maven.apache.org/doxia/macros/index.html">Doxia Macros</a>
+     */
+    enum MacroFormatter {
+        APT("%{", "|", "=", "|", "}"),
+        FML("<macro name=\"", "\"", "<param name=\"", "\" value=\" />", "</macro>"),
+        XDOC("<macro name=\"", "\"", "<param name=\"", "\" value=\" />", "</macro>"),
+        XHTML("<!-- MACRO{", "|", "=", "|", "} -->"),
+        MARKDOWN("<!-- MACRO{", "|", "=", "|", "} -->");
+
+        private final String prefix;
+        private final String nameParameterDelimiter;
+        private final String parameterNameValueDelimiter;
+        private final String parameterDelimiter;
+        private final String suffix;
+
+        public static MacroFormatter forFormat(DoxiaFormat format) {
+            switch (format) {
+                case APT:
+                    return APT;
+                case FML:
+                    return FML;
+                case XDOC:
+                    return XDOC;
+                case XHTML:
+                    return XHTML;
+                case MARKDOWN:
+                    return MARKDOWN;
+                default:
+                    throw new IllegalArgumentException("Unsupported Doxia format: " + format);
+            }
+        }
+
+        MacroFormatter(
+                String prefix,
+                String nameParameterDelimiter,
+                String parameterNameValueDelimiter,
+                String parameterDelimiter,
+                String suffix) {
+            this.prefix = prefix;
+            this.nameParameterDelimiter = nameParameterDelimiter;
+            this.parameterNameValueDelimiter = parameterNameValueDelimiter;
+            this.parameterDelimiter = parameterDelimiter;
+            this.suffix = suffix;
+        }
+
+        /**
+         * Formats a macro with the given name and parameters for this format.
+         * @param name
+         * @param parameters
+         * @return the formatted macro string to be emitted in the output
+         */
+        public String format(String name, Map<String, Object> parameters) {
+            StringBuilder macro = new StringBuilder();
+            macro.append(prefix).append(name);
+            String parameterString = parameters.entrySet().stream()
+                    .map(e -> e.getKey() + parameterNameValueDelimiter + e.getValue())
+                    .collect(Collectors.joining(parameterDelimiter));
+            if (!parameters.isEmpty()) {
+                macro.append(nameParameterDelimiter).append(parameterString);
+            }
+            macro.append(suffix);
+            return macro.toString();
+        }
+    }
+
     /**
      * All supported Doxia formats (either only parser, only sink or both)
      */
@@ -139,17 +212,43 @@ public class DefaultConverter implements Converter {
 
         /**
          * @param plexus not null
-         * @return an instance of <code>Parser</code> depending on the format.
+         * @param macroFormatter a formatter for macros in the target format
+         * @return an instance of <code>Parser</code> depending on the format which converts macros with the given {@link MacroFormatter}
          * @throws ComponentLookupException if could not find the Parser for the given format.
          * @throws IllegalArgumentException if any parameter is null
          */
-        public Parser getParser(PlexusContainer plexus) throws ComponentLookupException {
+        public Parser getParser(PlexusContainer plexus, MacroFormatter macroFormatter) throws ComponentLookupException {
             if (!hasParser) {
                 throw new IllegalStateException("The format " + this + " is not supported as parser!");
             }
             Objects.requireNonNull(plexus, "plexus is required");
+            Parser parser = plexus.lookup(Parser.class, roleHint);
+            parser.setMacroExecutor(new MacroConverterExecutor(macroFormatter));
+            return parser;
+        }
 
-            return plexus.lookup(Parser.class, roleHint);
+        public static class MacroConverterExecutor implements MacroExecutor {
+            private final MacroFormatter macroFormatter;
+
+            public MacroConverterExecutor(MacroFormatter macroFormatter) {
+                super();
+                this.macroFormatter = macroFormatter;
+            }
+
+            @Override
+            public void executeMacro(String id, MacroRequest request, Sink sink)
+                    throws MacroExecutionException, MacroNotFoundException {
+                // filter out internal parameters but keep original order
+                Map<String, Object> parameters = request.getParameters().entrySet().stream()
+                        .filter(e -> !MacroRequest.isInternalParameter(e.getKey()))
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+                // the format of macros differs between the parser implementations
+                // (https://maven.apache.org/doxia/macros/index.html)
+                String macro = macroFormatter.format(id, parameters);
+                sink.rawText(macro);
+            }
         }
 
         /**
@@ -354,7 +453,7 @@ public class DefaultConverter implements Converter {
         try {
             Parser parser;
             try {
-                parser = input.getFormat().getParser(plexus);
+                parser = input.getFormat().getParser(plexus, MacroFormatter.forFormat(output.getFormat()));
             } catch (ComponentLookupException e) {
                 throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
             }
@@ -443,7 +542,7 @@ public class DefaultConverter implements Converter {
 
         Parser parser;
         try {
-            parser = parserFormat.getParser(plexus);
+            parser = parserFormat.getParser(plexus, MacroFormatter.forFormat(output.getFormat()));
         } catch (ComponentLookupException e) {
             throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
         }
