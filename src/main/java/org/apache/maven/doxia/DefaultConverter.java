@@ -260,7 +260,7 @@ public class DefaultConverter implements Converter {
 
     private void cleanUp(InputFileWrapper input, File f) {
         if (input.cleanUp(f)) {
-            LOGGER.info("Removed input file \"{}\" after successfull conversion", f);
+            LOGGER.info("Removed input file \"{}\" after successful conversion", f);
         }
     }
 
