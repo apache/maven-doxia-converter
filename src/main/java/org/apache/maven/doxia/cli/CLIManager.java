@@ -97,7 +97,7 @@ class CLIManager {
                 .build());
         OPTIONS.addOption(Option.builder(REMOVE_IN)
                 .longOpt("removeInputAfterConversion")
-                .desc("Whether to remove the input file(s) after successfull conversion")
+                .desc("Whether to remove the input file(s) after successful conversion")
                 .build());
         OPTIONS.addOption(Option.builder(OUT)
                 .longOpt("output")
