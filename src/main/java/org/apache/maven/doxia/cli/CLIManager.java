@@ -47,6 +47,8 @@ class CLIManager {
     /** in String */
     static final String IN = "in";
 
+    static final String REMOVE_IN = "removeIn";
+
     /** out String */
     static final String OUT = "out";
 
@@ -92,6 +94,10 @@ class CLIManager {
                 .longOpt("input")
                 .desc("Input file or directory.")
                 .hasArg()
+                .build());
+        OPTIONS.addOption(Option.builder(REMOVE_IN)
+                .longOpt("removeInputAfterConversion")
+                .desc("Whether to remove the input file(s) after successful conversion")
                 .build());
         OPTIONS.addOption(Option.builder(OUT)
                 .longOpt("output")
