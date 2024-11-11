@@ -18,7 +18,6 @@
  */
 package org.apache.maven.doxia.wrapper;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
@@ -37,11 +36,6 @@ public class InputFileWrapper extends AbstractFileWrapper {
     private final DefaultConverter.DoxiaFormat format;
 
     /**
-     * If true, the related input file(s) will be removed after the conversion.
-     */
-    private final boolean removeAfterConversion;
-
-    /**
      * Private constructor.
      *
      * @param absolutePath not null
@@ -50,13 +44,11 @@ public class InputFileWrapper extends AbstractFileWrapper {
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    private InputFileWrapper(
-            String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName, boolean removeAfterConversion)
+    private InputFileWrapper(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
             throws UnsupportedEncodingException, FileNotFoundException {
         super(absolutePath, charsetName);
 
         this.format = format;
-        this.removeAfterConversion = removeAfterConversion;
         if (!getFile().exists()) {
             throw new FileNotFoundException("The file '" + getFile().getAbsolutePath() + "' doesn't exist.");
         }
@@ -72,42 +64,20 @@ public class InputFileWrapper extends AbstractFileWrapper {
      */
     public static InputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format)
             throws UnsupportedEncodingException, FileNotFoundException {
-        return valueOf(absolutePath, format, WriterFactory.UTF_8, false);
+        return valueOf(absolutePath, format, WriterFactory.UTF_8);
     }
 
-    /**
-     * Performs potential clean up operations on the given file
-     * @param file the file to clean up, not null.
-     * @return {@code true} if the file was removed.
-     */
-    public boolean cleanUp(File file) {
-        if (!file.toString().startsWith(getFile().toString())) {
-            throw new IllegalStateException(
-                    "The given file " + file + " is not related to the input file: " + getFile());
-        }
-        if (removeAfterConversion) {
-            return file.delete();
-        }
-        return false;
-    }
-
-    public static InputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
-            throws UnsupportedEncodingException, FileNotFoundException {
-        return valueOf(absolutePath, format, charsetName, false);
-    }
     /**
      * @param absolutePath for a wanted file or a wanted directory, not null.
      * @param format not null
      * @param charsetName could be null
-     * @param removeAfterConversion if true, the file will be removed after the conversion
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    public static InputFileWrapper valueOf(
-            String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName, boolean removeAfterConversion)
+    public static InputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
             throws UnsupportedEncodingException, FileNotFoundException {
-        return new InputFileWrapper(absolutePath, format, charsetName, removeAfterConversion);
+        return new InputFileWrapper(absolutePath, format, charsetName);
     }
 
     public DefaultConverter.DoxiaFormat getFormat() {
