@@ -45,8 +45,8 @@ public class OutputStreamWrapper {
      * @param supportedFormat not null
      * @throws IllegalArgumentException if any.
      */
-    private OutputStreamWrapper(OutputStream out, String format, String encoding) {
-        this.format = DefaultConverter.DoxiaFormat.valueOf(format.toUpperCase());
+    private OutputStreamWrapper(OutputStream out, DefaultConverter.DoxiaFormat format, String encoding) {
+        this.format = format;
         this.out = out;
         this.encoding = encoding;
     }
@@ -75,11 +75,9 @@ public class OutputStreamWrapper {
      * @param encoding not null
      * @return a type safe output stream wrapper
      */
-    public static OutputStreamWrapper valueOf(OutputStream out, String format, String encoding) {
+    public static OutputStreamWrapper valueOf(OutputStream out, DefaultConverter.DoxiaFormat format, String encoding) {
         Objects.requireNonNull(out, "output writer is required");
-        if (format == null || format.isEmpty()) {
-            throw new IllegalArgumentException("output format is required");
-        }
+        Objects.requireNonNull(format, "output format is required");
 
         return new OutputStreamWrapper(out, format, encoding);
     }
