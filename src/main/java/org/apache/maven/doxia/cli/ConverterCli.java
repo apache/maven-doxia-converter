@@ -31,6 +31,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.doxia.Converter;
+import org.apache.maven.doxia.Converter.PostProcess;
 import org.apache.maven.doxia.ConverterException;
 import org.apache.maven.doxia.DefaultConverter;
 import org.apache.maven.doxia.UnsupportedFormatException;
@@ -114,6 +115,7 @@ public class ConverterCli {
 
         InputFileWrapper input;
         OutputFileWrapper output;
+        final PostProcess postProcess;
         try {
             String sourceFormat = commandLine.getOptionValue(CLIManager.FROM, CLIManager.AUTO_FORMAT);
             final DefaultConverter.DoxiaFormat parserFormat;
@@ -127,13 +129,23 @@ public class ConverterCli {
                 parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
             }
             String targetFormat = commandLine.getOptionValue(CLIManager.TO);
+            if (commandLine.hasOption(CLIManager.REMOVE_IN)
+                    && commandLine.hasOption(CLIManager.GIT_MV_INPUT_TO_OUTPUT)) {
+                throw new IllegalArgumentException(
+                        "Options 'removeIn' and 'gitMvInputToOutput' are mutually exclusive.");
+            } else if (commandLine.hasOption(CLIManager.REMOVE_IN)) {
+                postProcess = PostProcess.REMOVE_AFTER_CONVERSION;
+            } else if (commandLine.hasOption(CLIManager.GIT_MV_INPUT_TO_OUTPUT)) {
+                postProcess = PostProcess.GIT_MV_INPUT_TO_OUTPUT;
+            } else {
+                postProcess = PostProcess.NONE;
+            }
             final DefaultConverter.DoxiaFormat sinkFormat =
                     DefaultConverter.DoxiaFormat.valueOf(targetFormat.toUpperCase());
             input = InputFileWrapper.valueOf(
                     commandLine.getOptionValue(CLIManager.IN),
                     parserFormat,
-                    commandLine.getOptionValue(CLIManager.INENCODING),
-                    commandLine.hasOption(CLIManager.REMOVE_IN));
+                    commandLine.getOptionValue(CLIManager.INENCODING));
             output = OutputFileWrapper.valueOf(
                     commandLine.getOptionValue(CLIManager.OUT),
                     sinkFormat,
@@ -152,6 +164,7 @@ public class ConverterCli {
 
         boolean format = commandLine.hasOption(CLIManager.FORMAT);
         converter.setFormatOutput(format);
+        converter.setPostProcess(postProcess);
 
         try {
             converter.convert(input, output);

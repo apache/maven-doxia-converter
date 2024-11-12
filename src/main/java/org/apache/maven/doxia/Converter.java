@@ -29,6 +29,12 @@ import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
 public interface Converter {
+    enum PostProcess {
+        NONE,
+        REMOVE_AFTER_CONVERSION,
+        GIT_MV_INPUT_TO_OUTPUT,
+    }
+
     /**
      * @param input an input file wrapper, not null.
      * @param output an output file wrapper, not null.
@@ -55,4 +61,6 @@ public interface Converter {
      * @param formatOutput <code>true</code> to format the generated files, <code>false</code> otherwise.
      */
     void setFormatOutput(boolean formatOutput);
+
+    void setPostProcess(PostProcess postProcess);
 }

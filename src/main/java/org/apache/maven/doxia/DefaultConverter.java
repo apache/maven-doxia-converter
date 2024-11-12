@@ -30,12 +30,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
@@ -204,6 +208,8 @@ public class DefaultConverter implements Converter {
         }
     }
 
+    private PostProcess postProcess = PostProcess.NONE;
+
     /** Flag to format the generated files, actually only for XML based sinks. */
     private boolean formatOutput;
 
@@ -212,6 +218,9 @@ public class DefaultConverter implements Converter {
 
     /** SLF4J logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConverter.class);
+
+    /** Map of temporary output files to their final output files */
+    private Map<Path, Path> outputRenameMap = new HashMap<>();
 
     /** {@inheritDoc} */
     @Override
@@ -225,11 +234,10 @@ public class DefaultConverter implements Converter {
         } catch (PlexusContainerException e) {
             throw new ConverterException("PlexusContainerException: " + e.getMessage(), e);
         }
-
+        outputRenameMap.clear();
         try {
             if (input.getFile().isFile()) {
                 convert(input.getFile(), input.getEncoding(), input.getFormat(), output);
-                cleanUp(input, input.getFile());
             } else {
                 List<File> files;
                 try {
@@ -250,18 +258,84 @@ public class DefaultConverter implements Converter {
                     File relativeOutputDirectory = new File(
                             PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
                     convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
-                    cleanUp(input, f);
                 }
+            }
+            try {
+                postProcessAllFiles(output.getFormat());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
+            } catch (IOException e) {
+                throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
             }
         } finally {
             stopPlexusContainer();
         }
     }
 
-    private void cleanUp(InputFileWrapper input, File f) {
-        if (input.cleanUp(f)) {
-            LOGGER.info("Removed input file \"{}\" after successful conversion", f);
+    private void postProcessFile(File inputFile, File outputFile) throws IOException, InterruptedException {
+        switch (postProcess) {
+            case REMOVE_AFTER_CONVERSION:
+                Files.delete(inputFile.toPath());
+                LOGGER.info("Removed input file \"{}\" after successful conversion", inputFile);
+                break;
+            case GIT_MV_INPUT_TO_OUTPUT:
+                // first move rename output file to tmp file name
+                Path tmpOutputFile = outputFile.toPath().resolveSibling(outputFile.getName() + ".tmp");
+                Files.move(outputFile.toPath(), tmpOutputFile);
+                LOGGER.info(
+                        "Renamed output file \"{}\" to temp name \"{}\"",
+                        outputFile.getCanonicalPath(),
+                        tmpOutputFile.getFileName());
+                // rename all input files to have the proper extension (must be individually committed)
+                executeCommand("git", "mv", inputFile.getCanonicalPath(), outputFile.getCanonicalPath());
+                LOGGER.info(
+                        "Moved input file \"{}\" to output file \"{}\" (keeping the old content)",
+                        inputFile.getCanonicalPath(),
+                        outputFile.getCanonicalPath());
+                outputRenameMap.put(tmpOutputFile, outputFile.getCanonicalFile().toPath());
+                break;
+            default:
+                break;
         }
+    }
+
+    private void postProcessAllFiles(DoxiaFormat outputFormat) throws IOException, InterruptedException {
+        if (postProcess == PostProcess.GIT_MV_INPUT_TO_OUTPUT) {
+            // first commit the move operation with original contents
+            executeCommand(
+                    "git",
+                    "commit",
+                    "-m",
+                    String.format("Move to match target converter format %s with doxia-converter", outputFormat));
+            for (Map.Entry<Path, Path> entry : outputRenameMap.entrySet()) {
+                // move back the converted file to the original output name (i.e. overwrite its old content)
+                Files.move(entry.getKey(), entry.getValue(), StandardCopyOption.REPLACE_EXISTING);
+                LOGGER.info("Replaced output file \"{}\" with converted file \"{}\"", entry.getValue(), entry.getKey());
+            }
+        }
+    }
+
+    static void executeCommand(String... commandAndArgs) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec(commandAndArgs);
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            logOutput(process.getInputStream(), "");
+            logOutput(process.getErrorStream(), "Error: ");
+            throw new IOException("Command " + String.join(" ", commandAndArgs) + " failed with exit code " + exitCode);
+        }
+    }
+
+    static void logOutput(InputStream inputStream, String prefix) throws InterruptedException {
+        Thread t = new Thread(() -> {
+            Scanner scanner = new Scanner(inputStream, "UTF-8");
+            while (scanner.hasNextLine()) {
+                LOGGER.error("{}{}", prefix, scanner.nextLine());
+            }
+            scanner.close();
+        });
+        t.start();
+        t.join();
     }
 
     /** {@inheritDoc} */
@@ -313,6 +387,11 @@ public class DefaultConverter implements Converter {
         this.formatOutput = formatOutput;
     }
 
+    @Override
+    public void setPostProcess(PostProcess postProcess) {
+        this.postProcess = postProcess;
+    }
+
     // ----------------------------------------------------------------------
     // Private methods
     // ----------------------------------------------------------------------
@@ -336,10 +415,11 @@ public class DefaultConverter implements Converter {
      * @param parserFormat  a not null supported format
      * @param output not null OutputFileWrapper object
      * @param relativeOutputDirectory the relative output directory (may be null, created if it does not exist yet)
+     * @return the output file
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
      */
-    private void convert(
+    private File convert(
             File inputFile,
             String inputEncoding,
             DoxiaFormat parserFormat,
@@ -438,6 +518,15 @@ public class DefaultConverter implements Converter {
                 "Successfully converted file \"{}\" to \"{}\"",
                 inputFile.getAbsolutePath(),
                 outputFile.getAbsolutePath());
+        try {
+            postProcessFile(inputFile, outputFile);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConverterException("Error post processing files: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ConverterException("Error post processing files: " + e.getMessage(), e);
+        }
+        return outputFile;
     }
 
     /**
