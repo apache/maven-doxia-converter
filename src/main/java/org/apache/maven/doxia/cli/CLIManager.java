@@ -49,6 +49,8 @@ class CLIManager {
 
     static final String REMOVE_IN = "removeIn";
 
+    static final String GIT_MV_INPUT_TO_OUTPUT = "gitMvInputToOutput";
+
     /** out String */
     static final String OUT = "out";
 
@@ -98,6 +100,10 @@ class CLIManager {
         OPTIONS.addOption(Option.builder(REMOVE_IN)
                 .longOpt("removeInputAfterConversion")
                 .desc("Whether to remove the input file(s) after successful conversion")
+                .build());
+        OPTIONS.addOption(Option.builder(GIT_MV_INPUT_TO_OUTPUT)
+                .desc(
+                        "When this flag is set the input file(s) are first moved to the output file(s), then committed and afterwards replaced with conversion result to keep the Git history")
                 .build());
         OPTIONS.addOption(Option.builder(OUT)
                 .longOpt("output")
