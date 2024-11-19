@@ -42,8 +42,8 @@ public class InputReaderWrapper {
      * @param supportedFormat not null
      * @throws IllegalArgumentException if the format equals AUTO_FORMAT.
      */
-    private InputReaderWrapper(Reader reader, String format) {
-        this.format = DefaultConverter.DoxiaFormat.valueOf(format.toUpperCase());
+    private InputReaderWrapper(Reader reader, DefaultConverter.DoxiaFormat format) {
+        this.format = format;
 
         if (reader == null) {
             throw new IllegalArgumentException("input reader is required");
@@ -66,7 +66,7 @@ public class InputReaderWrapper {
      * @param format not null
      * @return a type safe input reader
      */
-    public static InputReaderWrapper valueOf(Reader reader, String format) {
+    public static InputReaderWrapper valueOf(Reader reader, DefaultConverter.DoxiaFormat format) {
         return new InputReaderWrapper(reader, format);
     }
 }

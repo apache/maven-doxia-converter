@@ -20,13 +20,20 @@ package org.apache.maven.doxia;
 
 import javax.inject.Inject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.maven.doxia.DefaultConverter.DoxiaFormat;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
@@ -43,6 +50,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertLinesMatch;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -263,9 +271,7 @@ class ConverterTest extends InjectedTest {
     @Test
     void aptWriterConverter() throws Exception {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
-        String from = "apt";
         String out = getBasedir() + "/target/unit/writer/apt/test.apt.xhtml";
-        String to = "xhtml";
 
         File inFile = new File(in);
         File outFile = new File(out);
@@ -274,8 +280,8 @@ class ConverterTest extends InjectedTest {
         try (OutputStream fo = new FileOutputStream(outFile)) {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-            InputReaderWrapper input = InputReaderWrapper.valueOf(new FileReader(inFile), from);
-            OutputStreamWrapper output = OutputStreamWrapper.valueOf(outputStream, to, "UTF-8");
+            InputReaderWrapper input = InputReaderWrapper.valueOf(new FileReader(inFile), DoxiaFormat.APT);
+            OutputStreamWrapper output = OutputStreamWrapper.valueOf(outputStream, DoxiaFormat.XHTML, "UTF-8");
 
             converter.setFormatOutput(formatOutput);
             converter.convert(input, output);
@@ -428,5 +434,23 @@ class ConverterTest extends InjectedTest {
 
         assertEquals(DoxiaFormat.FML, autoDetectFormat("fml/test.fml"));
         assertEquals(DoxiaFormat.XHTML, autoDetectFormat("xhtml/test.xhtml"));
+    }
+
+    @Test
+    void testAptToMarkdownWithMacro() throws IOException, UnsupportedFormatException, ConverterException {
+        Path in = new File(getBasedir() + "/src/test/resources/unit/apt/macro.apt").toPath();
+        Path expectedOut = new File(getBasedir() + "//src/test/resources/unit/markdown/macro.md").toPath();
+
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                Reader reader = Files.newBufferedReader(in, StandardCharsets.UTF_8); ) {
+            converter.convert(
+                    InputReaderWrapper.valueOf(reader, DoxiaFormat.APT),
+                    OutputStreamWrapper.valueOf(output, DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name()));
+
+            try (BufferedReader outputReader =
+                    new BufferedReader(new StringReader(new String(output.toByteArray(), StandardCharsets.UTF_8))); ) {
+                assertLinesMatch(Files.readAllLines(expectedOut).stream(), outputReader.lines());
+            }
+        }
     }
 }
