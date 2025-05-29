@@ -40,8 +40,8 @@ under the License.
     <url>https://github.com/apache/maven-doxia-converter/tree/${project.scm.tag}</url>
   </scm>
   <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/projects/DOXIATOOLS</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/apache/maven-doxia-converter/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
