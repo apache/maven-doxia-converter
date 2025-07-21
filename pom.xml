@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.doxia</groupId>
     <artifactId>doxia-tools</artifactId>
-    <version>43</version>
+    <version>45</version>
     <relativePath />
   </parent>
 
