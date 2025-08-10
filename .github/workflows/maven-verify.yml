@@ -25,3 +25,7 @@ jobs:
   build:
     name: Verify
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v4
+    with:
+      verify-goal: '-Dapache.snapshots -P run-its verify'
+      ff-goal: '-Dapache.snapshots -P run-its verify'
+      ff-site-goal: '-Dapache.snapshots -DskipTests -P reporting site site:stage'
