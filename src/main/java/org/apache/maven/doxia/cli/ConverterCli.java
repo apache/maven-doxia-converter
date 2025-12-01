@@ -145,7 +145,8 @@ public class ConverterCli {
             input = InputFileWrapper.valueOf(
                     commandLine.getOptionValue(CLIManager.IN),
                     parserFormat,
-                    commandLine.getOptionValue(CLIManager.INENCODING));
+                    commandLine.getOptionValue(CLIManager.INENCODING),
+                    commandLine.hasOption(CLIManager.EXCLUDE_VELOCITY_TEMPLATES));
             output = OutputFileWrapper.valueOf(
                     commandLine.getOptionValue(CLIManager.OUT),
                     sinkFormat,

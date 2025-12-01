@@ -34,6 +34,7 @@ public class InputFileWrapper extends AbstractFileWrapper {
     static final long serialVersionUID = 6510443036267371188L;
 
     private final DefaultConverter.DoxiaFormat format;
+    private final boolean excludeVelocityTemplates;
 
     /**
      * Private constructor.
@@ -41,14 +42,20 @@ public class InputFileWrapper extends AbstractFileWrapper {
      * @param absolutePath not null
      * @param format not null
      * @param charsetName could be null
+     * @param excludeVelocityTemplates {@code true} to not consider velocity templates (ending with .vm) (only relevant when absolutePath is a directory)
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
      */
-    private InputFileWrapper(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
+    private InputFileWrapper(
+            String absolutePath,
+            DefaultConverter.DoxiaFormat format,
+            String charsetName,
+            boolean excludeVelocityTemplates)
             throws UnsupportedEncodingException, FileNotFoundException {
         super(absolutePath, charsetName);
 
         this.format = format;
+        this.excludeVelocityTemplates = excludeVelocityTemplates;
         if (!getFile().exists()) {
             throw new FileNotFoundException("The file '" + getFile().getAbsolutePath() + "' doesn't exist.");
         }
@@ -77,10 +84,32 @@ public class InputFileWrapper extends AbstractFileWrapper {
      */
     public static InputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format, String charsetName)
             throws UnsupportedEncodingException, FileNotFoundException {
-        return new InputFileWrapper(absolutePath, format, charsetName);
+        return valueOf(absolutePath, format, charsetName, false);
+    }
+
+    /**
+     * @param absolutePath for a wanted file or a wanted directory, not null.
+     * @param format not null
+     * @param charsetName could be null
+     * @param excludeVelocityTemplates {@code true} to not consider velocity templates (ending with .vm)
+     * @return a type safe input reader
+     * @throws UnsupportedEncodingException if the encoding is unsupported.
+     * @throws FileNotFoundException if the file for absolutePath is not found.
+     */
+    public static InputFileWrapper valueOf(
+            String absolutePath,
+            DefaultConverter.DoxiaFormat format,
+            String charsetName,
+            boolean excludeVelocityTemplates)
+            throws UnsupportedEncodingException, FileNotFoundException {
+        return new InputFileWrapper(absolutePath, format, charsetName, excludeVelocityTemplates);
     }
 
     public DefaultConverter.DoxiaFormat getFormat() {
         return format;
+    }
+
+    public boolean isExcludeVelocityTemplates() {
+        return excludeVelocityTemplates;
     }
 }
