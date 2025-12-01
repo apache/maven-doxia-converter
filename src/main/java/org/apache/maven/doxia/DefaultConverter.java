@@ -88,6 +88,9 @@ import static java.lang.String.format;
 @Named
 public class DefaultConverter implements Converter {
 
+    /** Filename suffix used for Doxia source files being preprocessed by Velocity */
+    private static final String VELOCITY_TEMPLATE_EXTENSION = ".vm";
+
     /** Macro formatter for different Doxia formats.
      * @see <a href="https://maven.apache.org/doxia/macros/index.html">Doxia Macros</a>
      */
@@ -342,7 +345,7 @@ public class DefaultConverter implements Converter {
                 try {
                     files = FileUtils.getFiles(
                             input.getFile(),
-                            "**/*." + input.getFormat().getExtension(),
+                            getFileNamePatterns(input.getFormat().getExtension(), !input.isExcludeVelocityTemplates()),
                             StringUtils.join(FileUtils.getDefaultExcludes(), ", "));
                 } catch (IOException e) {
                     throw new ConverterException("IOException: " + e.getMessage(), e);
@@ -370,6 +373,15 @@ public class DefaultConverter implements Converter {
         } finally {
             stopPlexusContainer();
         }
+    }
+
+    static String getFileNamePatterns(String extension, boolean includeVelocityTemplates) {
+        StringBuilder patterns = new StringBuilder("**/*." + extension);
+        if (includeVelocityTemplates) {
+            patterns.append(",");
+            patterns.append("**/*.").append(extension).append(VELOCITY_TEMPLATE_EXTENSION);
+        }
+        return patterns.toString();
     }
 
     private void postProcessFile(File inputFile, File outputFile) throws IOException, InterruptedException {
@@ -540,6 +552,7 @@ public class DefaultConverter implements Converter {
             LOGGER.debug("Auto detected encoding: '{}'", inputEncoding);
         }
 
+        boolean isVelocityTemplate = inputFile.getName().endsWith(VELOCITY_TEMPLATE_EXTENSION);
         Parser parser;
         try {
             parser = parserFormat.getParser(plexus, MacroFormatter.forFormat(output.getFormat()));
@@ -553,10 +566,19 @@ public class DefaultConverter implements Converter {
                 || relativeOutputDirectory != null) {
             // assume it is a directory
             outputDirectoryOrFile.mkdirs();
-            outputFile = new File(
-                    outputDirectoryOrFile,
-                    FileUtils.removeExtension(inputFile.getName()) + "."
-                            + output.getFormat().getExtension());
+            final String outputFileName;
+            if (isVelocityTemplate) {
+                outputFileName = FileUtils.removeExtension(inputFile
+                                .getName()
+                                .substring(0, inputFile.getName().length() - VELOCITY_TEMPLATE_EXTENSION.length()))
+                        + "."
+                        + output.getFormat().getExtension()
+                        + VELOCITY_TEMPLATE_EXTENSION;
+            } else {
+                outputFileName = FileUtils.removeExtension(inputFile.getName()) + "."
+                        + output.getFormat().getExtension();
+            }
+            outputFile = new File(outputDirectoryOrFile, outputFileName);
         } else {
             outputDirectoryOrFile.getParentFile().mkdirs();
             outputFile = output.getFile();

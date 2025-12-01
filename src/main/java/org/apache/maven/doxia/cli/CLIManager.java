@@ -75,6 +75,8 @@ class CLIManager {
     /** e character */
     static final String ERRORS = "e";
 
+    static final String EXCLUDE_VELOCITY_TEMPLATES = "excludeVm";
+
     public static final String AUTO_FORMAT = "auto";
 
     private static final Options OPTIONS;
@@ -126,6 +128,11 @@ class CLIManager {
         OPTIONS.addOption(Option.builder(OUTENCODING)
                 .desc("Output file encoding. If not specified, use the input encoding (or autodetected).")
                 .hasArg()
+                .build());
+        OPTIONS.addOption(Option.builder(EXCLUDE_VELOCITY_TEMPLATES)
+                .longOpt("excludeVelocity")
+                .desc(
+                        "Exclude Velocity templates (ending with .vm) from conversion. Only relevant when giving an input directory.")
                 .build());
         OPTIONS.addOption(Option.builder(DEBUG)
                 .longOpt("debug")
