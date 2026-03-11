@@ -54,7 +54,7 @@ Options:
  -X,--debug            Produce execution debug output.
 
 Supported Formats:
- from: apt, fml, xdoc, xhtml or auto
+ from: apt, fml, xdoc, xhtml, markdown or auto
  to:   apt, xdoc, xhtml, markdown
 
 

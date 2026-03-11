@@ -165,7 +165,7 @@ public class DefaultConverter implements Converter {
         FML("fml", "fml", "faqs", true, false),
         XDOC("xdoc", "xml", "document", true, true),
         XHTML("xhtml", "html", "html", true, true),
-        MARKDOWN("markdown", "md", false, true);
+        MARKDOWN("markdown", "md", true, true);
 
         /** Plexus role hint for Doxia sink/parser */
         private final String roleHint;
