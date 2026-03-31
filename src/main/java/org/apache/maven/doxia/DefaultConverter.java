@@ -357,9 +357,14 @@ public class DefaultConverter implements Converter {
                             + input.getFormat().getExtension() + " found in directory " + input.getFile());
                 }
                 for (File f : files) {
-                    File relativeOutputDirectory = new File(
-                            PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
-                    convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
+                    try {
+                        File relativeOutputDirectory = new File(
+                                PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+                        convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
+                    } catch (Exception e) {
+                        throw new ConverterException(
+                                "Error converting file \"" + f.getAbsolutePath() + "\": " + e.getMessage(), e);
+                    }
                 }
             }
             try {
@@ -484,9 +489,10 @@ public class DefaultConverter implements Converter {
             } catch (IOException e) {
                 throw new ConverterException("IOException: " + e.getMessage(), e);
             }
-            LOGGER.debug("Sink used: {}", sink.getClass().getName());
-
-            parse(parser, input.getReader(), sink);
+            try (Sink s = sink) {
+                LOGGER.debug("Sink used: {}", sink.getClass().getName());
+                parse(parser, input.getReader(), s);
+            }
         } finally {
             stopPlexusContainer();
         }
@@ -623,8 +629,9 @@ public class DefaultConverter implements Converter {
         }
 
         LOGGER.debug("Sink used: {}", sink.getClass().getName());
-        parse(parser, reader, sink);
-
+        try (Sink s = sink) {
+            parse(parser, reader, s);
+        }
         if (formatOutput && output.getFormat().isXml()) {
             try (Reader r = ReaderFactory.newXmlReader(outputFile);
                     Writer w = WriterFactory.newXmlWriter(outputFile)) {
@@ -659,11 +666,13 @@ public class DefaultConverter implements Converter {
     private void parse(Parser parser, Reader reader, Sink sink) throws ConverterException {
         try (Reader r = reader) {
             parser.parse(r, sink);
-        } catch (ParseException | IOException e) {
-            throw new ConverterException("ParseException: " + e.getMessage(), e);
-        } finally {
-            sink.flush();
-            sink.close();
+        } catch (ParseException e) {
+            throw new ConverterException(
+                    "ParseException in line " + e.getLineNumber() + ", column " + e.getColumnNumber() + ": "
+                            + e.getMessage(),
+                    e);
+        } catch (IOException e) {
+            throw new ConverterException("IOException: " + e.getMessage(), e);
         }
     }
 
