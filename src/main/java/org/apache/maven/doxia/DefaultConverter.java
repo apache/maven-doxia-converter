@@ -357,14 +357,9 @@ public class DefaultConverter implements Converter {
                             + input.getFormat().getExtension() + " found in directory " + input.getFile());
                 }
                 for (File f : files) {
-                    try {
-                        File relativeOutputDirectory = new File(
-                                PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
-                        convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
-                    } catch (Exception e) {
-                        throw new ConverterException(
-                                "Error converting file \"" + f.getAbsolutePath() + "\": " + e.getMessage(), e);
-                    }
+                    File relativeOutputDirectory = new File(
+                            PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+                    convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
                 }
             }
             try {
@@ -631,6 +626,9 @@ public class DefaultConverter implements Converter {
         LOGGER.debug("Sink used: {}", sink.getClass().getName());
         try (Sink s = sink) {
             parse(parser, reader, s);
+        } catch (Exception e) {
+            throw new ConverterException(
+                    "Error converting file \"" + inputFile.getAbsolutePath() + "\": " + e.getMessage(), e);
         }
         if (formatOutput && output.getFormat().isXml()) {
             try (Reader r = ReaderFactory.newXmlReader(outputFile);
