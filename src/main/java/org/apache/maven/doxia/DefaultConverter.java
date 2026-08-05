@@ -647,21 +647,7 @@ public class DefaultConverter implements Converter {
                     "Error converting file \"" + inputFile.getAbsolutePath() + "\": " + e.getMessage(), e);
         }
         if (velocityMasker != null) {
-            Charset charset = Charset.forName(outputEncoding);
-            try {
-                String converted = new String(Files.readAllBytes(outputFile.toPath()), charset);
-                Files.write(
-                        outputFile.toPath(), velocityMasker.unmask(converted).getBytes(charset));
-            } catch (IOException e) {
-                throw new ConverterException("IOException: " + e.getMessage(), e);
-            }
-            for (String directive : velocityMasker.getMaskedDirectives()) {
-                LOGGER.warn(
-                        "Velocity directive \"{}\" was kept but the parser treated it as ordinary content, "
-                                + "so check its placement in \"{}\"",
-                        directive.trim(),
-                        outputFile.getName());
-            }
+            restoreVelocityConstructs(velocityMasker, outputFile, outputEncoding);
         }
         if (formatOutput && output.getFormat().isXml()) {
             try (Reader r = ReaderFactory.newXmlReader(outputFile);
@@ -686,6 +672,41 @@ public class DefaultConverter implements Converter {
             throw new ConverterException("Error post processing files: " + e.getMessage(), e);
         }
         return outputFile;
+    }
+
+    /**
+     * Substitutes the Velocity constructs taken out of the source back into the converted document
+     * and reports the two cases the substitution cannot make good by itself.
+     *
+     * @param velocityMasker the masker holding the constructs taken out of the source
+     * @param outputFile the converted document
+     * @param outputEncoding the encoding the document was written with
+     * @throws ConverterException if the document cannot be read back or rewritten
+     */
+    private void restoreVelocityConstructs(VelocityMasker velocityMasker, File outputFile, String outputEncoding)
+            throws ConverterException {
+        Charset charset = Charset.forName(outputEncoding);
+        String converted;
+        try {
+            converted = velocityMasker.unmask(new String(Files.readAllBytes(outputFile.toPath()), charset));
+            Files.write(outputFile.toPath(), converted.getBytes(charset));
+        } catch (IOException e) {
+            throw new ConverterException("IOException: " + e.getMessage(), e);
+        }
+        for (String reference : velocityMasker.findNewReferences(converted)) {
+            LOGGER.warn(
+                    "\"{}\" was written literally in the source but is a live Velocity reference in \"{}\", "
+                            + "so escape it there",
+                    reference,
+                    outputFile.getName());
+        }
+        for (String directive : velocityMasker.getMaskedDirectives()) {
+            LOGGER.warn(
+                    "Velocity directive \"{}\" was kept but the parser treated it as ordinary content, "
+                            + "so check its placement in \"{}\"",
+                    directive.trim(),
+                    outputFile.getName());
+        }
     }
 
     /**

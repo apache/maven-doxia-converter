@@ -83,6 +83,29 @@ class VelocityMaskerTest {
     }
 
     @Test
+    void referencesTheSourceEscapedAreReportedAsNew() {
+        VelocityMasker masker = new VelocityMasker();
+        // the source shows ${project.version} literally and uses a real ${esc.d}
+        String source = "literal $\\{project.version\\} and real ${esc.d}";
+
+        masker.mask(source);
+
+        // the parser unescaped the literal one, so the converted document holds two references
+        String converted = "literal ${project.version} and real ${esc.d}";
+        assertEquals(Arrays.asList("${project.version}"), masker.findNewReferences(converted));
+    }
+
+    @Test
+    void referencesCarriedOverUnchangedAreNotReported() {
+        VelocityMasker masker = new VelocityMasker();
+        String source = "Version ${project.version} of ${project.artifactId}.";
+
+        String converted = masker.unmask(masker.mask(source));
+
+        assertTrue(masker.findNewReferences(converted).isEmpty());
+    }
+
+    @Test
     void plainTextIsLeftAlone() {
         VelocityMasker masker = new VelocityMasker();
         String source = "A price of $5, a shell variable $HOME and a C directive-looking #hashtag inline.";

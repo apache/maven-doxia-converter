@@ -99,6 +99,28 @@ class VelocityMasker {
     }
 
     /**
+     * A parser may unescape markup which the source used to render a reference literally: APT
+     * writes {@code $\{foo\}} to show {@code ${foo}} as text, and the APT parser hands the sink the
+     * unescaped {@code ${foo}}. Written back into a {@code *.vm} file that is a live reference, and
+     * Velocity resolves it. Comparing the references found in the converted document against the
+     * ones taken out of the source spots exactly those.
+     *
+     * @param converted the converted document, after {@link #unmask(String)}
+     * @return references that appear in the converted document but were not in the source
+     */
+    List<String> findNewReferences(String converted) {
+        List<String> extra = new ArrayList<>();
+        List<String> known = new ArrayList<>(maskedValues);
+        Matcher matcher = REFERENCE.matcher(converted);
+        while (matcher.find()) {
+            if (!known.remove(matcher.group())) {
+                extra.add(matcher.group());
+            }
+        }
+        return extra;
+    }
+
+    /**
      * @param content a converted document still holding the placeholders produced by {@link #mask(String)}
      * @return the same content with the original Velocity constructs substituted back in
      */
