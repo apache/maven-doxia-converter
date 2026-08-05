@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -45,6 +47,7 @@ import java.util.stream.Collectors;
 
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.XmlStreamReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.doxia.macro.MacroExecutionException;
@@ -600,6 +603,20 @@ public class DefaultConverter implements Converter {
             throw new ConverterException("IOException: " + e.getMessage(), e);
         }
 
+        // a *.vm source is only valid markup after Velocity has run, so hide the Velocity constructs
+        // from the parser and put them back into the converted document afterwards
+        final VelocityMasker velocityMasker;
+        if (isVelocityTemplate) {
+            velocityMasker = new VelocityMasker();
+            try (Reader r = reader) {
+                reader = new StringReader(velocityMasker.mask(IOUtils.toString(r)));
+            } catch (IOException e) {
+                throw new ConverterException("IOException: " + e.getMessage(), e);
+            }
+        } else {
+            velocityMasker = null;
+        }
+
         SinkFactory sinkFactory;
         try {
             sinkFactory = output.getFormat().getSinkFactory(plexus);
@@ -607,16 +624,15 @@ public class DefaultConverter implements Converter {
             throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
         }
 
+        final String outputEncoding;
+        if (StringUtils.isEmpty(output.getEncoding()) || output.getEncoding().equals(OutputFileWrapper.AUTO_ENCODING)) {
+            outputEncoding = inputEncoding;
+        } else {
+            outputEncoding = output.getEncoding();
+        }
+
         Sink sink;
         try {
-            String outputEncoding;
-            if (StringUtils.isEmpty(output.getEncoding())
-                    || output.getEncoding().equals(OutputFileWrapper.AUTO_ENCODING)) {
-                outputEncoding = inputEncoding;
-            } else {
-                outputEncoding = output.getEncoding();
-            }
-
             OutputStream out = new FileOutputStream(outputFile);
             sink = sinkFactory.createSink(out, outputEncoding);
         } catch (IOException e) {
@@ -629,6 +645,23 @@ public class DefaultConverter implements Converter {
         } catch (Exception e) {
             throw new ConverterException(
                     "Error converting file \"" + inputFile.getAbsolutePath() + "\": " + e.getMessage(), e);
+        }
+        if (velocityMasker != null) {
+            Charset charset = Charset.forName(outputEncoding);
+            try {
+                String converted = new String(Files.readAllBytes(outputFile.toPath()), charset);
+                Files.write(
+                        outputFile.toPath(), velocityMasker.unmask(converted).getBytes(charset));
+            } catch (IOException e) {
+                throw new ConverterException("IOException: " + e.getMessage(), e);
+            }
+            for (String directive : velocityMasker.getMaskedDirectives()) {
+                LOGGER.warn(
+                        "Velocity directive \"{}\" was kept but the parser treated it as ordinary content, "
+                                + "so check its placement in \"{}\"",
+                        directive.trim(),
+                        outputFile.getName());
+            }
         }
         if (formatOutput && output.getFormat().isXml()) {
             try (Reader r = ReaderFactory.newXmlReader(outputFile);
