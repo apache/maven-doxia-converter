@@ -39,13 +39,18 @@ import java.util.regex.Pattern;
 class VelocityMasker {
 
     /**
-     * Wraps a placeholder. Deliberately built from ASCII letters and digits only: those are never
-     * escaped by a sink and always survive the output encoding, which characters outside US-ASCII
-     * (such as the Unicode private use area) do not.
+     * Wraps a placeholder. Deliberately built from ASCII only: characters outside US-ASCII (such as
+     * the Unicode private use area) do not survive the output encoding, and letters and digits are
+     * never escaped by a sink.
+     *
+     * <p>It carries {@code ://} because a reference frequently opens a link destination, as in
+     * <code>{{{$&#123;project.scm.url&#125;/src/main/README.md}README}}</code>. A parser decides
+     * from the destination whether it has a link or an in-page anchor, and a placeholder of bare
+     * letters looks like neither, so the destination would be mangled into an anchor.</p>
      */
-    private static final String PLACEHOLDER_START = "VELOCITYMASK";
+    private static final String PLACEHOLDER_START = "velocitymask://";
 
-    private static final String PLACEHOLDER_END = "ENDMASK";
+    private static final String PLACEHOLDER_END = "/endmask";
 
     /** A block comment {@code #* ... *#}, which may span several lines. */
     private static final Pattern BLOCK_COMMENT = Pattern.compile("#\\*.*?\\*#", Pattern.DOTALL);
