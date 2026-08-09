@@ -104,6 +104,64 @@ Velocity emits the backslash too and the page shows `\${project.version}`.
 The converter warns about every reference that was literal in the source and is live in the
 output, so watch its output rather than hunting for these by hand.
 
+**On a source that was already `*.apt.vm`, read those warnings with suspicion.** The converter
+compares what the APT parser saw against what Velocity will see, and it cannot tell a reference
+the page wanted to *show* from one it wanted to *resolve* — in a `.vm` source the latter was
+already live before the conversion and must stay live. Converting this project's own
+`usage.apt.vm` produces
+
+```
+WARN "${project.version}" was written literally in the source but is a live Velocity
+     reference in "usage.md.vm", so escape it there
+```
+
+for a reference that is deliberately live: it renders the current version into the sample
+command lines, it did so in the APT source too, and escaping it as the warning suggests would
+replace the version with the literal text `${project.version}` on the published page. Escape a
+reference only when the *rendered* page is supposed to display it.
+
+The same conversion warns
+
+```
+WARN Velocity directive "# java -jar target/doxia-converter-${project.version}-shaded.jar -h"
+     was kept but the parser treated it as ordinary content, so check its placement
+```
+
+for a shell prompt inside a code block. A `#` followed by a space is literal to Velocity, so
+these are safe; the warning asks you to check, and the check is that the line is prose or a
+prompt rather than a directive.
+
+## Do not tidy away a code block's info string
+
+The converter writes an info string of `unknown` for a boxed APT block (`+-----+`):
+
+````
+```unknown
+String in = "...";
+```
+````
+
+It reads like a placeholder, and deleting it is the obvious tidy-up. **Do not.** The Markdown
+parser treats *any non-empty* info string as the boxed flag, so removing it silently downgrades
+the block:
+
+```
+with an info string:     <pre class="prettyprint linenums"><code class="language-java">
+with none:               <pre><code class="nohighlight nocode">
+```
+
+The block still renders and the text is unchanged, so a body-only comparison passes and the
+build stays green — only the box and the line numbers are gone.
+
+Replace `unknown` with the language the block actually is, rather than deleting it. That keeps
+the box and gets the syntax highlighting the placeholder never had:
+
+````
+```java
+String in = "...";
+```
+````
+
 ## Things Markdown cannot express
 
 Some APT constructs have no Markdown equivalent. None of them is a converter defect, but each
