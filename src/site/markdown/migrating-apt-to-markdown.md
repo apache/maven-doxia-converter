@@ -45,6 +45,13 @@ Pass `-outEncoding UTF-8` explicitly. Without it the output follows the autodete
 encoding, and an ASCII source is detected as ISO-8859-1; an APT escaped space (`\ `, which
 becomes U+00A0) is then written as a lone `0xa0` byte.
 
+**Keep the YAML front matter the converter writes.** It carries the title, authors and date
+from the APT header, and the skin renders them into `<title>` and `<meta>`. Delete it and the
+parser falls back to the first heading for the title, so a page headed *Release Notes* under
+project *Modello* silently retitles itself `Modello – Modello`. The front matter must be the
+**first bytes of the file** — the parser only looks for it when the source starts with `---`,
+so the licence header goes below it. RAT accepts either order.
+
 ## Velocity and Markdown disagree about `#`
 
 A Markdown ATX heading below level one starts with `##`, which is also how a Velocity line
@@ -124,16 +131,22 @@ not "fix" these back:
 
 Comparing raw HTML is too noisy to be useful: `<b>` becomes `<strong>`, `<i>` becomes `<em>`,
 attribute order changes, and `<code>` and `<a>` nest the other way round. Reduce each page to
-its visible text plus its link targets and compare that instead. A script that does so ships
-with this project as `tools/normalize-site-page.py`:
+the parts that carry meaning — its title, author and date metadata, its visible text and its
+link targets — and compare that instead. A script that does so ships with this project as
+`tools/normalize-site-page.py`:
 
 ```
 diff <(tools/normalize-site-page.py before/index.html) \
      <(tools/normalize-site-page.py after/index.html)
 ```
 
-Two mistakes are easy to make when scripting the comparison and both produce a reassuring
-but meaningless result:
+**Compare the `<head>`, not just the body.** An APT header carries the document's title,
+authors and date, and the skin turns them into `<title>` and `<meta name="author">` /
+`<meta name="date">`. A normaliser that reduces a page to its rendered body will pass a page
+that has lost all of it. This is the single easiest way to ship a migration that looks
+perfect and is not: the body matches on every page while the metadata quietly disappears.
+
+Two further mistakes produce a reassuring but meaningless result:
 
 * **Check the exit status of `mvn site`.** A failed build leaves the previous output in
   `target/site`, so a comparison against it reports no difference at all.

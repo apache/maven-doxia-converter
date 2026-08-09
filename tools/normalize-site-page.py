@@ -34,6 +34,14 @@ import sys
 
 html = io.open(sys.argv[1], encoding="utf-8", errors="replace").read()
 
+# The document's metadata is part of what the migration must not change: the APT header
+# carries the title, authors and date, and the skin turns them into <title> and <meta>.
+# Comparing only the rendered body hides a page that has lost them, which is exactly how
+# a migration once dropped the metadata of 387 pages without any comparison noticing.
+meta = ["[TITLE:%s]" % t for t in re.findall(r"<title>([^<]*)</title>", html)]
+meta += ["[META:%s=%s]" % (k, v) for k, v in
+         re.findall(r'<meta name="(author|date)" content="([^"]*)"', html)]
+
 # the skin wraps the document; only the rendered document itself is of interest
 match = re.search(r"<main.*?</main>", html, re.DOTALL)
 body = match.group(0) if match else html
@@ -56,4 +64,4 @@ body = body.replace("&#x2026;", "...").replace("…", "...")
 body = body.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&")
 body = re.sub(r"\s+", " ", body).strip()
 
-sys.stdout.write("\n".join(body.split(" ")))
+sys.stdout.write("\n".join(meta + body.split(" ")))
