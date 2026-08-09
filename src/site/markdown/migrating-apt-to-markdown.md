@@ -59,6 +59,18 @@ comment starts. In a `*.md.vm` file Velocity removes the heading before Doxia ev
 document: the line simply disappears from the rendered page, with no error and no warning.
 Level one is safe, because a single `#` followed by a space is literal to Velocity.
 
+**In a file that keeps its `.vm` suffix, never write an ATX heading below level one.** This is
+the most damaging thing that can go wrong in the migration, and nothing anywhere reports it. It
+has been hit twice on different source formats: an APT conversion lost all four of its `<h2>`
+headings, and an xdoc conversion lost both of its own. In each case `mvn site` exited zero, the
+page rendered, every paragraph of prose was intact, and the `%{toc}` macro that listed those
+sections rendered as an empty list.
+
+**A green build is not evidence here, and neither is reading the converted Markdown** — the
+`##` looks correct in the source, because it *is* correct Markdown. Only a diff of the generated
+HTML shows the headings are gone. This one failure is the reason the before/after comparison at
+the top of this page is mandatory rather than advisable.
+
 There are three ways out, in order of preference.
 
 **Drop the `.vm`.** Most `index.apt.vm` pages only use Velocity to interpolate
