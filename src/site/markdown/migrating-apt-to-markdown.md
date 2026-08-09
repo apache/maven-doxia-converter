@@ -129,8 +129,22 @@ WARN "${project.version}" was written literally in the source but is a live Velo
 
 for a reference that is deliberately live: it renders the current version into the sample
 command lines, it did so in the APT source too, and escaping it as the warning suggests would
-replace the version with the literal text `${project.version}` on the published page. Escape a
-reference only when the *rendered* page is supposed to display it.
+replace the version with the literal text `${project.version}` on the published page.
+
+The rule the warnings approximate has two halves, and a reference needs escaping only when
+**both** hold: the page means to **display** it, *and* the name actually **resolves** in that
+document's context.
+
+| | resolves | does not resolve |
+|---|---|---|
+| **page displays it** | escape — `${esc.d}{…}` | already correct; escaping is harmless insurance |
+| **page resolves it** | leave live | broken either way; fix the reference |
+
+Only the top-left cell is a bug, and it is the one that reads as fine in the source. A page
+documenting a default value with `${project.build.outputDirectory}` publishes an absolute path
+from whichever machine built the site; `${basedir}` or `${surefire.forkNumber}` in the same page
+resolve to nothing and pass through literally whatever you do. The APT source tells you which
+references were meant to be displayed: they are the ones written `$\{…\}`.
 
 The same conversion warns
 
@@ -145,7 +159,10 @@ prompt rather than a directive.
 
 ## Do not tidy away a code block's info string
 
-The converter writes an info string of `unknown` for a boxed APT block (`+-----+`):
+Both source formats have two verbatim forms, one boxed and one not, and the converter already
+tells them apart. In APT, `+-----+` is boxed and a bare `-----` is not; in xdoc, `<source>` is
+boxed and `<pre>` is not. The boxed one gets an info string of `unknown`, the unboxed one gets a
+bare fence:
 
 ````
 ```unknown
@@ -173,6 +190,41 @@ the box and gets the syntax highlighting the placeholder never had:
 String in = "...";
 ```
 ````
+
+**Substitute only where `unknown` already is.** The same rule run backwards is the opposite
+error: adding a language to a fence the converter left bare *boxes a block the source
+deliberately left unboxed*. Console transcripts and log samples are usually the unboxed form,
+and they are exactly the blocks whose content most tempts you to write ` ```bash ` or
+` ```text `. If you are sweeping a tree with an editor macro, key it on the literal `unknown`
+and on nothing else.
+
+## Raw HTML does not survive the way it looks like it will
+
+A Markdown page can contain raw HTML, and a converted page often does. It is not passed through
+untouched, and the two rules below cost anchors and styling on green builds.
+
+**An `<a>` carrying only `name` is deleted outright.** The parser drops the obsolete `name`
+attribute, which leaves an element with no attributes and no content, and that is discarded.
+The anchor does not move or get wrapped — it is gone, and every link pointing at it is now
+broken. Same line, same position, only the attribute differs:
+
+```
+<a name="x"></a>   ->  (nothing at all)
+<a id="x"></a>     ->  <a id="x"></a>
+<a name="x" id="x"></a>  ->  <a id="x"></a>
+```
+
+So write hand-made anchors with `id`. Note this is invisible to a text comparison: an anchor
+contributes no visible text, and an `<a>` with no `href` is not a link.
+
+**Raw `<pre>` keeps exactly the attributes you write and gains none.** Doxia's own boxed block
+is `<pre class="prettyprint linenums"><code>`; a bare `<pre>` in raw HTML renders as a bare
+`<pre>`, unboxed and unstyled. If you are hand-writing a block to match what xdoc `<source>`
+produced, write both classes and the inner `<code>` yourself — or better, use a fenced block
+with an info string and let the parser do it.
+
+There is no attribute syntax for heading ids. `## Heading {#custom}` is not recognised; the
+braces stay in the heading text and end up percent-encoded into the generated id.
 
 ## Things Markdown cannot express
 
@@ -222,6 +274,36 @@ Two further mistakes produce a reassuring but meaningless result:
   `target/site`, so a comparison against it reports no difference at all.
 * **Derive the page list from the built site, not from an inventory of the APT files.** Once
   the sources are converted that inventory is empty, and an empty list compares nothing.
+
+### Know what this comparison cannot see
+
+`normalize-site-page.py` throws away every attribute except `href`, deliberately — that is what
+makes it quiet enough to read. It catches a lost heading, lost or reordered text, a changed link
+target and lost metadata. It cannot see:
+
+* **whether a code block is boxed.** `<pre …>` becomes `[PRE]`, so
+  `<pre class="prettyprint linenums">` and a bare `<pre>` compare equal. This is the axis the
+  info string sits on, and a tree-wide unboxing passes it silently on every page.
+* **anchor ids.** An `<a>` with no `href` is not a link and leaves no token, so a deleted
+  `<a name="…">` is invisible.
+* **ordered against unordered lists.** Every `<li>` becomes `[ITEM]` whatever encloses it.
+
+None of that is a defect in the script; a normaliser that kept attributes would drown you in
+noise. It means one pass is not enough. Add a second, structural pass over the same two
+directories — the *sequence* of structural tags per page, and the set of anchor ids:
+
+```
+tags() { sed -e 's/></>\n</g' "$1" | grep -o '^<\(pre\|h[1-6]\|table\|thead\|th\|ol\|ul\|dl\)[^>]*>'; }
+ids()  { grep -o 'id="[^"]*"' "$1" | sort -u; }
+
+diff <(tags before/index.html) <(tags after/index.html)
+diff <(ids  before/index.html) <(ids  after/index.html)
+```
+
+Keep the attributes in the tag pass — the whole point is to catch `class="prettyprint linenums"`
+appearing or disappearing. Expect a little noise from the skin and read past it; what you are
+looking for is a `<pre>` that lost its classes, a structural tag that vanished, or an id that is
+no longer there.
 
 ## What not to convert
 
