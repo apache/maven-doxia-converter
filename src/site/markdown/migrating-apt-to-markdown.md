@@ -298,6 +298,35 @@ changes the rendered page, so decide deliberately:
 * **Typographic substitution.** The Markdown module turns straight quotes into curly quotes
   and `...` into an ellipsis in prose. Code spans and code blocks are left alone.
 
+Tables lose three things, and none of them shows up in a text comparison — the words are all
+still there, in the right order. Only the structural pass below sees these.
+
+* **A table with no header row.** APT does not require one; Markdown does. The converter
+  therefore writes an *empty* header row above the first row, and it renders as a blank band
+  across the top of the table:
+
+  ```
+  |   |   |
+  |:---:|:---:|
+  |Name|Default|
+  ```
+
+  Promoting the real first row to the header removes the blank band, at the cost of those cells
+  becoming `<th>` rather than `<td>`. That is a content decision — make it deliberately, and say
+  so in the commit, because a reviewer reading the Markdown will not see what it fixed.
+
+* **Column alignment.** The converter writes `|:---:|` faithfully, but the Markdown module emits
+  no `text-align`, so a centred APT table renders left-aligned like any other.
+
+* **Grid borders.** APT's `+` grid form renders `<table class="table table-bordered …">`. A
+  Markdown table is always `table-striped` only, so the borders go.
+
+**The escape hatch, if a table has to keep any of that: leave it as raw HTML.** A `<table>`
+written out in the page passes through Doxia untouched — `class`, inline `style` and all — so
+`table-bordered` and per-cell alignment survive exactly as written, and no `<thead>` is inserted.
+It costs you a table that is no longer readable as Markdown, so it is worth it for a page whose
+table is the point, and not otherwise.
+
 ## Differences that are improvements
 
 Several APT constructs render incorrectly today and come out *better* after conversion. Do
