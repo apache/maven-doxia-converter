@@ -201,21 +201,52 @@ and on nothing else.
 ## Raw HTML does not survive the way it looks like it will
 
 A Markdown page can contain raw HTML, and a converted page often does. It is not passed through
-untouched, and the two rules below cost anchors and styling on green builds.
+untouched, and the rules below cost anchors and styling on green builds. All of it is invisible
+to a text comparison: an anchor contributes no visible text, and an `<a>` with no `href` is not
+a link.
 
-**An `<a>` carrying only `name` is deleted outright.** The parser drops the obsolete `name`
-attribute, which leaves an element with no attributes and no content, and that is discarded.
-The anchor does not move or get wrapped — it is gone, and every link pointing at it is now
-broken. Same line, same position, only the attribute differs:
+**Write the anchor with `id`, not `name`.** The obsolete `name` attribute is dropped, which
+leaves an element with no attributes and no content, and that is discarded. The anchor does not
+move or get wrapped — it is gone, and every link pointing at it is broken. Same line, same
+position, only the attribute differs:
 
 ```
-<a name="x"></a>   ->  (nothing at all)
-<a id="x"></a>     ->  <a id="x"></a>
-<a name="x" id="x"></a>  ->  <a id="x"></a>
+<a name="x"></a>          ->  (nothing at all)
+<a id="x"></a>            ->  <a id="x"></a>
+<a name="x" id="x"></a>   ->  <a id="x"></a>
 ```
 
-So write hand-made anchors with `id`. Note this is invisible to a text comparison: an anchor
-contributes no visible text, and an `<a>` with no `href` is not a link.
+**Never fold an anchor into a heading's text.** An anchor that survives *inside* a heading
+suppresses the id Doxia would otherwise generate for that section, so you trade the section's
+own anchor for your hand-written one and every link to the generated id breaks:
+
+```
+<a id="x"></a>Configuration      ->  <h2><a id="x"></a>Configuration</h2>
+-----------------------              (no <a id="Configuration">)
+
+<a id="x"></a>                    ->  <p><a id="x"></a></p>
+                                      <section><a id="Configuration"></a>
+Configuration                         <h2>Configuration</h2>
+-------------
+```
+
+**An anchor on its own line is safe.** It costs an empty `<p>`, and the following heading keeps
+its generated id. That is the placement to use.
+
+**A closing fence may be followed only by whitespace.** An anchor that an APT or xdoc source
+carried at the end of a verbatim block cannot stay there once the block is a fenced block. A
+fence with an anchor after it closes nothing, and the remainder of the document — headings and
+all — is swallowed into the code block:
+
+````
+```
+some code
+```<a id="x"></a>
+````
+
+That failure is at least loud in the rendered page, but the build still exits zero. Put the
+anchor on its own line after the fence and accept the empty paragraph; moving it above the fence
+would change where a deep link lands.
 
 **Raw `<pre>` keeps exactly the attributes you write and gains none.** Doxia's own boxed block
 is `<pre class="prettyprint linenums"><code>`; a bare `<pre>` in raw HTML renders as a bare
