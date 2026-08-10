@@ -205,20 +205,36 @@ untouched, and the rules below cost anchors and styling on green builds. All of 
 to a text comparison: an anchor contributes no visible text, and an `<a>` with no `href` is not
 a link.
 
-**Write the anchor with `id`, not `name`.** The obsolete `name` attribute is dropped, which
-leaves an element with no attributes and no content, and that is discarded. The anchor does not
-move or get wrapped — it is gone, and every link pointing at it is broken. Same line, same
-position, only the attribute differs:
+**Write the anchor with `id`, not `name` — what `name` does depends on the Doxia version.**
+`name` is obsolete in HTML5, and the Markdown module changed how it treats it:
 
-```
-<a name="x"></a>          ->  (nothing at all)
-<a id="x"></a>            ->  <a id="x"></a>
-<a name="x" id="x"></a>   ->  <a id="x"></a>
-```
+| written in the page | doxia-module-markdown 2.0.0 | 2.1.0 |
+|---|---|---|
+| `<a name="x"></a>` | *deleted* | `<a id="x"></a>` |
+| `<a id="x"></a>` | `<a id="x"></a>` | `<a id="x"></a>` |
+| `<a name="x" id="x"></a>` | `<a id="x"></a>` | `<a id="x"></a>` |
+
+On 2.0.0 the attribute is dropped, which leaves an element with no attributes and no content,
+and that is discarded — the anchor is gone and every link to it is broken. On 2.1.0 the same
+source is rewritten to `id` and the anchor works. The version arrives with the site plugin:
+`maven-site-plugin` 3.21.0 brings 2.0.0, 3.22.0 brings 2.1.0. Placement makes no difference to
+this — it holds for an anchor on its own line, glued to a raw `</table>` or `</pre>`, or
+immediately after a fenced block.
+
+Only `id` behaves the same on both, which is why it is the form to write.
 
 **Never fold an anchor into a heading's text.** An anchor that survives *inside* a heading
 suppresses the id Doxia would otherwise generate for that section, so you trade the section's
-own anchor for your hand-written one and every link to the generated id breaks:
+own anchor for your hand-written one and every link to the generated id breaks.
+
+This is the one place where the version difference above is a trap rather than a curiosity. Fold
+`<a name="x"></a>` into a heading and on 2.0.0 nothing appears to be wrong — the anchor is
+deleted before it can do any harm, and the section keeps its generated id. Upgrade the site
+plugin to 3.22.0 and the anchor starts surviving, so **the section silently loses its id on a
+build where nothing but the plugin version changed.** A page converted today and checked today
+can break on somebody else's upgrade months later.
+
+Both attributes behave the same way once the anchor survives:
 
 ```
 <a id="x"></a>Configuration      ->  <h2><a id="x"></a>Configuration</h2>
@@ -247,6 +263,12 @@ some code
 That failure is at least loud in the rendered page, but the build still exits zero. Put the
 anchor on its own line after the fence and accept the empty paragraph; moving it above the fence
 would change where a deep link lands.
+
+This applies to *fenced* blocks only. A block that stays raw HTML —
+`<pre class="prettyprint linenums"><code>…</code></pre>` — is not a fence, and an anchor glued to
+its closing tag is fine; that is what converted xdoc pages normally carry, and it reproduces the
+anchor's original position exactly. Converting such a block to a fence is what takes the
+placement away, so keep the two decisions together.
 
 **Raw `<pre>` keeps exactly the attributes you write and gains none.** Doxia's own boxed block
 is `<pre class="prettyprint linenums"><code>`; a bare `<pre>` in raw HTML renders as a bare
