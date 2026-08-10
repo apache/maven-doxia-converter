@@ -217,11 +217,18 @@ a link.
 On 2.0.0 the attribute is dropped, which leaves an element with no attributes and no content,
 and that is discarded — the anchor is gone and every link to it is broken. On 2.1.0 the same
 source is rewritten to `id` and the anchor works. The version arrives with the site plugin:
-`maven-site-plugin` 3.21.0 brings 2.0.0, 3.22.0 brings 2.1.0. Placement makes no difference to
-this — it holds for an anchor on its own line, glued to a raw `</table>` or `</pre>`, or
-immediately after a fenced block.
+`maven-site-plugin` 3.21.0 brings 2.0.0, 3.22.0 brings 2.1.0. In the Maven repositories that
+means the parent — `maven-plugins:48` resolves 3.21.0 and `49` resolves 3.22.0 — so you can tell
+which side a project is on without building it.
 
-Only `id` behaves the same on both, which is why it is the form to write.
+Placement makes no difference to this: it holds for an anchor on its own line, glued to a raw
+`</table>` or `</pre>`, or immediately after a fenced block. Nor is it about anchors as such —
+on the older module `<a id>`, `<div id>` and `<span id>` all survive; it is specifically the
+`name` attribute that is dropped.
+
+Only `id` behaves the same on both, which is why it is the form to write. On an older toolchain
+that is not a matter of taste: the `name` anchors already in the page are not merely
+old-fashioned, they are gone from the rendered site, and every link into them is dead.
 
 **Never fold an anchor into a heading's text.** An anchor that survives *inside* a heading
 suppresses the id Doxia would otherwise generate for that section, so you trade the section's
