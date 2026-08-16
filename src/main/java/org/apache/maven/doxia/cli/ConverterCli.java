@@ -23,10 +23,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -38,14 +43,11 @@ import org.apache.maven.doxia.UnsupportedFormatException;
 import org.apache.maven.doxia.parser.AbstractParser;
 import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.Os;
+import org.eclipse.sisu.space.ClassSpace;
+import org.eclipse.sisu.space.SpaceModule;
+import org.eclipse.sisu.space.URLClassSpace;
+import org.eclipse.sisu.wire.WireModule;
 
 /**
  * Doxia converter CLI.
@@ -60,7 +62,7 @@ public class ConverterCli {
      * @see #doMain(String[])
      * @see System#exit(int)
      */
-    public static void main(String[] args) throws PlexusContainerException, ComponentLookupException {
+    public static void main(String[] args) {
         if (args == null || args.length == 0) {
             args = new String[] {"-h"};
         }
@@ -70,7 +72,7 @@ public class ConverterCli {
     /**
      * @param args The args
      */
-    private static int doMain(String[] args) throws PlexusContainerException, ComponentLookupException {
+    private static int doMain(String[] args) {
         // ----------------------------------------------------------------------
         // Setup the command line parser
         // ----------------------------------------------------------------------
@@ -110,8 +112,7 @@ public class ConverterCli {
             System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         }
 
-        PlexusContainer container = getPlexusContainer();
-        Converter converter = container.lookup(Converter.class);
+        Converter converter = newConverter();
 
         InputFileWrapper input;
         OutputFileWrapper output;
@@ -228,20 +229,37 @@ public class ConverterCli {
         }
     }
     /**
-     * Start the Plexus container.
+     * Builds a {@link Converter} by scanning the class path for Doxia components.
      *
-     * @throws PlexusContainerException if any
+     * @return the converter, wired with every parser and sink factory found
      */
-    private static PlexusContainer getPlexusContainer() throws PlexusContainerException {
-        Map<Object, Object> context = new HashMap<>();
-        context.put("basedir", new File("").getAbsolutePath());
+    private static Converter newConverter() {
+        ClassSpace space = new URLClassSpace(ConverterCli.class.getClassLoader(), classPathUrls());
+        Injector injector = Guice.createInjector(new WireModule(new SpaceModule(space)));
+        // Sisu registers each component under its implementation type, so the Converter interface
+        // carries no binding of its own; parsers and sink factories reach it as wired Maps
+        return injector.getInstance(DefaultConverter.class);
+    }
 
-        ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
-        containerConfiguration.setName("Doxia");
-        containerConfiguration.setContext(context);
-        containerConfiguration.setAutoWiring(true);
-        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON);
-
-        return new DefaultPlexusContainer(containerConfiguration);
+    /**
+     * The class path as URLs, read from {@code java.class.path} rather than from the class loader:
+     * since Java 9 the application class loader is no longer a {@link java.net.URLClassLoader} and
+     * so cannot enumerate its own entries.
+     *
+     * @return one URL per class path entry
+     */
+    private static URL[] classPathUrls() {
+        List<URL> urls = new ArrayList<>();
+        for (String entry : System.getProperty("java.class.path", "").split(File.pathSeparator)) {
+            if (entry.isEmpty()) {
+                continue;
+            }
+            try {
+                urls.add(new File(entry).toURI().toURL());
+            } catch (MalformedURLException e) {
+                // not addressable as a URL, so nothing on it could be scanned either
+            }
+        }
+        return urls.toArray(new URL[0]);
     }
 }
