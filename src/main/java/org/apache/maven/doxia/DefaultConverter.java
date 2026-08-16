@@ -18,6 +18,7 @@
  */
 package org.apache.maven.doxia;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.io.BufferedInputStream;
@@ -62,13 +63,6 @@ import org.apache.maven.doxia.wrapper.InputFileWrapper;
 import org.apache.maven.doxia.wrapper.InputReaderWrapper;
 import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.PathTool;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -217,18 +211,23 @@ public class DefaultConverter implements Converter {
         }
 
         /**
-         * @param plexus not null
+         * @param parsers all available parsers, keyed by role hint
          * @param macroFormatter a formatter for macros in the target format
          * @return an instance of <code>Parser</code> depending on the format which converts macros with the given {@link MacroFormatter}
-         * @throws ComponentLookupException if could not find the Parser for the given format.
+         * @throws IllegalStateException if no Parser is registered for the given format.
          * @throws IllegalArgumentException if any parameter is null
          */
-        public Parser getParser(PlexusContainer plexus, MacroFormatter macroFormatter) throws ComponentLookupException {
+        public Parser getParser(Map<String, Parser> parsers, MacroFormatter macroFormatter) {
             if (!hasParser) {
                 throw new IllegalStateException("The format " + this + " is not supported as parser!");
             }
-            Objects.requireNonNull(plexus, "plexus is required");
-            Parser parser = plexus.lookup(Parser.class, roleHint);
+            Objects.requireNonNull(parsers, "parsers is required");
+            Parser parser = parsers.get(roleHint);
+            if (parser == null) {
+                throw new IllegalStateException(
+                        "No Parser registered for format " + this + " (role hint \"" + roleHint
+                                + "\"); is the according Doxia module on the classpath?");
+            }
             parser.setMacroExecutor(new MacroConverterExecutor(macroFormatter));
             return parser;
         }
@@ -258,18 +257,24 @@ public class DefaultConverter implements Converter {
         }
 
         /**
-         * @param plexus not null
+         * @param sinkFactories all available sink factories, keyed by role hint
          * @return an instance of <code>SinkFactory</code> depending on the given format.
-         * @throws ComponentLookupException if could not find the SinkFactory for the given format.
+         * @throws IllegalStateException if no SinkFactory is registered for the given format.
          * @throws IllegalArgumentException if any parameter is null
          */
-        public SinkFactory getSinkFactory(PlexusContainer plexus) throws ComponentLookupException {
+        public SinkFactory getSinkFactory(Map<String, SinkFactory> sinkFactories) {
             if (!hasSink) {
                 throw new IllegalStateException("The format " + this + " is not supported as sink!");
             }
-            Objects.requireNonNull(plexus, "plexus is required");
+            Objects.requireNonNull(sinkFactories, "sinkFactories is required");
 
-            return plexus.lookup(SinkFactory.class, roleHint);
+            SinkFactory sinkFactory = sinkFactories.get(roleHint);
+            if (sinkFactory == null) {
+                throw new IllegalStateException(
+                        "No SinkFactory registered for format " + this + " (role hint \"" + roleHint
+                                + "\"); is the according Doxia module on the classpath?");
+            }
+            return sinkFactory;
         }
 
         /**
@@ -318,8 +323,17 @@ public class DefaultConverter implements Converter {
     /** Flag to format the generated files, actually only for XML based sinks. */
     private boolean formatOutput;
 
-    /** Plexus container */
-    private PlexusContainer plexus;
+    /** All Doxia parsers on the classpath, keyed by role hint */
+    private final Map<String, Parser> parsers;
+
+    /** All Doxia sink factories on the classpath, keyed by role hint */
+    private final Map<String, SinkFactory> sinkFactories;
+
+    @Inject
+    public DefaultConverter(Map<String, Parser> parsers, Map<String, SinkFactory> sinkFactories) {
+        this.parsers = parsers;
+        this.sinkFactories = sinkFactories;
+    }
 
     /** SLF4J logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConverter.class);
@@ -334,47 +348,38 @@ public class DefaultConverter implements Converter {
         Objects.requireNonNull(input, "input is required");
         Objects.requireNonNull(output, "output is required");
 
-        try {
-            startPlexusContainer();
-        } catch (PlexusContainerException e) {
-            throw new ConverterException("PlexusContainerException: " + e.getMessage(), e);
-        }
         outputRenameMap.clear();
-        try {
-            if (input.getFile().isFile()) {
-                convert(input.getFile(), input.getEncoding(), input.getFormat(), output);
-            } else {
-                List<File> files;
-                try {
-                    files = FileUtils.getFiles(
-                            input.getFile(),
-                            getFileNamePatterns(input.getFormat().getExtension(), !input.isExcludeVelocityTemplates()),
-                            StringUtils.join(FileUtils.getDefaultExcludes(), ", "));
-                } catch (IOException e) {
-                    throw new ConverterException("IOException: " + e.getMessage(), e);
-                } catch (IllegalStateException e) {
-                    throw new ConverterException("IllegalStateException: " + e.getMessage(), e);
-                }
-                if (files.isEmpty()) {
-                    throw new ConverterException("ConverterException: No files with extension "
-                            + input.getFormat().getExtension() + " found in directory " + input.getFile());
-                }
-                for (File f : files) {
-                    File relativeOutputDirectory = new File(
-                            PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
-                    convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
-                }
-            }
+        if (input.getFile().isFile()) {
+            convert(input.getFile(), input.getEncoding(), input.getFormat(), output);
+        } else {
+            List<File> files;
             try {
-                postProcessAllFiles(output.getFormat());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
+                files = FileUtils.getFiles(
+                        input.getFile(),
+                        getFileNamePatterns(input.getFormat().getExtension(), !input.isExcludeVelocityTemplates()),
+                        StringUtils.join(FileUtils.getDefaultExcludes(), ", "));
             } catch (IOException e) {
-                throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
+                throw new ConverterException("IOException: " + e.getMessage(), e);
+            } catch (IllegalStateException e) {
+                throw new ConverterException("IllegalStateException: " + e.getMessage(), e);
             }
-        } finally {
-            stopPlexusContainer();
+            if (files.isEmpty()) {
+                throw new ConverterException("ConverterException: No files with extension "
+                        + input.getFormat().getExtension() + " found in directory " + input.getFile());
+            }
+            for (File f : files) {
+                File relativeOutputDirectory = new File(
+                        PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+                convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
+            }
+        }
+        try {
+            postProcessAllFiles(output.getFormat());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
         }
     }
 
@@ -459,40 +464,20 @@ public class DefaultConverter implements Converter {
         Objects.requireNonNull(input, "input is required");
         Objects.requireNonNull(output, "output is required");
 
+        Parser parser = input.getFormat().getParser(parsers, MacroFormatter.forFormat(output.getFormat()));
+        LOGGER.debug("Parser used: {}", parser.getClass().getName());
+
+        SinkFactory sinkFactory = output.getFormat().getSinkFactory(sinkFactories);
+
+        Sink sink;
         try {
-            startPlexusContainer();
-        } catch (PlexusContainerException e) {
-            throw new ConverterException("PlexusContainerException: " + e.getMessage(), e);
+            sink = sinkFactory.createSink(output.getOutputStream(), output.getEncoding());
+        } catch (IOException e) {
+            throw new ConverterException("IOException: " + e.getMessage(), e);
         }
-
-        try {
-            Parser parser;
-            try {
-                parser = input.getFormat().getParser(plexus, MacroFormatter.forFormat(output.getFormat()));
-            } catch (ComponentLookupException e) {
-                throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
-            }
-            LOGGER.debug("Parser used: {}", parser.getClass().getName());
-
-            SinkFactory sinkFactory;
-            try {
-                sinkFactory = output.getFormat().getSinkFactory(plexus);
-            } catch (ComponentLookupException e) {
-                throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
-            }
-
-            Sink sink;
-            try {
-                sink = sinkFactory.createSink(output.getOutputStream(), output.getEncoding());
-            } catch (IOException e) {
-                throw new ConverterException("IOException: " + e.getMessage(), e);
-            }
-            try (Sink s = sink) {
-                LOGGER.debug("Sink used: {}", sink.getClass().getName());
-                parse(parser, input.getReader(), s);
-            }
-        } finally {
-            stopPlexusContainer();
+        try (Sink s = sink) {
+            LOGGER.debug("Sink used: {}", sink.getClass().getName());
+            parse(parser, input.getReader(), s);
         }
     }
 
@@ -557,12 +542,7 @@ public class DefaultConverter implements Converter {
         }
 
         boolean isVelocityTemplate = inputFile.getName().endsWith(VELOCITY_TEMPLATE_EXTENSION);
-        Parser parser;
-        try {
-            parser = parserFormat.getParser(plexus, MacroFormatter.forFormat(output.getFormat()));
-        } catch (ComponentLookupException e) {
-            throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
-        }
+        Parser parser = parserFormat.getParser(parsers, MacroFormatter.forFormat(output.getFormat()));
 
         File outputFile;
         if (outputDirectoryOrFile.isDirectory()
@@ -617,12 +597,7 @@ public class DefaultConverter implements Converter {
             velocityMasker = null;
         }
 
-        SinkFactory sinkFactory;
-        try {
-            sinkFactory = output.getFormat().getSinkFactory(plexus);
-        } catch (ComponentLookupException e) {
-            throw new ConverterException("ComponentLookupException: " + e.getMessage(), e);
-        }
+        SinkFactory sinkFactory = output.getFormat().getSinkFactory(sinkFactories);
 
         final String outputEncoding;
         if (StringUtils.isEmpty(output.getEncoding()) || output.getEncoding().equals(OutputFileWrapper.AUTO_ENCODING)) {
@@ -726,40 +701,6 @@ public class DefaultConverter implements Converter {
         } catch (IOException e) {
             throw new ConverterException("IOException: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Start the Plexus container.
-     *
-     * @throws PlexusContainerException if any
-     */
-    private void startPlexusContainer() throws PlexusContainerException {
-        if (plexus != null) {
-            return;
-        }
-
-        Map<Object, Object> context = new HashMap<>();
-        context.put("basedir", new File("").getAbsolutePath());
-
-        ContainerConfiguration containerConfiguration = new DefaultContainerConfiguration();
-        containerConfiguration.setName("Doxia");
-        containerConfiguration.setContext(context);
-        containerConfiguration.setAutoWiring(true);
-        containerConfiguration.setClassPathScanning(PlexusConstants.SCANNING_ON);
-
-        plexus = new DefaultPlexusContainer(containerConfiguration);
-    }
-
-    /**
-     * Stop the Plexus container.
-     */
-    private void stopPlexusContainer() {
-        if (plexus == null) {
-            return;
-        }
-
-        plexus.dispose();
-        plexus = null;
     }
 
     /**
