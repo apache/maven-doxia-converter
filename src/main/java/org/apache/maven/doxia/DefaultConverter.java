@@ -224,9 +224,8 @@ public class DefaultConverter implements Converter {
             Objects.requireNonNull(parsers, "parsers is required");
             Parser parser = parsers.get(roleHint);
             if (parser == null) {
-                throw new IllegalStateException(
-                        "No Parser registered for format " + this + " (role hint \"" + roleHint
-                                + "\"); is the according Doxia module on the classpath?");
+                throw new IllegalStateException("No Parser registered for format " + this + " (role hint \"" + roleHint
+                        + "\"); is the according Doxia module on the classpath?");
             }
             parser.setMacroExecutor(new MacroConverterExecutor(macroFormatter));
             return parser;
@@ -270,9 +269,8 @@ public class DefaultConverter implements Converter {
 
             SinkFactory sinkFactory = sinkFactories.get(roleHint);
             if (sinkFactory == null) {
-                throw new IllegalStateException(
-                        "No SinkFactory registered for format " + this + " (role hint \"" + roleHint
-                                + "\"); is the according Doxia module on the classpath?");
+                throw new IllegalStateException("No SinkFactory registered for format " + this + " (role hint \""
+                        + roleHint + "\"); is the according Doxia module on the classpath?");
             }
             return sinkFactory;
         }
@@ -368,8 +366,8 @@ public class DefaultConverter implements Converter {
                         + input.getFormat().getExtension() + " found in directory " + input.getFile());
             }
             for (File f : files) {
-                File relativeOutputDirectory = new File(
-                        PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+                File relativeOutputDirectory =
+                        new File(PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
                 convert(f, input.getEncoding(), input.getFormat(), output, relativeOutputDirectory);
             }
         }
