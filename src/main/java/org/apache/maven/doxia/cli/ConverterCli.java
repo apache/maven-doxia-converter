@@ -109,7 +109,9 @@ public class ConverterCli {
             System.out.println("+ Error stacktraces are turned on.");
         }
         if (debug) {
-            System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+            // the property name is spelled out rather than read off SimpleLogger, whose package
+            // differs between SLF4J 1.x (org.slf4j.impl) and 2.x (org.slf4j.simple)
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
         }
 
         Converter converter = newConverter();

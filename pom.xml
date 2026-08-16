@@ -57,6 +57,7 @@ under the License.
   <properties>
     <doxiaVersion>2.1.0</doxiaVersion>
     <javaVersion>8</javaVersion>
+    <slf4jVersion>2.0.18</slf4jVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
 
@@ -134,12 +135,12 @@ under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.36</version>
+      <version>${slf4jVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.36</version>
+      <version>${slf4jVersion}</version>
     </dependency>
     <!-- Plexus -->
     <dependency>
