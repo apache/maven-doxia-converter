@@ -20,9 +20,9 @@ package org.apache.maven.doxia.wrapper;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.maven.doxia.DefaultConverter;
-import org.codehaus.plexus.util.WriterFactory;
 
 /**
  * Wrapper for an input file.
@@ -67,11 +67,11 @@ public class InputFileWrapper extends AbstractFileWrapper {
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
-     * @see #valueOf(String, DefaultConverter.DoxiaFormat, String) using WriterFactory.UTF_8
+     * @see #valueOf(String, DefaultConverter.DoxiaFormat, String) using UTF-8
      */
     public static InputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format)
             throws UnsupportedEncodingException, FileNotFoundException {
-        return valueOf(absolutePath, format, WriterFactory.UTF_8);
+        return valueOf(absolutePath, format, StandardCharsets.UTF_8.name());
     }
 
     /**

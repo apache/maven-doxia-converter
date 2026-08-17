@@ -42,8 +42,6 @@ import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.ReaderFactory;
-import org.codehaus.plexus.util.WriterFactory;
 import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,8 +88,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -112,8 +110,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/apt";
         String out = getBasedir() + "/target/unit/";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.MARKDOWN, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -136,8 +134,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/Doxia.htm";
         String out = getBasedir() + "/target/unit/Doxia.apt";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -158,8 +156,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/apt/test.apt";
         String out = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.APT, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -169,8 +167,8 @@ class ConverterTest extends InjectedTest {
         in = getBasedir() + "/target/unit/file/apt/test.apt.xhtml";
         out = getBasedir() + "/target/unit/file/apt/test.apt";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, WriterFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        output = OutputFileWrapper.valueOf(out, DoxiaFormat.APT, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -189,8 +187,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/fml/test.fml";
         String out = getBasedir() + "/target/unit/file/fml/test.fml.xhtml";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.FML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.FML, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -211,8 +209,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/xdoc/test.xml";
         String out = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XDOC, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XDOC, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -222,8 +220,8 @@ class ConverterTest extends InjectedTest {
         in = getBasedir() + "/target/unit/file/xdoc/test.xdoc.xhtml";
         out = getBasedir() + "/target/unit/file/xdoc/test.xdoc";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XDOC, WriterFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XDOC, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -242,8 +240,8 @@ class ConverterTest extends InjectedTest {
         String in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
         String out = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
 
-        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        InputFileWrapper input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        OutputFileWrapper output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
@@ -253,8 +251,8 @@ class ConverterTest extends InjectedTest {
         in = getBasedir() + "/target/unit/file/xhtml/test.xhtml.xhtml";
         out = getBasedir() + "/target/unit/file/xhtml/test.xhtml";
 
-        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, ReaderFactory.UTF_8);
-        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, WriterFactory.UTF_8);
+        input = InputFileWrapper.valueOf(in, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
+        output = OutputFileWrapper.valueOf(out, DoxiaFormat.XHTML, StandardCharsets.UTF_8.name());
 
         converter.setFormatOutput(formatOutput);
         converter.convert(input, output);
