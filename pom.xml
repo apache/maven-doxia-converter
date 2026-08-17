@@ -21,17 +21,20 @@ under the License.
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.maven.doxia</groupId>
-    <artifactId>doxia-tools</artifactId>
-    <version>45</version>
+    <groupId>org.apache.maven</groupId>
+    <artifactId>maven-parent</artifactId>
+    <version>49</version>
     <relativePath />
   </parent>
 
+  <groupId>org.apache.maven.doxia</groupId>
   <artifactId>doxia-converter</artifactId>
   <version>1.4-SNAPSHOT</version>
 
   <name>Doxia Tools :: Converter</name>
   <description>Doxia Converter Tool to convert a supported format to another.</description>
+  <url>https://maven.apache.org/doxia/doxia-tools/doxia-converter/</url>
+  <inceptionYear>2005</inceptionYear>
 
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-doxia-converter.git</connection>
@@ -55,6 +58,8 @@ under the License.
   </distributionManagement>
 
   <properties>
+    <!-- kept identical to what doxia-tools set, so the published site path does not move -->
+    <maven.site.path>doxia-tools-archives/${project.artifactId}-${maven.site.path.suffix}</maven.site.path>
     <doxiaVersion>2.1.0</doxiaVersion>
     <javaVersion>8</javaVersion>
     <slf4jVersion>2.0.18</slf4jVersion>
@@ -176,6 +181,14 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
+        <!-- site is published by maven-scm-publish-plugin below, not by the site plugin -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <skipDeploy>true</skipDeploy>
+          </configuration>
+        </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
@@ -190,6 +203,23 @@ under the License.
       </plugins>
     </pluginManagement>
     <plugins>
+      <!-- deploy the site with maven-scm-publish-plugin; no need for site:stage, use target/site -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <configuration>
+          <content>${project.reporting.outputDirectory}</content>
+        </configuration>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+            <phase>site-deploy</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>sisu-maven-plugin</artifactId>
