@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
@@ -50,6 +51,7 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.XmlStreamReader;
+import org.apache.commons.io.output.XmlStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.doxia.macro.MacroExecutionException;
 import org.apache.maven.doxia.macro.MacroExecutor;
@@ -65,9 +67,7 @@ import org.apache.maven.doxia.wrapper.OutputFileWrapper;
 import org.apache.maven.doxia.wrapper.OutputStreamWrapper;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.PathTool;
-import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.SelectorUtils;
-import org.codehaus.plexus.util.WriterFactory;
 import org.codehaus.plexus.util.xml.XmlUtil;
 import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
@@ -570,12 +570,12 @@ public class DefaultConverter implements Converter {
         try {
             if (inputEncoding != null) {
                 if (parser.getType() == Parser.XML_TYPE) {
-                    reader = ReaderFactory.newXmlReader(inputFile);
+                    reader = XmlStreamReader.builder().setFile(inputFile).get();
                 } else {
-                    reader = ReaderFactory.newReader(inputFile, inputEncoding);
+                    reader = new InputStreamReader(Files.newInputStream(inputFile.toPath()), inputEncoding);
                 }
             } else {
-                reader = ReaderFactory.newPlatformReader(inputFile);
+                reader = Files.newBufferedReader(inputFile.toPath());
             }
         } catch (IOException e) {
             throw new ConverterException("IOException: " + e.getMessage(), e);
@@ -623,8 +623,8 @@ public class DefaultConverter implements Converter {
             restoreVelocityConstructs(velocityMasker, outputFile, outputEncoding);
         }
         if (formatOutput && output.getFormat().isXml()) {
-            try (Reader r = ReaderFactory.newXmlReader(outputFile);
-                    Writer w = WriterFactory.newXmlWriter(outputFile)) {
+            try (Reader r = XmlStreamReader.builder().setFile(outputFile).get();
+                    Writer w = XmlStreamWriter.builder().setFile(outputFile).get()) {
                 CharArrayWriter caw = new CharArrayWriter();
                 XmlUtil.prettyFormat(r, caw);
                 w.write(caw.toString());
@@ -716,7 +716,8 @@ public class DefaultConverter implements Converter {
         }
         try {
             if (XmlUtil.isXml(f)) {
-                try (XmlStreamReader reader = new XmlStreamReader(f)) {
+                try (XmlStreamReader reader =
+                        XmlStreamReader.builder().setFile(f).get()) {
                     return reader.getEncoding();
                 }
             }
@@ -759,7 +760,7 @@ public class DefaultConverter implements Converter {
             throw new IllegalArgumentException("The file '" + xmlFile.getAbsolutePath() + "' is not a file.");
         }
 
-        try (Reader reader = ReaderFactory.newXmlReader(xmlFile)) {
+        try (Reader reader = XmlStreamReader.builder().setFile(xmlFile).get()) {
             XmlPullParser parser = new MXParser();
             parser.setInput(reader);
             int eventType = parser.getEventType();

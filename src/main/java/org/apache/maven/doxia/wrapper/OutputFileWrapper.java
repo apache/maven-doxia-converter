@@ -19,10 +19,10 @@
 package org.apache.maven.doxia.wrapper;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import org.apache.maven.doxia.DefaultConverter;
-import org.codehaus.plexus.util.WriterFactory;
 
 /**
  * Wrapper for an output file.
@@ -63,7 +63,7 @@ public class OutputFileWrapper extends AbstractFileWrapper {
      */
     public static OutputFileWrapper valueOf(String absolutePath, DefaultConverter.DoxiaFormat format)
             throws UnsupportedEncodingException {
-        return valueOf(absolutePath, format, WriterFactory.UTF_8);
+        return valueOf(absolutePath, format, StandardCharsets.UTF_8.name());
     }
 
     /**
