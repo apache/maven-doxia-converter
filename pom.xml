@@ -181,23 +181,25 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <inputExcludes combine.children="append">
+
+              <exclude>src/test/resources/unit/**/test.*</exclude>
+              <exclude>src/test/resources/unit/**/macro.*</exclude>
+              <exclude>src/test/resources/book-1/section-*.apt</exclude>
+
+            </inputExcludes>
+          </configuration>
+        </plugin>
         <!-- site is published by maven-scm-publish-plugin below, not by the site plugin -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
           <configuration>
             <skipDeploy>true</skipDeploy>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <configuration>
-            <excludes combine.children="append">
-              <exclude>src/test/resources/unit/**/test.*</exclude>
-              <exclude>src/test/resources/unit/**/macro.*</exclude>
-              <exclude>src/test/resources/book-1/section-*.apt</exclude>
-            </excludes>
           </configuration>
         </plugin>
       </plugins>
@@ -280,4 +282,5 @@ under the License.
       </plugin>
     </plugins>
   </build>
+  <profiles />
 </project>
