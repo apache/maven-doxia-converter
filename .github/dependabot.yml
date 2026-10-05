@@ -22,6 +22,10 @@ updates:
     interval: daily
     time: '04:00'
   open-pull-requests-limit: 10
+  ignore:
+  # Guice 7 moved to jakarta.inject; Sisu and Maven 3 still need javax.inject
+  - dependency-name: "com.google.inject:guice"
+    versions: [">= 7.0.0"]
 
 - package-ecosystem: github-actions
   directory: "/"
