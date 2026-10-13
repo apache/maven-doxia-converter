@@ -202,6 +202,14 @@ under the License.
             <skipDeploy>true</skipDeploy>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.tooling</groupId>
+          <artifactId>atr-maven-plugin</artifactId>
+          <configuration>
+            <!-- override - the default is project.artifactId -->
+            <project>maven-doxia-converter</project>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
