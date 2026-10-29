@@ -61,7 +61,6 @@ under the License.
     <!-- kept identical to what doxia-tools set, so the published site path does not move -->
     <maven.site.path>doxia-tools-archives/${project.artifactId}-${maven.site.path.suffix}</maven.site.path>
     <doxiaVersion>2.2.0</doxiaVersion>
-    <javaVersion>8</javaVersion>
     <slf4jVersion>2.0.18</slf4jVersion>
     <project.build.outputTimestamp>2023-01-09T21:24:22Z</project.build.outputTimestamp>
   </properties>
