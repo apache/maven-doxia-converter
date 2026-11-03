@@ -461,4 +461,27 @@ class ConverterTest extends InjectedTest {
             }
         }
     }
+
+    @Test
+    void xdocObjectSurvivesConversionToMarkdown() throws IOException, UnsupportedFormatException, ConverterException {
+        String xdoc = "<?xml version=\"1.0\"?>\n"
+                + "<document><properties><title>T</title></properties><body>\n"
+                + "<section name=\"S\">\n"
+                + "<p><object type=\"image/svg+xml\" data=\"x.svg\"/></p>\n"
+                + "<p>Text after the object.</p>\n"
+                + "</section></body></document>\n";
+
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                Reader reader = new StringReader(xdoc)) {
+            converter.convert(
+                    InputReaderWrapper.valueOf(reader, DoxiaFormat.XDOC),
+                    OutputStreamWrapper.valueOf(output, DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name()));
+
+            String markdown = new String(output.toByteArray(), StandardCharsets.UTF_8);
+            assertTrue(
+                    markdown.contains("<object type=\"image/svg+xml\" data=\"x.svg\"></object>"),
+                    "object element missing from:\n" + markdown);
+            assertTrue(markdown.contains("Text after the object."), "text after object missing from:\n" + markdown);
+        }
+    }
 }
