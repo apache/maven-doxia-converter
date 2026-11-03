@@ -40,7 +40,7 @@ public class InputFileWrapper extends AbstractFileWrapper {
      * Private constructor.
      *
      * @param absolutePath not null
-     * @param format not null
+     * @param format the format, or null to detect it per file
      * @param charsetName could be null
      * @param excludeVelocityTemplates {@code true} to not consider velocity templates (ending with .vm) (only relevant when absolutePath is a directory)
      * @throws UnsupportedEncodingException if the encoding is unsupported.
@@ -63,7 +63,7 @@ public class InputFileWrapper extends AbstractFileWrapper {
 
     /**
      * @param absolutePath for a file or a directory not null.
-     * @param format not null
+     * @param format the format, or null to detect it per file
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
      * @throws FileNotFoundException if the file for absolutePath is not found.
@@ -76,7 +76,7 @@ public class InputFileWrapper extends AbstractFileWrapper {
 
     /**
      * @param absolutePath for a wanted file or a wanted directory, not null.
-     * @param format not null
+     * @param format the format, or null to detect it per file
      * @param charsetName could be null
      * @return a type safe input reader
      * @throws UnsupportedEncodingException if the encoding is unsupported.
@@ -89,7 +89,7 @@ public class InputFileWrapper extends AbstractFileWrapper {
 
     /**
      * @param absolutePath for a wanted file or a wanted directory, not null.
-     * @param format not null
+     * @param format the format, or null to detect it per file
      * @param charsetName could be null
      * @param excludeVelocityTemplates {@code true} to not consider velocity templates (ending with .vm)
      * @return a type safe input reader

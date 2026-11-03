@@ -48,7 +48,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertLinesMatch;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -483,5 +485,67 @@ class ConverterTest extends InjectedTest {
                     "object element missing from:\n" + markdown);
             assertTrue(markdown.contains("Text after the object."), "text after object missing from:\n" + markdown);
         }
+    }
+
+    /**
+     * Converts a shared source directory, such as <code>src/site/source</code>, in place: every document not yet in
+     * Markdown is converted next to its source, picking the parser by its extension.
+     */
+    @Test
+    void sharedSourceDirectoryInPlace() throws Exception {
+        File dir = new File(getBasedir(), "target/unit/shared/source");
+        FileUtils.deleteDirectory(dir);
+        String markdown = "# Index\n\nAlready Markdown.\n";
+        write(new File(dir, "index.md"), markdown);
+        write(new File(dir, "guide/usage.apt"), "Usage\n\n* APT\n\n  Text.\n");
+        write(
+                new File(dir, "about.xml"),
+                "<document><body><section name=\"About\"><p>XDoc</p></section></body></document>");
+        write(
+                new File(dir, "faq.fml"),
+                "<faqs title=\"FAQ\"><part id=\"p\"><faq id=\"q\"><question>Q?</question>"
+                        + "<answer><p>A.</p></answer></faq></part></faqs>");
+        write(new File(dir, "notes.apt.vm"), "Notes\n\n* Version\n\n  ${project.version}\n");
+        write(new File(dir, "site.xml"), "<site><body/></site>");
+
+        converter.convert(
+                InputFileWrapper.valueOf(dir.getPath(), null),
+                OutputFileWrapper.valueOf(dir.getPath(), DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name()));
+
+        assertTrue(new File(dir, "guide/usage.md").isFile());
+        assertTrue(readFile(new File(dir, "about.md")).contains("XDoc"));
+        assertTrue(readFile(new File(dir, "faq.md")).contains("Q?"));
+        assertTrue(readFile(new File(dir, "notes.md.vm")).contains("${project.version}"));
+        assertEquals(markdown, readFile(new File(dir, "index.md")));
+        assertFalse(new File(dir, "site.md").exists());
+
+        FileUtils.deleteDirectory(dir);
+    }
+
+    @Test
+    void sharedSourceDirectoryRejectsTwoSourcesForOneOutput() throws Exception {
+        File dir = new File(getBasedir(), "target/unit/shared-duplicate/source");
+        FileUtils.deleteDirectory(dir);
+        write(new File(dir, "usage.apt"), "Usage\n\n* APT\n\n  Text.\n");
+        write(new File(dir, "usage.xml"), "<document><body><section name=\"Usage\"/></body></document>");
+
+        ConverterException e = assertThrows(
+                ConverterException.class,
+                () -> converter.convert(
+                        InputFileWrapper.valueOf(dir.getPath(), null),
+                        OutputFileWrapper.valueOf(dir.getPath(), DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name())));
+        assertTrue(e.getMessage().contains("usage.md"), e.getMessage());
+        assertFalse(new File(dir, "usage.md").exists());
+
+        FileUtils.deleteDirectory(dir);
+    }
+
+    private static void write(File file, String content) throws IOException {
+        file.getParentFile().mkdirs();
+        Files.write(file.toPath(), content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String readFile(File file) throws IOException {
+        return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
     }
 }

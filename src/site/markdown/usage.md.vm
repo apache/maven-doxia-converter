@@ -42,7 +42,8 @@ usage: doxia-converter [-e] [-f] [-from <arg>] [-h] [-in <arg>] [-inEncoding <ar
 Options:
  -e,--errors           Produce execution error messages.
  -f,--format           Format the output (actually only xml based outputs) to be human readable.
- -from <arg>           From format. If not specified, try to autodetect it.
+ -from <arg>           From format. If not specified, autodetect it: for a directory, per file by extension, such as .md,
+                       .apt, .xml (xdoc), .xhtml or .fml, skipping files already in the target format.
  -h,--help             Display help information.
  -in,--input <arg>     Input file or directory.
  -inEncoding <arg>     Input file encoding. If not specified, try to autodetect it (only works if input is a single file)
@@ -76,7 +77,24 @@ Command Line Execution
     -to markdown
 ```
 
-**Note**: The `from` parameter can be empty. In that case, Doxia converter tries to autodetect the `from` input from the `in` file parameter, this only works when the input is a file (and not a directory).
+**Note**: The `from` parameter can be empty. In that case, Doxia converter autodetects the format of the `in` file, or of each file in the `in` directory.
+
+Shared Source Directory
+-----------------------
+
+Doxia Sitetools can read documents of any format from one directory, `src/site/source`, where the file extension picks the parser. Without `-from`, the converter reads such a directory the same way: `.apt` is APT, `.md` and `.markdown` are Markdown, `.xml` is XDoc, `.xhtml` is XHTML and `.fml` is FML, each optionally followed by `.vm`. Files already in the target format are left alone, and so is an `.xml` file whose root element is not `<document>`.
+
+To convert every remaining document to Markdown in place, keeping the history in Git:
+
+```
+# java -jar target/doxia-converter-${project.version}-shaded.jar \
+    -in src/site/source \
+    -out src/site/source \
+    -to markdown \
+    -gitMvInputToOutput
+```
+
+Use `-removeIn` instead outside Git. Without either, each source stays next to its converted document, and Doxia Sitetools reports the pair as a duplicate page. The conversion stops before writing anything if two documents, such as `usage.apt` and `usage.xml`, would produce the same output file.
 
 Java Usage
 ----------

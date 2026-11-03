@@ -123,9 +123,14 @@ public class ConverterCli {
             final DefaultConverter.DoxiaFormat parserFormat;
             if (CLIManager.AUTO_FORMAT.equalsIgnoreCase(sourceFormat)) {
                 File inputFile = new File(commandLine.getOptionValue(CLIManager.IN));
-                parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
-                if (debug) {
-                    System.out.println("Auto detected input format: " + parserFormat);
+                if (inputFile.isDirectory()) {
+                    // detected per file, by extension
+                    parserFormat = null;
+                } else {
+                    parserFormat = DefaultConverter.DoxiaFormat.autoDetectFormat(inputFile);
+                    if (debug) {
+                        System.out.println("Auto detected input format: " + parserFormat);
+                    }
                 }
             } else {
                 parserFormat = DefaultConverter.DoxiaFormat.valueOf(sourceFormat.toUpperCase());
