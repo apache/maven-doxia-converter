@@ -432,6 +432,16 @@ class ConverterTest extends InjectedTest {
 
         assertEquals(DoxiaFormat.FML, autoDetectFormat("fml/test.fml"));
         assertEquals(DoxiaFormat.XHTML, autoDetectFormat("xhtml/test.xhtml"));
+        assertEquals(DoxiaFormat.MARKDOWN, autoDetectFormat("markdown/test.md"));
+        assertEquals(DoxiaFormat.MARKDOWN, autoDetectFormat("markdown/test.markdown"));
+    }
+
+    @Test
+    void fileNamePatternsCoverEveryExtension() {
+        assertEquals(
+                "**/*.md,**/*.md.vm,**/*.markdown,**/*.markdown.vm",
+                DefaultConverter.getFileNamePatterns(DoxiaFormat.MARKDOWN.getExtensions(), true));
+        assertEquals("**/*.apt", DefaultConverter.getFileNamePatterns(DoxiaFormat.APT.getExtensions(), false));
     }
 
     @Test

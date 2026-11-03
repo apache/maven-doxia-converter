@@ -37,6 +37,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -45,6 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.ibm.icu.text.CharsetDetector;
@@ -162,12 +165,14 @@ public class DefaultConverter implements Converter {
         FML("fml", "fml", "faqs", true, false),
         XDOC("xdoc", "xml", "document", true, true),
         XHTML("xhtml", "html", "html", true, true),
-        MARKDOWN("markdown", "md", true, true);
+        MARKDOWN("markdown", "md", null, true, true, "markdown");
 
         /** Plexus role hint for Doxia sink/parser */
         private final String roleHint;
 
         private final String extension;
+        /** Further extensions recognized for input files */
+        private final String[] alternativeExtensions;
         /** The name of the first element in case this is an XML format, otherwise {@code null} */
         private final String firstElement;
 
@@ -178,9 +183,16 @@ public class DefaultConverter implements Converter {
             this(roleHint, extension, null, hasParser, hasSink);
         }
 
-        DoxiaFormat(String roleHint, String extension, String firstElement, boolean hasParser, boolean hasSink) {
+        DoxiaFormat(
+                String roleHint,
+                String extension,
+                String firstElement,
+                boolean hasParser,
+                boolean hasSink,
+                String... alternativeExtensions) {
             this.roleHint = roleHint;
             this.extension = extension;
+            this.alternativeExtensions = alternativeExtensions;
             this.firstElement = firstElement;
             this.hasParser = hasParser;
             this.hasSink = hasSink;
@@ -192,6 +204,17 @@ public class DefaultConverter implements Converter {
          */
         public String getExtension() {
             return extension;
+        }
+
+        /**
+         *
+         * @return the primary extension followed by any further extensions recognized for input files
+         */
+        public List<String> getExtensions() {
+            List<String> extensions = new ArrayList<>();
+            extensions.add(extension);
+            extensions.addAll(Arrays.asList(alternativeExtensions));
+            return extensions;
         }
 
         public boolean hasParser() {
@@ -305,8 +328,10 @@ public class DefaultConverter implements Converter {
                         return format;
                     }
                 } else {
-                    if (hasFileExtensionIgnoreCase(f.getName(), format.getExtension())) {
-                        return format;
+                    for (String extension : format.getExtensions()) {
+                        if (hasFileExtensionIgnoreCase(f.getName(), extension)) {
+                            return format;
+                        }
                     }
                 }
             }
@@ -354,7 +379,7 @@ public class DefaultConverter implements Converter {
             try {
                 files = FileUtils.getFiles(
                         input.getFile(),
-                        getFileNamePatterns(input.getFormat().getExtension(), !input.isExcludeVelocityTemplates()),
+                        getFileNamePatterns(input.getFormat().getExtensions(), !input.isExcludeVelocityTemplates()),
                         StringUtils.join(FileUtils.getDefaultExcludes(), ", "));
             } catch (IOException e) {
                 throw new ConverterException("IOException: " + e.getMessage(), e);
@@ -363,7 +388,8 @@ public class DefaultConverter implements Converter {
             }
             if (files.isEmpty()) {
                 throw new ConverterException("ConverterException: No files with extension "
-                        + input.getFormat().getExtension() + " found in directory " + input.getFile());
+                        + String.join(", ", input.getFormat().getExtensions()) + " found in directory "
+                        + input.getFile());
             }
             for (File f : files) {
                 File relativeOutputDirectory =
@@ -381,11 +407,13 @@ public class DefaultConverter implements Converter {
         }
     }
 
-    static String getFileNamePatterns(String extension, boolean includeVelocityTemplates) {
-        StringBuilder patterns = new StringBuilder("**/*." + extension);
-        if (includeVelocityTemplates) {
-            patterns.append(",");
-            patterns.append("**/*.").append(extension).append(VELOCITY_TEMPLATE_EXTENSION);
+    static String getFileNamePatterns(List<String> extensions, boolean includeVelocityTemplates) {
+        StringJoiner patterns = new StringJoiner(",");
+        for (String extension : extensions) {
+            patterns.add("**/*." + extension);
+            if (includeVelocityTemplates) {
+                patterns.add("**/*." + extension + VELOCITY_TEMPLATE_EXTENSION);
+            }
         }
         return patterns.toString();
     }
