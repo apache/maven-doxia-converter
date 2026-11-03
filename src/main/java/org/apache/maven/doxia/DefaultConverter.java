@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -373,7 +374,11 @@ public class DefaultConverter implements Converter {
 
         outputRenameMap.clear();
         if (input.getFile().isFile()) {
-            convert(input.getFile(), input.getEncoding(), input.getFormat(), output);
+            DoxiaFormat format =
+                    input.getFormat() != null ? input.getFormat() : DoxiaFormat.autoDetectFormat(input.getFile());
+            convert(input.getFile(), input.getEncoding(), format, output);
+        } else if (input.getFormat() == null) {
+            convertSharedSourceDirectory(input, output);
         } else {
             List<File> files;
             try {
@@ -405,6 +410,108 @@ public class DefaultConverter implements Converter {
         } catch (IOException e) {
             throw new ConverterException("Error post processing all files: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * The file extensions that Doxia parser modules declare. In a shared source directory, such as
+     * <code>src/site/source</code>, Doxia Sitetools picks the parser by these extensions.
+     */
+    static final Map<String, DoxiaFormat> SOURCE_EXTENSIONS;
+
+    static {
+        Map<String, DoxiaFormat> extensions = new LinkedHashMap<>();
+        extensions.put("apt", DoxiaFormat.APT);
+        extensions.put("fml", DoxiaFormat.FML);
+        extensions.put("xml", DoxiaFormat.XDOC);
+        extensions.put("xhtml", DoxiaFormat.XHTML);
+        extensions.put("md", DoxiaFormat.MARKDOWN);
+        extensions.put("markdown", DoxiaFormat.MARKDOWN);
+        SOURCE_EXTENSIONS = Collections.unmodifiableMap(extensions);
+    }
+
+    /**
+     * Converts a directory that holds documents of several formats, the format of each picked by its extension as in
+     * {@link #SOURCE_EXTENSIONS}. Documents already in the output format are left alone, and so is an XML document
+     * whose root element does not match its format, such as a <code>site.xml</code>. Fails before converting anything
+     * if two documents would be written to the same output file.
+     */
+    private void convertSharedSourceDirectory(InputFileWrapper input, OutputFileWrapper output)
+            throws ConverterException, UnsupportedFormatException {
+        List<File> files;
+        try {
+            files = FileUtils.getFiles(
+                    input.getFile(),
+                    getFileNamePatterns(
+                            new ArrayList<>(SOURCE_EXTENSIONS.keySet()), !input.isExcludeVelocityTemplates()),
+                    StringUtils.join(FileUtils.getDefaultExcludes(), ", "));
+        } catch (IOException e) {
+            throw new ConverterException("IOException: " + e.getMessage(), e);
+        }
+
+        Map<File, DoxiaFormat> formats = new LinkedHashMap<>();
+        Map<File, File> outputs = new HashMap<>();
+        for (File f : files) {
+            String name = f.getName();
+            if (name.endsWith(VELOCITY_TEMPLATE_EXTENSION)) {
+                name = name.substring(0, name.length() - VELOCITY_TEMPLATE_EXTENSION.length());
+            }
+            DoxiaFormat format =
+                    SOURCE_EXTENSIONS.get(FileUtils.getExtension(name).toLowerCase(Locale.ENGLISH));
+            if (format == output.getFormat()) {
+                LOGGER.debug("Skipping \"{}\", already in format {}", f, format);
+                continue;
+            }
+            if (format.isXml()
+                    && !f.getName().endsWith(VELOCITY_TEMPLATE_EXTENSION)
+                    && !format.firstElement.equals(getFirstTag(f))) {
+                LOGGER.warn("Skipping \"{}\", its root element is not <{}>", f, format.firstElement);
+                continue;
+            }
+            File relativeOutputDirectory =
+                    new File(PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+            File outputFile = new File(
+                    new File(output.getFile(), relativeOutputDirectory.getPath()),
+                    getOutputFileName(f, output.getFormat()));
+            File other = outputs.put(outputFile.getAbsoluteFile(), f);
+            if (other != null) {
+                throw new ConverterException("ConverterException: \"" + other + "\" and \"" + f
+                        + "\" would both be converted to \"" + outputFile + "\"");
+            }
+            formats.put(f, format);
+        }
+        if (formats.isEmpty()) {
+            throw new ConverterException("ConverterException: No files to convert to " + output.getFormat()
+                    + " found in directory " + input.getFile());
+        }
+        for (Map.Entry<File, DoxiaFormat> entry : formats.entrySet()) {
+            File f = entry.getKey();
+            File relativeOutputDirectory =
+                    new File(PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
+            convert(f, input.getEncoding(), entry.getValue(), output, relativeOutputDirectory);
+        }
+        if (postProcess == PostProcess.NONE
+                && input.getFile().getAbsoluteFile().equals(output.getFile().getAbsoluteFile())) {
+            LOGGER.warn(
+                    "The converted documents sit next to their sources in {}; remove the sources, or Doxia Sitetools"
+                            + " reports each pair as a duplicate page",
+                    input.getFile());
+        }
+    }
+
+    /**
+     * @param inputFile the input file, a Velocity template when its name ends with <code>.vm</code>
+     * @param outputFormat the output format
+     * @return the name of the output file: the input file name with the output format's extension
+     */
+    static String getOutputFileName(File inputFile, DoxiaFormat outputFormat) {
+        String name = inputFile.getName();
+        if (name.endsWith(VELOCITY_TEMPLATE_EXTENSION)) {
+            return FileUtils.removeExtension(name.substring(0, name.length() - VELOCITY_TEMPLATE_EXTENSION.length()))
+                    + "."
+                    + outputFormat.getExtension()
+                    + VELOCITY_TEMPLATE_EXTENSION;
+        }
+        return FileUtils.removeExtension(name) + "." + outputFormat.getExtension();
     }
 
     static String getFileNamePatterns(List<String> extensions, boolean includeVelocityTemplates) {
@@ -525,7 +632,7 @@ public class DefaultConverter implements Converter {
     /**
      * @param inputFile a not null existing file.
      * @param inputEncoding a not null supported encoding or {@link InputFileWrapper#AUTO_ENCODING}
-     * @param parserFormat  a not null supported format or {@link InputFileWrapper#AUTO_FORMAT}
+     * @param parserFormat  a not null supported format
      * @param output not null OutputFileWrapper object
      * @throws ConverterException if any
      * @throws UnsupportedFormatException if any
@@ -576,19 +683,7 @@ public class DefaultConverter implements Converter {
                 || relativeOutputDirectory != null) {
             // assume it is a directory
             outputDirectoryOrFile.mkdirs();
-            final String outputFileName;
-            if (isVelocityTemplate) {
-                outputFileName = FileUtils.removeExtension(inputFile
-                                .getName()
-                                .substring(0, inputFile.getName().length() - VELOCITY_TEMPLATE_EXTENSION.length()))
-                        + "."
-                        + output.getFormat().getExtension()
-                        + VELOCITY_TEMPLATE_EXTENSION;
-            } else {
-                outputFileName = FileUtils.removeExtension(inputFile.getName()) + "."
-                        + output.getFormat().getExtension();
-            }
-            outputFile = new File(outputDirectoryOrFile, outputFileName);
+            outputFile = new File(outputDirectoryOrFile, getOutputFileName(inputFile, output.getFormat()));
         } else {
             outputDirectoryOrFile.getParentFile().mkdirs();
             outputFile = output.getFile();

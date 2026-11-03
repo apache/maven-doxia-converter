@@ -113,7 +113,8 @@ class CLIManager {
                 .hasArg()
                 .build());
         OPTIONS.addOption(Option.builder(FROM)
-                .desc("From format. If not specified, try to autodetect it (only works if input is a single file).")
+                .desc("From format. If not specified, autodetect it: for a directory, per file by extension, such as"
+                        + " .md, .apt, .xml (xdoc), .xhtml or .fml, skipping files already in the target format.")
                 .hasArg()
                 .build());
         OPTIONS.addOption(Option.builder(TO).desc("To format.").hasArg().build());
