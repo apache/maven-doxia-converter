@@ -459,6 +459,12 @@ public class DefaultConverter implements Converter {
                     SOURCE_EXTENSIONS.get(FileUtils.getExtension(name).toLowerCase(Locale.ENGLISH));
             if (format == output.getFormat()) {
                 LOGGER.debug("Skipping \"{}\", already in format {}", f, format);
+                // a document in the output format keeps its place, so no converted file may be written over it
+                File other = outputs.put(f.getAbsoluteFile(), f);
+                if (other != null) {
+                    throw new ConverterException("ConverterException: \"" + other + "\" and \"" + f
+                            + "\" would both be converted to \"" + f + "\"");
+                }
                 continue;
             }
             if (format.isXml()
@@ -489,11 +495,14 @@ public class DefaultConverter implements Converter {
                     new File(PathTool.getRelativeFilePath(input.getFile().getAbsolutePath(), f.getParent()));
             convert(f, input.getEncoding(), entry.getValue(), output, relativeOutputDirectory);
         }
-        if (postProcess == PostProcess.NONE
-                && input.getFile().getAbsoluteFile().equals(output.getFile().getAbsoluteFile())) {
+        Path inputPath = input.getFile().getAbsoluteFile().toPath().normalize();
+        Path outputPath = output.getFile().getAbsoluteFile().toPath().normalize();
+        if (postProcess == PostProcess.NONE && (outputPath.startsWith(inputPath) || inputPath.startsWith(outputPath))) {
             LOGGER.warn(
-                    "The converted documents sit next to their sources in {}; remove the sources, or Doxia Sitetools"
-                            + " reports each pair as a duplicate page",
+                    "The output directory {} and the input directory {} overlap, so converted documents sit next to"
+                            + " their sources; remove the sources, or Doxia Sitetools reports each pair as a"
+                            + " duplicate page",
+                    output.getFile(),
                     input.getFile());
         }
     }

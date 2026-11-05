@@ -46,6 +46,7 @@ import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -492,9 +493,8 @@ class ConverterTest extends InjectedTest {
      * Markdown is converted next to its source, picking the parser by its extension.
      */
     @Test
-    void sharedSourceDirectoryInPlace() throws Exception {
-        File dir = new File(getBasedir(), "target/unit/shared/source");
-        FileUtils.deleteDirectory(dir);
+    void sharedSourceDirectoryInPlace(@TempDir File tempDir) throws Exception {
+        File dir = new File(tempDir, "source");
         String markdown = "# Index\n\nAlready Markdown.\n";
         write(new File(dir, "index.md"), markdown);
         write(new File(dir, "guide/usage.apt"), "Usage\n\n* APT\n\n  Text.\n");
@@ -518,14 +518,11 @@ class ConverterTest extends InjectedTest {
         assertTrue(readFile(new File(dir, "notes.md.vm")).contains("${project.version}"));
         assertEquals(markdown, readFile(new File(dir, "index.md")));
         assertFalse(new File(dir, "site.md").exists());
-
-        FileUtils.deleteDirectory(dir);
     }
 
     @Test
-    void sharedSourceDirectoryRejectsTwoSourcesForOneOutput() throws Exception {
-        File dir = new File(getBasedir(), "target/unit/shared-duplicate/source");
-        FileUtils.deleteDirectory(dir);
+    void sharedSourceDirectoryRejectsTwoSourcesForOneOutput(@TempDir File tempDir) throws Exception {
+        File dir = new File(tempDir, "source");
         write(new File(dir, "usage.apt"), "Usage\n\n* APT\n\n  Text.\n");
         write(new File(dir, "usage.xml"), "<document><body><section name=\"Usage\"/></body></document>");
 
@@ -536,8 +533,26 @@ class ConverterTest extends InjectedTest {
                         OutputFileWrapper.valueOf(dir.getPath(), DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name())));
         assertTrue(e.getMessage().contains("usage.md"), e.getMessage());
         assertFalse(new File(dir, "usage.md").exists());
+    }
 
-        FileUtils.deleteDirectory(dir);
+    /**
+     * A hand-written document in the output format must not be overwritten by the conversion of a source that maps
+     * to the same file.
+     */
+    @Test
+    void sharedSourceDirectoryKeepsExistingTargetFormatDocument(@TempDir File tempDir) throws Exception {
+        File dir = new File(tempDir, "source");
+        String handWritten = "# Usage\n\nHand-written.\n";
+        write(new File(dir, "usage.md"), handWritten);
+        write(new File(dir, "usage.apt"), "Usage\n\n* APT\n\n  Text.\n");
+
+        ConverterException e = assertThrows(
+                ConverterException.class,
+                () -> converter.convert(
+                        InputFileWrapper.valueOf(dir.getPath(), null),
+                        OutputFileWrapper.valueOf(dir.getPath(), DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name())));
+        assertTrue(e.getMessage().contains("usage.md"), e.getMessage());
+        assertEquals(handWritten, readFile(new File(dir, "usage.md")));
     }
 
     private static void write(File file, String content) throws IOException {
