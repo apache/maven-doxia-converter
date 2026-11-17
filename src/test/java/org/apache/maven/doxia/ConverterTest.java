@@ -68,6 +68,7 @@ class ConverterTest extends InjectedTest {
 
     /** {@inheritDoc} */
     @BeforeEach
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         formatOutput = Boolean.parseBoolean(System.getProperty("format", "false"));
@@ -75,6 +76,7 @@ class ConverterTest extends InjectedTest {
 
     /** {@inheritDoc} */
     @AfterEach
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
         converter = null;
