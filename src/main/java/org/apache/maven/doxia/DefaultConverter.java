@@ -730,8 +730,7 @@ public class DefaultConverter implements Converter {
         SinkFactory sinkFactory = output.getFormat().getSinkFactory(sinkFactories);
 
         final String outputEncoding;
-        if ((output.getEncoding() == null || output.getEncoding().isEmpty())
-                || output.getEncoding().equals(OutputFileWrapper.AUTO_ENCODING)) {
+        if (StringUtils.isEmpty(output.getEncoding()) || output.getEncoding().equals(OutputFileWrapper.AUTO_ENCODING)) {
             outputEncoding = inputEncoding;
         } else {
             outputEncoding = output.getEncoding();
