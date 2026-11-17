@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DefaultConverterTest {
 
     @Test
-    void testExecuteCommand() throws IOException, InterruptedException {
+    void testExecuteCommand() throws Exception {
         DefaultConverter.executeCommand("git", "version");
     }
 

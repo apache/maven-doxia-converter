@@ -367,7 +367,7 @@ class ConverterTest extends InjectedTest {
 
             fail();
         } catch (UnsupportedOperationException e) {
-            assertTrue(true);
+            // expected
         }
 
         in = getBasedir() + "/src/test/resources/unit/xhtml/test.xhtml";
@@ -432,7 +432,7 @@ class ConverterTest extends InjectedTest {
             autoDetectFormat("apt/test.unknown");
             fail();
         } catch (UnsupportedOperationException e) {
-            assertTrue(true);
+            // expected
         }
 
         assertEquals(DoxiaFormat.FML, autoDetectFormat("fml/test.fml"));
@@ -450,7 +450,7 @@ class ConverterTest extends InjectedTest {
     }
 
     @Test
-    void testAptToMarkdownWithMacro() throws IOException, UnsupportedFormatException, ConverterException {
+    void testAptToMarkdownWithMacro() throws Exception {
         Path in = new File(getBasedir() + "/src/test/resources/unit/apt/macro.apt").toPath();
         Path expectedOut = new File(getBasedir() + "//src/test/resources/unit/markdown/macro.md").toPath();
 
@@ -468,7 +468,7 @@ class ConverterTest extends InjectedTest {
     }
 
     @Test
-    void xdocObjectSurvivesConversionToMarkdown() throws IOException, UnsupportedFormatException, ConverterException {
+    void xdocObjectSurvivesConversionToMarkdown() throws Exception {
         String xdoc = "<?xml version=\"1.0\"?>\n"
                 + "<document><properties><title>T</title></properties><body>\n"
                 + "<section name=\"S\">\n"
