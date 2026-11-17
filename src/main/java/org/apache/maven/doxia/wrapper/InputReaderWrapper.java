@@ -27,7 +27,7 @@ import org.apache.maven.doxia.DefaultConverter;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class InputReaderWrapper {
+public final class InputReaderWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 3260213754615748766L;
 

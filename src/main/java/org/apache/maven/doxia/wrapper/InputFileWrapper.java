@@ -29,7 +29,7 @@ import org.apache.maven.doxia.DefaultConverter;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class InputFileWrapper extends AbstractFileWrapper {
+public final class InputFileWrapper extends AbstractFileWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 6510443036267371188L;
 
