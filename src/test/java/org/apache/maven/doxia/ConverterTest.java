@@ -453,13 +453,13 @@ class ConverterTest extends InjectedTest {
         Path expectedOut = new File(getBasedir() + "//src/test/resources/unit/markdown/macro.md").toPath();
 
         try (ByteArrayOutputStream output = new ByteArrayOutputStream();
-                Reader reader = Files.newBufferedReader(in, StandardCharsets.UTF_8); ) {
+                Reader reader = Files.newBufferedReader(in, StandardCharsets.UTF_8)) {
             converter.convert(
                     InputReaderWrapper.valueOf(reader, DoxiaFormat.APT),
                     OutputStreamWrapper.valueOf(output, DoxiaFormat.MARKDOWN, StandardCharsets.UTF_8.name()));
 
             try (BufferedReader outputReader =
-                    new BufferedReader(new StringReader(new String(output.toByteArray(), StandardCharsets.UTF_8))); ) {
+                    new BufferedReader(new StringReader(new String(output.toByteArray(), StandardCharsets.UTF_8)))) {
                 assertLinesMatch(Files.readAllLines(expectedOut).stream(), outputReader.lines());
             }
         }

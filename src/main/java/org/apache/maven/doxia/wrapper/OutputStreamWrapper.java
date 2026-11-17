@@ -28,7 +28,7 @@ import org.apache.maven.doxia.DefaultConverter;
  *
  * @author <a href="mailto:vincent.siveton@gmail.com">Vincent Siveton</a>
  */
-public class OutputStreamWrapper {
+public final class OutputStreamWrapper {
     /** serialVersionUID */
     static final long serialVersionUID = 3329037527245430610L;
 

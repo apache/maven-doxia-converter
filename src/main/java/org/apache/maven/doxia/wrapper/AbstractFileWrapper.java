@@ -63,7 +63,7 @@ abstract class AbstractFileWrapper {
                     + "' is not a valid one. The supported charsets are: "
                     + StringUtils.join(CharsetDetector.getAllDetectableCharsets(), ", "));
         }
-        this.encoding = (encoding != null && !encoding.isEmpty()) ? encoding : AUTO_ENCODING;
+        this.encoding = encoding != null && !encoding.isEmpty() ? encoding : AUTO_ENCODING;
     }
 
     /**
