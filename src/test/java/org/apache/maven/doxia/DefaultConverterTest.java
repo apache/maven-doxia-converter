@@ -26,14 +26,15 @@ import java.util.Map;
 import org.apache.maven.doxia.DefaultConverter.MacroFormatter;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultConverterTest {
 
     @Test
-    void testExecuteCommand() throws Exception {
-        DefaultConverter.executeCommand("git", "version");
+    void testExecuteCommand() {
+        assertDoesNotThrow(() -> DefaultConverter.executeCommand("git", "version"));
     }
 
     @Test
